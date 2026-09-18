@@ -1,0 +1,23 @@
+# Dependências e ambiente
+node_modules/
+.vercel/
+.env
+.env.*
+!.env.example
+
+# Dados operacionais / relatórios reais (não versionar)
+*.xlsx
+*.xls
+*.csv
+*.pdf
+source_files/
+uploads/
+real-import-*.json
+after-import-*
+public/assets/dashboard-data-real.js
+
+# Evidências e artefatos locais
+screens/
+*.zip
+*.gz
+.DS_Store
