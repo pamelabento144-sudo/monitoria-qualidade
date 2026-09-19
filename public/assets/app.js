@@ -110,6 +110,12 @@
     $(target).innerHTML=`<div class="donut" style="--segments:conic-gradient(${stops.join(",")})"><strong>${fmtInt(total)}</strong></div><div class="donut-legend">${items.slice(0,7).map((x,i)=>`<div class="legend-row"><i style="background:${palette[i%palette.length]}"></i><span title="${escapeHtml(x.label)}">${escapeHtml(shorten(x.label,28))}</span><strong>${fmtPct(x.value/total*100)}</strong></div>`).join("")}</div>`;
   }
 
+  function renderOriginBars(target,items){
+    const rows=items.slice(0,6),max=Math.max(1,...rows.map(x=>x.value));
+    if(!rows.length){$(target).innerHTML=empty();return;}
+    $(target).innerHTML=`<div class="origin-bars">${rows.map((x,i)=>`<div class="origin-bar-item"><strong>${fmtInt(x.value)}</strong><div class="origin-bar-track"><span class="origin-bar-fill c${i+1}" style="height:${Math.max(8,x.value/max*100)}%"></span></div><small title="${escapeHtml(x.label)}">${escapeHtml(shorten(x.label,14))}</small></div>`).join("")}</div>`;
+  }
+
   function generalOriginCategory(origin){const n=normalize(origin);if(n.includes("cronograma"))return"Cronograma";if(n.includes("auditoria"))return"Auditoria";if(n.includes("reclam"))return"Reclamação";if(n.includes("elogio"))return"Elogio";if(n.includes("oficio")||n.includes("carta"))return"Ofício/Carta";return"Outros";}
   function specialCategory(origin){const n=normalize(origin);if(n.includes("reclam"))return"Reclamação";if(n.includes("auditoria cliente"))return"Auditoria Cliente";if(n.includes("auditoria"))return"Auditoria Interna";if(n.includes("elogio"))return"Elogio";if(n.includes("oficio")||n.includes("carta"))return"Ofício/Carta";return null;}
   function procedure(origin){const n=normalize(origin);if(n.includes("nao procedente")||n.includes("improced")||n.includes("improcent"))return"improper";if(n.includes("procedente"))return"proper";return"neutral";}
@@ -134,7 +140,7 @@
     ].join("");
     renderColumns("quality-quartiles",quartileStats(operators.filter(x=>Number.isFinite(x.quality)).map(x=>({value:x.quality}))));
     renderColumns("survey-quartiles",quartileStats(operators.filter(x=>Number.isFinite(x.isc)).map(x=>({value:x.isc}))));
-    const originMap=new Map();f.monitoring.forEach(x=>{const key=generalOriginCategory(x.origin);originMap.set(key,(originMap.get(key)||0)+1);});const origins=[...originMap].map(([label,value])=>({label,value})).sort((a,b)=>b.value-a.value);renderDonut("general-origin",origins,f.monitoring.length);
+    const originMap=new Map();f.monitoring.forEach(x=>{const key=generalOriginCategory(x.origin);originMap.set(key,(originMap.get(key)||0)+1);});const origins=[...originMap].map(([label,value])=>({label,value})).sort((a,b)=>b.value-a.value);renderOriginBars("general-origin",origins);
     const criteria=aggregateCriteria(f.criteria).sort((a,b)=>b.accuracy-a.accuracy).slice(0,5);renderRank("best-criteria",criteria.map(x=>({label:x.criterion,value:x.accuracy})),{limit:5,format:fmtPct,maxValue:100});
     renderSplit("form-performance",aggregate(f.monitoring,"form"));renderSplit("skill-performance",aggregate(f.monitoring,"skill"));
     const qualityTop=operators.filter(x=>x.evaluations>0).sort((a,b)=>b.quality-a.quality).map(x=>({label:x.operator,value:x.quality,width:x.quality}));
