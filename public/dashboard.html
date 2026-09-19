@@ -124,7 +124,7 @@
 
     <section class="view" id="survey">
       <div id="survey-kpis" class="kpi-grid"></div><div id="survey-quartile-detail" class="quartile-detail"></div>
-      <article class="panel table-panel"><header><div><h2>Pesquisa por Operador</h2><span id="survey-operator-count"></span></div></header><div class="table-scroll"><table><thead><tr><th>Operador</th><th>RE</th><th>Supervisão</th><th>Respostas</th><th>P1</th><th>P2</th><th>P3</th><th>ISC</th><th>Quartil</th></tr></thead><tbody id="survey-table"></tbody></table></div>
+      <article class="panel table-panel"><header><div><h2>Pesquisa por Operador</h2><span id="survey-operator-count"></span></div><label>Quartil<select id="survey-quartile-filter"><option value="all">Todos</option><option value="1">1º Quartil</option><option value="2">2º Quartil</option><option value="3">3º Quartil</option><option value="4">4º Quartil</option></select></label></header><div class="table-scroll"><table><thead><tr><th>Operador</th><th>RE</th><th>Supervisão</th><th>Respostas</th><th>P1</th><th>P2</th><th>P3</th><th>ISC</th><th>Quartil</th></tr></thead><tbody id="survey-table"></tbody></table></div>
         <footer class="pager data-pager">
           <label>Por página<select id="survey-page-size"><option value="25" selected>25</option><option value="50">50</option><option value="100">100</option><option value="all">Todos</option></select></label>
           <button type="button" id="survey-prev">Anterior</button><strong id="survey-page-indicator">1 de 1</strong><button type="button" id="survey-next">Próxima</button>
@@ -150,7 +150,7 @@
     <section class="view" id="operators">
       <div class="operator-tools"><div><h2>Desempenho Individual</h2><span id="operator-count"></span></div><label>Status<select id="operator-status-filter"><option value="all">Todos</option><option value="excellent">Destaque</option><option value="good">Dentro da meta</option><option value="attention">Acompanhamento</option></select></label></div>
       <div id="operator-summary" class="operator-summary"></div>
-      <article class="panel table-panel"><div class="table-scroll"><table class="sortable"><thead><tr><th data-sort="operator">Operador</th><th data-sort="re">RE</th><th data-sort="supervisor">Supervisão</th><th data-sort="evaluations">Monitorias</th><th data-sort="quality">Qualidade</th><th data-sort="isc">ISC</th><th data-sort="calls">Atendimentos</th><th data-sort="tma">TMA</th><th data-sort="fg">FG</th><th data-sort="status">Status</th></tr></thead><tbody id="operators-table"></tbody></table></div>
+      <article class="panel table-panel"><div class="table-scroll"><table class="sortable"><thead><tr><th data-sort="re">RE</th><th data-sort="operator">Operador</th><th data-sort="evaluations">Monitorias</th><th data-sort="quality">Qualidade</th><th data-sort="quartileQuality">Quartil Qualidade</th><th data-sort="isc">ISC</th><th data-sort="calls">Atendimentos</th><th data-sort="tma">TMA</th><th data-sort="fg">FG</th><th data-sort="status">Status</th></tr></thead><tbody id="operators-table"></tbody></table></div>
         <footer class="pager data-pager">
           <label>Por página<select id="operator-page-size"><option value="10" selected>10</option><option value="15">15</option><option value="30">30</option><option value="all">Todos</option></select></label>
           <button type="button" id="operator-prev">Anterior</button><strong id="operator-page-indicator">1 de 1</strong><button type="button" id="operator-next">Próxima</button>
