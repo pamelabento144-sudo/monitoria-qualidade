@@ -101,7 +101,7 @@
 
   function renderColumns(target,stats){
     const max=Math.max(1,...stats.map(x=>x.count));
-    $(target).innerHTML=stats.map(x=>`<div class="column-item"><span class="column-value">${fmtInt(x.count)}<br><small>${fmtPct(sum(stats,y=>y.count)?x.count/sum(stats,y=>y.count)*100:NaN)}</small></span><div class="column-bar" style="height:${Math.max(3,x.count/max*118)}px"></div><span class="column-label">${x.q}º Quartil<br>${x.range}<br>Média ${fmtPct(x.average)}</span></div>`).join("");
+    $(target).innerHTML=stats.map(x=>`<div class="column-item"><span class="column-value">${fmtInt(x.count)}<br><small>${fmtPct(sum(stats,y=>y.count)?x.count/sum(stats,y=>y.count)*100:NaN)}</small></span><div class="column-bar q${x.q}" style="height:${Math.max(3,x.count/max*118)}px"></div><span class="column-label">${x.q}º Quartil<br>${x.range}<br>Média ${fmtPct(x.average)}</span></div>`).join("");
   }
 
   function renderDonut(target,items,total){
