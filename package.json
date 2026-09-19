@@ -3,6 +3,9 @@
   "private": true,
   "type": "module",
   "engines": {"node": ">=20"},
+  "scripts": {
+    "build": "node scripts/blob-health.mjs"
+  },
   "dependencies": {
     "@vercel/blob": "latest"
   }
