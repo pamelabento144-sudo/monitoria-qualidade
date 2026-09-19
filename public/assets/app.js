@@ -3,7 +3,7 @@
 
   let data = window.DASH_DATA;
   const $ = (id) => document.getElementById(id);
-  const state = { view:"general", month:"Ago", skill:"all", form:"all", supervisor:"all", search:"", criteriaDimension:"all", specialPage:1, specialPageSize:50, qualitySkillPage:1, qualitySkillPageSize:10, criteriaPage:1, criteriaPageSize:10, surveyPage:1, surveyPageSize:25, fgPage:1, fgPageSize:10, operatorPage:1, operatorPageSize:10, operatorStatus:"all", sort:{key:"quality",direction:"asc"} };
+  const state = { view:"general", month:"Ago", skill:"all", form:"all", supervisor:"all", search:"", criteriaDimension:"all", specialPage:1, specialPageSize:50, qualitySkillPage:1, qualitySkillPageSize:10, criteriaPage:1, criteriaPageSize:10, surveyPage:1, surveyPageSize:25, surveyQuartile:"all", fgPage:1, fgPageSize:10, operatorPage:1, operatorPageSize:10, operatorStatus:"all", sort:{key:"quality",direction:"asc"} };
   const palette=["#16d9f5","#9254ff","#ff526d","#15e2ac","#ffc13d","#6ea8d8","#b4c6d4"];
   const monthNames={Jan:"JANEIRO",Fev:"FEVEREIRO",Mar:"MARÇO",Abr:"ABRIL",Mai:"MAIO",Jun:"JUNHO",Jul:"JULHO",Ago:"AGOSTO",Set:"SETEMBRO",Out:"OUTUBRO",Nov:"NOVEMBRO",Dez:"DEZEMBRO"};
   const monthOrder={Jan:1,Fev:2,Mar:3,Abr:4,Mai:5,Jun:6,Jul:7,Ago:8,Set:9,Out:10,Nov:11,Dez:12};
@@ -85,6 +85,7 @@
 
   function kpi(label,value,foot,icon,{danger=false,meter=null}={}){return`<article class="kpi-card ${danger?"danger":""}"><div class="kpi-label"><span>${label}</span><span class="kpi-icon">${iconSvg(icon)}</span></div><div class="kpi-value">${value}</div><div class="kpi-foot">${foot}</div>${meter==null?"":`<div class="meter"><span style="width:${Math.max(0,Math.min(100,meter))}%"></span></div>`}</article>`;}
   function badge(status){return status==="excellent"?'<span class="badge">Destaque</span>':status==="good"?'<span class="badge warn">Dentro da meta</span>':'<span class="badge danger">Acompanhamento</span>';}
+  function quartileBadge(value){const q=Number(value);return Number.isFinite(q)&&q>=1&&q<=4?`<span class="quartile-pill q${q}">${q}º Quartil</span>`:'<span class="quartile-pill none">—</span>';}
   function empty(message="Sem dados para os filtros selecionados."){return`<div class="empty">${message}</div>`;}
 
   function normalizePageSize(value,fallback){return value==="all"?"all":Math.max(1,Number(value)||fallback);}
@@ -198,11 +199,12 @@
   function renderSurvey(f){
     const overall=isc(f.satisfaction),p1=isc(f.satisfaction,"p1"),p2=isc(f.satisfaction,"p2"),p3=isc(f.satisfaction,"p3"),responses=sum(questionCounts(f.satisfaction));
     $("survey-kpis").innerHTML=[kpi("ISC Geral",fmtPct(overall),"P1 + P2 + P3","survey",{meter:overall}),kpi("P1 Atendimento",fmtPct(p1),"Notas 4 e 5","check",{meter:p1}),kpi("P2 Cordialidade",fmtPct(p2),"Notas 4 e 5","check",{meter:p2}),kpi("P3 Clareza",fmtPct(p3),"Notas 4 e 5","check",{meter:p3}),kpi("Respondidas",fmtInt(responses),"Somatório de P1, P2 e P3","clipboard",{meter:100})].join("");
-    const rows=operatorSurveyRows(f.satisfaction).sort((a,b)=>b.isc-a.isc),stats=quartileStats(rows.map(x=>({value:x.isc})));
+    const allRows=operatorSurveyRows(f.satisfaction).sort((a,b)=>b.isc-a.isc),stats=quartileStats(allRows.map(x=>({value:x.isc})));
     $("survey-quartile-detail").innerHTML=stats.map(x=>`<div class="quartile-card"><span class="quartile-badge">Q${x.q}</span><div><strong>${fmtInt(x.count)}</strong><small>${x.range}</small></div><div><strong>${fmtPct(x.average)}</strong><small>Média do quartil</small></div></div>`).join("");
+    const rows=state.surveyQuartile==="all"?allRows:allRows.filter(x=>String(x.quartile)===String(state.surveyQuartile));
     const paged=paginateRows(rows,state.surveyPage,state.surveyPageSize);state.surveyPage=paged.page;
     $("survey-operator-count").textContent=rows.length?`${fmtInt(rows.length)} operadores · ${fmtInt(paged.start+1)}–${fmtInt(paged.end)}`:"0 operadores";
-    $("survey-table").innerHTML=paged.rows.map(x=>`<tr><td><strong>${escapeHtml(x.operator)}</strong></td><td>${escapeHtml(x.re)}</td><td>${escapeHtml(x.supervisor||"Não atribuída")}</td><td>${fmtInt(x.responses)}</td><td class="${metricClass(x.p1Score)}">${fmtPct(x.p1Score)}</td><td class="${metricClass(x.p2Score)}">${fmtPct(x.p2Score)}</td><td class="${metricClass(x.p3Score)}">${fmtPct(x.p3Score)}</td><td class="${metricClass(x.isc)}">${fmtPct(x.isc)}</td><td><span class="badge ${x.quartile>=3?"danger":x.quartile===2?"warn":""}">${x.quartile}º Quartil</span></td></tr>`).join("")||`<tr><td colspan="9" class="empty">Sem respostas de pesquisa.</td></tr>`;
+    $("survey-table").innerHTML=paged.rows.map(x=>`<tr><td><strong>${escapeHtml(x.operator)}</strong></td><td>${escapeHtml(x.re)}</td><td>${escapeHtml(x.supervisor||"Não atribuída")}</td><td>${fmtInt(x.responses)}</td><td class="${metricClass(x.p1Score)}">${fmtPct(x.p1Score)}</td><td class="${metricClass(x.p2Score)}">${fmtPct(x.p2Score)}</td><td class="${metricClass(x.p3Score)}">${fmtPct(x.p3Score)}</td><td class="${metricClass(x.isc)}">${fmtPct(x.isc)}</td><td>${quartileBadge(x.quartile)}</td></tr>`).join("")||`<tr><td colspan="9" class="empty">Sem respostas de pesquisa para o quartil selecionado.</td></tr>`;
     syncPager("survey",paged,state.surveyPageSize);
   }
 
@@ -290,7 +292,7 @@
     const paged=paginateRows(visible,state.operatorPage,state.operatorPageSize);state.operatorPage=paged.page;
     $("operator-count").textContent=visible.length?`${fmtInt(visible.length)} operadores · ${fmtInt(paged.start+1)}–${fmtInt(paged.end)}`:"0 operadores";
     $("operator-summary").innerHTML=`<div class="summary-tile"><strong>${fmtInt(counts.excellent)}</strong><span>Destaques com média de 100%</span></div><div class="summary-tile warn"><strong>${fmtInt(counts.good)}</strong><span>Dentro da meta</span></div><div class="summary-tile danger"><strong>${fmtInt(counts.attention)}</strong><span>Para acompanhamento</span></div>`;
-    $("operators-table").innerHTML=paged.rows.map(x=>`<tr><td><strong>${escapeHtml(x.operator)}</strong></td><td>${escapeHtml(x.re)}</td><td>${escapeHtml(x.supervisor||"Não atribuída")}</td><td>${fmtInt(x.evaluations)}</td><td class="${metricClass(x.quality)}">${fmtPct(x.quality)}</td><td class="${metricClass(x.isc)}">${fmtPct(x.isc)}</td><td>${fmtInt(x.calls)}</td><td>${fmtTime(x.tma)}</td><td class="${x.fg?"metric-danger":""}">${fmtInt(x.fg)}</td><td>${badge(x.status)}</td></tr>`).join("")||`<tr><td colspan="10" class="empty">Nenhum operador encontrado.</td></tr>`;
+    $("operators-table").innerHTML=paged.rows.map(x=>`<tr><td>${escapeHtml(x.re)}</td><td><strong>${escapeHtml(x.operator)}</strong></td><td>${fmtInt(x.evaluations)}</td><td class="${metricClass(x.quality)}">${fmtPct(x.quality)}</td><td>${quartileBadge(x.quartileQuality)}</td><td class="${metricClass(x.isc)}">${fmtPct(x.isc)}</td><td>${fmtInt(x.calls)}</td><td>${fmtTime(x.tma)}</td><td class="${x.fg?"metric-danger":""}">${fmtInt(x.fg)}</td><td>${badge(x.status)}</td></tr>`).join("")||`<tr><td colspan="10" class="empty">Nenhum operador encontrado.</td></tr>`;
     syncPager("operator",paged,state.operatorPageSize);
   }
 
@@ -494,8 +496,9 @@
     $("main-nav").addEventListener("click",e=>{const button=e.target.closest("[data-view]");if(button)switchView(button.dataset.view);});
     [["month-filter","month"],["skill-filter","skill"],["form-filter","form"],["supervisor-filter","supervisor"]].forEach(([id,key])=>$(id).addEventListener("change",e=>{state[key]=e.target.value;resetListPages();render();}));
     let timer;$("operator-filter").addEventListener("input",e=>{clearTimeout(timer);timer=setTimeout(()=>{state.search=e.target.value.trim();resetListPages();render();},180);});
-    $("clear-filters").addEventListener("click",()=>{state.skill="all";state.form="all";state.supervisor="all";state.search="";state.criteriaDimension="all";resetListPages();$("skill-filter").value="all";$("form-filter").value="all";$("supervisor-filter").value="all";$("criteria-dimension-filter").value="all";$("operator-filter").value="";render();});
+    $("clear-filters").addEventListener("click",()=>{state.skill="all";state.form="all";state.supervisor="all";state.search="";state.criteriaDimension="all";state.surveyQuartile="all";resetListPages();$("skill-filter").value="all";$("form-filter").value="all";$("supervisor-filter").value="all";$("criteria-dimension-filter").value="all";$("survey-quartile-filter").value="all";$("operator-filter").value="";render();});
     $("criteria-dimension-filter").addEventListener("change",e=>{state.criteriaDimension=e.target.value;state.criteriaPage=1;renderQuality(filtered(),buildOperators(filtered()));});
+    $("survey-quartile-filter").addEventListener("change",e=>{state.surveyQuartile=e.target.value;state.surveyPage=1;renderSurvey(filtered());});
     $("operator-status-filter").addEventListener("change",e=>{state.operatorStatus=e.target.value;state.operatorPage=1;renderOperators(buildOperators(filtered()));});
     $("special-page-size").addEventListener("change",e=>{state.specialPageSize=Number(e.target.value)||50;state.specialPage=1;renderSpecial(filtered());});
     $("special-prev").addEventListener("click",()=>{state.specialPage=Math.max(1,state.specialPage-1);renderSpecial(filtered());});
