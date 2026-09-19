@@ -921,3 +921,28 @@ html,body{max-width:100%;overflow-x:hidden}
   .table-panel>header label{width:100%;justify-content:flex-start}
   .table-panel>header select{min-width:150px}
 }
+
+/* Logo MQ por tema — modelos aprovados */
+.brand-logo-block{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  overflow:hidden;
+}
+.brand-logo{
+  display:block;
+  width:auto;
+  max-width:100%;
+  height:auto;
+  max-height:88px;
+  object-fit:contain;
+}
+.brand-logo-light{display:none}
+body.light .brand-logo-dark{display:none}
+body.light .brand-logo-light{display:block}
+@media(max-width:800px){
+  .brand-logo{max-height:78px}
+}
+@media(max-width:520px){
+  .brand-logo{max-height:68px}
+}
