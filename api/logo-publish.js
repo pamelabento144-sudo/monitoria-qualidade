@@ -23,7 +23,7 @@ export default async function handler(req,res){
     const r=await fetch(source);
     if(!r.ok)throw new Error("Falha ao baixar logo: "+r.status);
     const buffer=Buffer.from(await r.arrayBuffer());
-    const blob=await put("mq-assets/"+name,buffer,{access:"public",addRandomSuffix:false,allowOverwrite:true,contentType:r.headers.get("content-type")||"image/png",...(token()?{token:token()}:{})});
+    const blob=await put("mq-assets/"+name,buffer,{access:"private",addRandomSuffix:false,allowOverwrite:true,contentType:r.headers.get("content-type")||"image/png",...(token()?{token:token()}:{})});
     return json(res,200,{url:blob.url,pathname:blob.pathname,size:buffer.length});
   }catch(error){
     return json(res,500,{error:error.message||"Falha."});
