@@ -101,20 +101,48 @@
 
     <section class="view" id="quality">
       <div id="quality-kpis" class="kpi-grid four"></div>
-      <div class="content-grid three"><article class="panel"><h2>Por Origem</h2><table><tbody id="quality-origin-table"></tbody></table></article><article class="panel"><h2>Por Skill</h2><table><tbody id="quality-skill-table"></tbody></table></article><article class="panel"><h2>Por Ficha</h2><table><tbody id="quality-form-table"></tbody></table></article></div>
+      <div class="content-grid three">
+        <article class="panel quality-summary-panel"><h2>Por Origem</h2><div class="summary-table-wrap"><table class="compact-summary-table"><tbody id="quality-origin-table"></tbody></table></div></article>
+        <article class="panel quality-summary-panel"><h2>Por Skill</h2><div class="summary-table-wrap"><table class="compact-summary-table"><tbody id="quality-skill-table"></tbody></table></div>
+          <footer class="pager data-pager">
+            <label>Por página<select id="quality-skill-page-size"><option value="10" selected>10</option><option value="15">15</option><option value="30">30</option><option value="all">Todos</option></select></label>
+            <button type="button" id="quality-skill-prev">Anterior</button><strong id="quality-skill-page-indicator">1 de 1</strong><button type="button" id="quality-skill-next">Próxima</button>
+            <form id="quality-skill-page-form"><label>Ir para <input id="quality-skill-page-input" type="number" min="1" value="1"></label><button type="submit">Ir</button></form>
+          </footer>
+        </article>
+        <article class="panel quality-summary-panel"><h2>Por Ficha</h2><div class="summary-table-wrap"><table class="compact-summary-table"><tbody id="quality-form-table"></tbody></table></div></article>
+      </div>
       <div class="content-grid two"><article class="panel"><h2>Tipo de Monitoria</h2><div id="quality-type-chart"></div></article><article class="panel"><h2>Principais Ofensores</h2><div id="criteria-offenders"></div></article></div>
-      <article class="panel table-panel"><header><div><h2>Itens Aferidos</h2></div><label>Dimensão<select id="criteria-dimension-filter"><option value="all">Todas</option><option value="Qualidade">Qualidade</option><option value="Processo">Processo</option></select></label></header><div class="table-scroll"><table><thead><tr><th>Critério</th><th>Tipo</th><th>Peso</th><th>Total</th><th>Acertos</th><th>Erros</th><th>% Acerto</th><th>% Erro</th></tr></thead><tbody id="criteria-table"></tbody></table></div></article>
+      <article class="panel table-panel"><header><div><h2>Itens Aferidos</h2></div><label>Dimensão<select id="criteria-dimension-filter"><option value="all">Todas</option><option value="Qualidade">Qualidade</option><option value="Processo">Processo</option></select></label></header><div class="table-scroll"><table><thead><tr><th>Critério</th><th>Tipo</th><th>Peso</th><th>Total</th><th>Acertos</th><th>Erros</th><th>% Acerto</th><th>% Erro</th></tr></thead><tbody id="criteria-table"></tbody></table></div>
+        <footer class="pager data-pager">
+          <label>Por página<select id="criteria-page-size"><option value="10" selected>10</option><option value="15">15</option><option value="30">30</option><option value="all">Todos</option></select></label>
+          <button type="button" id="criteria-prev">Anterior</button><strong id="criteria-page-indicator">1 de 1</strong><button type="button" id="criteria-next">Próxima</button>
+          <form id="criteria-page-form"><label>Ir para <input id="criteria-page-input" type="number" min="1" value="1"></label><button type="submit">Ir</button></form>
+        </footer>
+      </article>
     </section>
 
     <section class="view" id="survey">
       <div id="survey-kpis" class="kpi-grid"></div><div id="survey-quartile-detail" class="quartile-detail"></div>
-      <article class="panel table-panel"><header><div><h2>Pesquisa por Operador</h2><span id="survey-operator-count"></span></div></header><div class="table-scroll"><table><thead><tr><th>Operador</th><th>RE</th><th>Supervisão</th><th>Respostas</th><th>P1</th><th>P2</th><th>P3</th><th>ISC</th><th>Quartil</th></tr></thead><tbody id="survey-table"></tbody></table></div></article>
+      <article class="panel table-panel"><header><div><h2>Pesquisa por Operador</h2><span id="survey-operator-count"></span></div></header><div class="table-scroll"><table><thead><tr><th>Operador</th><th>RE</th><th>Supervisão</th><th>Respostas</th><th>P1</th><th>P2</th><th>P3</th><th>ISC</th><th>Quartil</th></tr></thead><tbody id="survey-table"></tbody></table></div>
+        <footer class="pager data-pager">
+          <label>Por página<select id="survey-page-size"><option value="25" selected>25</option><option value="50">50</option><option value="100">100</option><option value="all">Todos</option></select></label>
+          <button type="button" id="survey-prev">Anterior</button><strong id="survey-page-indicator">1 de 1</strong><button type="button" id="survey-next">Próxima</button>
+          <form id="survey-page-form"><label>Ir para <input id="survey-page-input" type="number" min="1" value="1"></label><button type="submit">Ir</button></form>
+        </footer>
+      </article>
     </section>
 
     <section class="view" id="fg">
       <div id="fg-kpis" class="kpi-grid four"></div>
       <div class="content-grid three"><article class="panel"><h2>Motivos</h2><div id="fg-reasons"></div></article><article class="panel"><h2>Origens</h2><div id="fg-origins"></div></article><article class="panel"><h2>Skills</h2><div id="fg-skills"></div></article></div>
-      <article class="panel table-panel"><header><div><h2>Operadores com Falta Grave</h2><span id="fg-operator-count"></span></div></header><div class="table-scroll"><table><thead><tr><th>Operador</th><th>RE</th><th>Supervisão</th><th>FGs</th><th>Motivo</th><th>Origem</th><th>Skill</th></tr></thead><tbody id="fg-operators"></tbody></table></div></article>
+      <article class="panel table-panel"><header><div><h2>Operadores com Falta Grave</h2><span id="fg-operator-count"></span></div></header><div class="table-scroll"><table><thead><tr><th>Operador</th><th>RE</th><th>Supervisão</th><th>FGs</th><th>Motivo</th><th>Origem</th><th>Skill</th></tr></thead><tbody id="fg-operators"></tbody></table></div>
+        <footer class="pager data-pager">
+          <label>Por página<select id="fg-page-size"><option value="10" selected>10</option><option value="15">15</option><option value="30">30</option><option value="all">Todos</option></select></label>
+          <button type="button" id="fg-prev">Anterior</button><strong id="fg-page-indicator">1 de 1</strong><button type="button" id="fg-next">Próxima</button>
+          <form id="fg-page-form"><label>Ir para <input id="fg-page-input" type="number" min="1" value="1"></label><button type="submit">Ir</button></form>
+        </footer>
+      </article>
     </section>
 
     <section class="view" id="comparison"><div id="comparison-charts" class="comparison-charts"></div><article class="panel table-panel"><div class="table-scroll"><table><thead id="comparison-head"></thead><tbody id="comparison-table"></tbody></table></div></article></section>
@@ -122,7 +150,13 @@
     <section class="view" id="operators">
       <div class="operator-tools"><div><h2>Desempenho Individual</h2><span id="operator-count"></span></div><label>Status<select id="operator-status-filter"><option value="all">Todos</option><option value="excellent">Destaque</option><option value="good">Dentro da meta</option><option value="attention">Acompanhamento</option></select></label></div>
       <div id="operator-summary" class="operator-summary"></div>
-      <article class="panel table-panel"><div class="table-scroll"><table class="sortable"><thead><tr><th data-sort="operator">Operador</th><th data-sort="re">RE</th><th data-sort="supervisor">Supervisão</th><th data-sort="evaluations">Monitorias</th><th data-sort="quality">Qualidade</th><th data-sort="isc">ISC</th><th data-sort="calls">Atendimentos</th><th data-sort="tma">TMA</th><th data-sort="fg">FG</th><th data-sort="status">Status</th></tr></thead><tbody id="operators-table"></tbody></table></div></article>
+      <article class="panel table-panel"><div class="table-scroll"><table class="sortable"><thead><tr><th data-sort="operator">Operador</th><th data-sort="re">RE</th><th data-sort="supervisor">Supervisão</th><th data-sort="evaluations">Monitorias</th><th data-sort="quality">Qualidade</th><th data-sort="isc">ISC</th><th data-sort="calls">Atendimentos</th><th data-sort="tma">TMA</th><th data-sort="fg">FG</th><th data-sort="status">Status</th></tr></thead><tbody id="operators-table"></tbody></table></div>
+        <footer class="pager data-pager">
+          <label>Por página<select id="operator-page-size"><option value="10" selected>10</option><option value="15">15</option><option value="30">30</option><option value="all">Todos</option></select></label>
+          <button type="button" id="operator-prev">Anterior</button><strong id="operator-page-indicator">1 de 1</strong><button type="button" id="operator-next">Próxima</button>
+          <form id="operator-page-form"><label>Ir para <input id="operator-page-input" type="number" min="1" value="1"></label><button type="submit">Ir</button></form>
+        </footer>
+      </article>
     </section>
   </main>
 </div>
