@@ -883,3 +883,41 @@ html,body{max-width:100%;overflow-x:hidden}
   .data-pager form label{font-size:9px}
   .compact-summary-table td:first-child{white-space:normal}
 }
+
+
+/* Quartis — filtros e classificação nas tabelas */
+.table-panel>header label{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  color:var(--muted);
+  font-size:9px;
+  font-weight:750;
+}
+.table-panel>header select{min-width:130px}
+.quartile-pill{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:72px;
+  padding:4px 8px;
+  border-radius:999px;
+  font-size:9px;
+  font-weight:850;
+  white-space:nowrap;
+}
+.quartile-pill.q1{background:rgba(46,210,252,.12);color:#2ed2fc;border:1px solid rgba(46,210,252,.24)}
+.quartile-pill.q2{background:rgba(71,239,174,.12);color:#47efae;border:1px solid rgba(71,239,174,.24)}
+.quartile-pill.q3{background:rgba(255,214,84,.12);color:#ffd654;border:1px solid rgba(255,214,84,.24)}
+.quartile-pill.q4{background:rgba(255,113,135,.12);color:#ff7187;border:1px solid rgba(255,113,135,.24)}
+.quartile-pill.none{background:rgba(125,150,172,.10);color:var(--muted);border:1px solid rgba(125,150,172,.18)}
+.light .quartile-pill.q1{color:#058fbe}
+.light .quartile-pill.q2{color:#09966d}
+.light .quartile-pill.q3{color:#b47c00}
+.light .quartile-pill.q4{color:#d43e59}
+
+@media(max-width:800px){
+  .table-panel>header{align-items:flex-start;flex-wrap:wrap}
+  .table-panel>header label{width:100%;justify-content:flex-start}
+  .table-panel>header select{min-width:150px}
+}
