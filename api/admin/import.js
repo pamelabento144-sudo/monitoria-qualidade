@@ -20,7 +20,7 @@ export default async function handler(req, res) {
     return json(res, 200, {
       importId: history.id,
       message: "Arquivo validado com sucesso.",
-      file: { originalName, uploadedAt: new Date().toISOString(), url: blob.url }
+      file: { originalName, uploadedAt: new Date().toISOString(), pathname: blob.pathname }
     });
   } catch (error) {
     if (history?.id) await updateHistory(history.id, { status: "Erro", details: error.message || "Falha ao validar arquivo." });
