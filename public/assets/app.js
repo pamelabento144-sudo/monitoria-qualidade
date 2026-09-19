@@ -432,14 +432,33 @@
   }
 
   async function establishAdmin(){
-    const url=new URL(location.href),token=url.searchParams.get("admin_token"),adminMode=Boolean(token)||url.searchParams.get("admin")==="1";
+    const url=new URL(location.href),urlToken=url.searchParams.get("admin_token"),adminMode=Boolean(urlToken)||url.searchParams.get("admin")==="1";
     if(!adminMode)return;
-    if(token){
+
+    async function openSession(token){
       const response=await fetch("/api/admin/session",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({token})});
-      history.replaceState({},"",`${url.pathname}?admin=1`);
-      if(!response.ok){toast("Chave administrativa inválida.");return;}
+      return response.ok;
     }
-    try{const response=await fetch("/api/admin/status",{cache:"no-store"}),status=await response.json();if(status.admin)injectAdminInterface(status);}catch{/* visualização pública permanece disponível */}
+
+    if(urlToken){
+      const ok=await openSession(urlToken);
+      history.replaceState({},"",`${url.pathname}?admin=1`);
+      if(!ok){toast("Chave administrativa inválida.");return;}
+    }
+
+    try{
+      let response=await fetch("/api/admin/status",{cache:"no-store"});
+      let status=await response.json();
+      if(!status.admin&&!urlToken){
+        const typed=window.prompt("Digite a chave administrativa:");
+        if(!typed)return;
+        const ok=await openSession(typed);
+        if(!ok){toast("Chave administrativa inválida.");return;}
+        response=await fetch("/api/admin/status",{cache:"no-store"});
+        status=await response.json();
+      }
+      if(status.admin)injectAdminInterface(status);
+    }catch{/* visualização pública permanece disponível */}
   }
 
   function bind(){
