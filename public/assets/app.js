@@ -3,7 +3,7 @@
 
   let data = window.DASH_DATA;
   const $ = (id) => document.getElementById(id);
-  const state = { view:"general", month:"Ago", skill:"all", form:"all", supervisor:"all", search:"", criteriaDimension:"all", specialPage:1, specialPageSize:50, operatorStatus:"all", sort:{key:"quality",direction:"asc"} };
+  const state = { view:"general", month:"Ago", skill:"all", form:"all", supervisor:"all", search:"", criteriaDimension:"all", specialPage:1, specialPageSize:50, qualitySkillPage:1, qualitySkillPageSize:10, criteriaPage:1, criteriaPageSize:10, surveyPage:1, surveyPageSize:25, fgPage:1, fgPageSize:10, operatorPage:1, operatorPageSize:10, operatorStatus:"all", sort:{key:"quality",direction:"asc"} };
   const palette=["#16d9f5","#9254ff","#ff526d","#15e2ac","#ffc13d","#6ea8d8","#b4c6d4"];
   const monthNames={Jan:"JANEIRO",Fev:"FEVEREIRO",Mar:"MARÇO",Abr:"ABRIL",Mai:"MAIO",Jun:"JUNHO",Jul:"JULHO",Ago:"AGOSTO",Set:"SETEMBRO",Out:"OUTUBRO",Nov:"NOVEMBRO",Dez:"DEZEMBRO"};
   const monthOrder={Jan:1,Fev:2,Mar:3,Abr:4,Mai:5,Jun:6,Jul:7,Ago:8,Set:9,Out:10,Nov:11,Dez:12};
@@ -87,6 +87,18 @@
   function badge(status){return status==="excellent"?'<span class="badge">Destaque</span>':status==="good"?'<span class="badge warn">Dentro da meta</span>':'<span class="badge danger">Acompanhamento</span>';}
   function empty(message="Sem dados para os filtros selecionados."){return`<div class="empty">${message}</div>`;}
 
+  function normalizePageSize(value,fallback){return value==="all"?"all":Math.max(1,Number(value)||fallback);}
+  function paginateRows(items,page,size){
+    if(size==="all")return{rows:items,page:1,totalPages:1,start:0,end:items.length};
+    const per=Math.max(1,Number(size)||10),totalPages=Math.max(1,Math.ceil(items.length/per)),current=Math.min(Math.max(1,Number(page)||1),totalPages),start=(current-1)*per,end=Math.min(start+per,items.length);
+    return{rows:items.slice(start,end),page:current,totalPages,start,end};
+  }
+  function syncPager(prefix,paged,size){
+    const sizeEl=$(prefix+"-page-size"),prev=$(prefix+"-prev"),next=$(prefix+"-next"),indicator=$(prefix+"-page-indicator"),input=$(prefix+"-page-input");
+    if(sizeEl)sizeEl.value=String(size);if(prev)prev.disabled=paged.page<=1;if(next)next.disabled=paged.page>=paged.totalPages;if(indicator)indicator.textContent=`${paged.page} de ${paged.totalPages}`;if(input){input.max=String(paged.totalPages);input.value=String(paged.page);}
+  }
+  function resetListPages(){state.specialPage=1;state.qualitySkillPage=1;state.criteriaPage=1;state.surveyPage=1;state.fgPage=1;state.operatorPage=1;}
+
   function aggregate(items,key,valueKey="note"){
     const map=new Map();items.forEach(x=>{const label=x[key]||"Não informado",row=map.get(label)||{label,count:0,sum:0,valid:0};row.count++;if(Number.isFinite(x[valueKey])){row.sum+=x[valueKey];row.valid++;}map.set(label,row);});
     return[...map.values()].map(x=>({...x,average:x.valid?x.sum/x.valid:NaN}));
@@ -168,13 +180,18 @@
   function renderQuality(f,operators){
     const notes=f.monitoring.map(x=>x.note).filter(Number.isFinite),quality=average(notes),maxOps=operators.filter(x=>x.evaluations>0&&Math.abs(x.quality-100)<.0001).length,below=operators.filter(x=>x.evaluations>0&&x.quality<qualityTarget()).length;
     $("quality-kpis").innerHTML=[kpi("Total de Monitorias",fmtInt(notes.length),"Atendimentos avaliados","headset",{meter:100}),kpi("Média Geral",fmtPct(quality),`Meta ≥ ${fmtPct(qualityTarget())}`,"star",{meter:quality}),kpi("Alta Performance",fmtInt(maxOps),"Operadores com média de 100%","arrow-up",{meter:operators.length?maxOps/operators.length*100:0}),kpi("Abaixo da Meta",fmtInt(below),`Operadores abaixo de ${fmtPct(qualityTarget())}`,"arrow-down",{danger:below>0,meter:operators.length?below/operators.length*100:0})].join("");
-    const table=(target,rows)=>{$(target).innerHTML=rows.sort((a,b)=>b.count-a.count).map(x=>`<tr><td><strong>${escapeHtml(x.label)}</strong></td><td>${fmtInt(x.count)}</td><td class="${metricClass(x.average)}">${fmtPct(x.average)}</td></tr>`).join("")||`<tr><td colspan="3" class="empty">Sem dados.</td></tr>`;};
-    table("quality-origin-table",aggregate(f.monitoring,"origin"));table("quality-skill-table",aggregate(f.monitoring,"skill"));table("quality-form-table",aggregate(f.monitoring,"form"));
+    const table=(target,rows)=>{$(target).innerHTML=rows.map(x=>`<tr><td><strong>${escapeHtml(x.label)}</strong></td><td>${fmtInt(x.count)}</td><td class="${metricClass(x.average)}">${fmtPct(x.average)}</td></tr>`).join("")||`<tr><td colspan="3" class="empty">Sem dados.</td></tr>`;};
+    const originRows=aggregate(f.monitoring,"origin").sort((a,b)=>b.count-a.count),skillRows=aggregate(f.monitoring,"skill").sort((a,b)=>b.count-a.count),formRows=aggregate(f.monitoring,"form").sort((a,b)=>b.count-a.count);
+    table("quality-origin-table",originRows);
+    const skillPaged=paginateRows(skillRows,state.qualitySkillPage,state.qualitySkillPageSize);state.qualitySkillPage=skillPaged.page;table("quality-skill-table",skillPaged.rows);syncPager("quality-skill",skillPaged,state.qualitySkillPageSize);
+    table("quality-form-table",formRows);
     renderRank("quality-type-chart",aggregate(f.monitoring,"monitoringType").sort((a,b)=>b.count-a.count).map(x=>({label:x.label,value:x.average,sub:x.count})),{limit:8,format:fmtPct,maxValue:100});
     const criteria=aggregateCriteria(f.criteria).sort((a,b)=>b.errorRate-a.errorRate),offenders=criteria.filter(x=>x.errors>0).slice(0,3);
     $("criteria-offenders").innerHTML=offenders.length?offenders.map((x,index)=>`<div class="offender-card"><span class="offender-position">${index+1}</span><div class="offender-copy"><strong title="${escapeHtml(x.criterion)}">${escapeHtml(shorten(x.criterion,72))}</strong><span>${escapeHtml(x.kind||"Dimensão não informada")} · ${fmtInt(x.errors)} erro(s) em ${fmtInt(x.total)} aplicações</span></div><div class="offender-rate"><strong>${fmtPct(x.errorRate)}</strong><span>erro</span></div></div>`).join(""):empty("Nenhum critério ofensor no recorte selecionado.");
     const visibleCriteria=criteria.filter(x=>state.criteriaDimension==="all"||normalize(x.kind)===normalize(state.criteriaDimension));
-    $("criteria-table").innerHTML=visibleCriteria.map(x=>`<tr><td><strong>${escapeHtml(shorten(x.criterion,110))}</strong></td><td>${escapeHtml(x.kind)}</td><td>${x.weight}</td><td>${fmtInt(x.total)}</td><td class="metric-good">${fmtInt(x.hits)}</td><td class="${x.errors?"metric-danger":""}">${fmtInt(x.errors)}</td><td class="${metricClass(x.accuracy)}">${fmtPct(x.accuracy)}</td><td class="${x.errorRate>=10?"metric-danger":x.errorRate>0?"metric-warn":""}">${fmtPct(x.errorRate)}</td></tr>`).join("")||`<tr><td colspan="8" class="empty">Sem itens para a dimensão selecionada.</td></tr>`;
+    const criteriaPaged=paginateRows(visibleCriteria,state.criteriaPage,state.criteriaPageSize);state.criteriaPage=criteriaPaged.page;
+    $("criteria-table").innerHTML=criteriaPaged.rows.map(x=>`<tr><td><strong>${escapeHtml(shorten(x.criterion,110))}</strong></td><td>${escapeHtml(x.kind)}</td><td>${x.weight}</td><td>${fmtInt(x.total)}</td><td class="metric-good">${fmtInt(x.hits)}</td><td class="${x.errors?"metric-danger":""}">${fmtInt(x.errors)}</td><td class="${metricClass(x.accuracy)}">${fmtPct(x.accuracy)}</td><td class="${x.errorRate>=10?"metric-danger":x.errorRate>0?"metric-warn":""}">${fmtPct(x.errorRate)}</td></tr>`).join("")||`<tr><td colspan="8" class="empty">Sem itens para a dimensão selecionada.</td></tr>`;
+    syncPager("criteria",criteriaPaged,state.criteriaPageSize);
   }
 
   function operatorSurveyRows(items){return items.map(x=>{const p1=iscFromCounts(x.p1||[]),p2=iscFromCounts(x.p2||[]),p3=iscFromCounts(x.p3||[]),all=[0,0,0,0,0];["p1","p2","p3"].forEach(q=>(x[q]||[]).forEach((v,i)=>all[i]+=+v||0));return{...x,p1Score:p1,p2Score:p2,p3Score:p3,isc:iscFromCounts(all),responses:sum(all),quartile:quartile(iscFromCounts(all))};}).filter(x=>x.responses>0);}
@@ -183,8 +200,10 @@
     $("survey-kpis").innerHTML=[kpi("ISC Geral",fmtPct(overall),"P1 + P2 + P3","survey",{meter:overall}),kpi("P1 Atendimento",fmtPct(p1),"Notas 4 e 5","check",{meter:p1}),kpi("P2 Cordialidade",fmtPct(p2),"Notas 4 e 5","check",{meter:p2}),kpi("P3 Clareza",fmtPct(p3),"Notas 4 e 5","check",{meter:p3}),kpi("Respondidas",fmtInt(responses),"Somatório de P1, P2 e P3","clipboard",{meter:100})].join("");
     const rows=operatorSurveyRows(f.satisfaction).sort((a,b)=>b.isc-a.isc),stats=quartileStats(rows.map(x=>({value:x.isc})));
     $("survey-quartile-detail").innerHTML=stats.map(x=>`<div class="quartile-card"><span class="quartile-badge">Q${x.q}</span><div><strong>${fmtInt(x.count)}</strong><small>${x.range}</small></div><div><strong>${fmtPct(x.average)}</strong><small>Média do quartil</small></div></div>`).join("");
-    $("survey-operator-count").textContent=`${fmtInt(rows.length)} operadores`;
-    $("survey-table").innerHTML=rows.map(x=>`<tr><td><strong>${escapeHtml(x.operator)}</strong></td><td>${escapeHtml(x.re)}</td><td>${escapeHtml(x.supervisor||"Não atribuída")}</td><td>${fmtInt(x.responses)}</td><td class="${metricClass(x.p1Score)}">${fmtPct(x.p1Score)}</td><td class="${metricClass(x.p2Score)}">${fmtPct(x.p2Score)}</td><td class="${metricClass(x.p3Score)}">${fmtPct(x.p3Score)}</td><td class="${metricClass(x.isc)}">${fmtPct(x.isc)}</td><td><span class="badge ${x.quartile>=3?"danger":x.quartile===2?"warn":""}">${x.quartile}º Quartil</span></td></tr>`).join("")||`<tr><td colspan="9" class="empty">Sem respostas de pesquisa.</td></tr>`;
+    const paged=paginateRows(rows,state.surveyPage,state.surveyPageSize);state.surveyPage=paged.page;
+    $("survey-operator-count").textContent=rows.length?`${fmtInt(rows.length)} operadores · ${fmtInt(paged.start+1)}–${fmtInt(paged.end)}`:"0 operadores";
+    $("survey-table").innerHTML=paged.rows.map(x=>`<tr><td><strong>${escapeHtml(x.operator)}</strong></td><td>${escapeHtml(x.re)}</td><td>${escapeHtml(x.supervisor||"Não atribuída")}</td><td>${fmtInt(x.responses)}</td><td class="${metricClass(x.p1Score)}">${fmtPct(x.p1Score)}</td><td class="${metricClass(x.p2Score)}">${fmtPct(x.p2Score)}</td><td class="${metricClass(x.p3Score)}">${fmtPct(x.p3Score)}</td><td class="${metricClass(x.isc)}">${fmtPct(x.isc)}</td><td><span class="badge ${x.quartile>=3?"danger":x.quartile===2?"warn":""}">${x.quartile}º Quartil</span></td></tr>`).join("")||`<tr><td colspan="9" class="empty">Sem respostas de pesquisa.</td></tr>`;
+    syncPager("survey",paged,state.surveyPageSize);
   }
 
   function renderFg(f){
@@ -192,8 +211,10 @@
     $("fg-kpis").innerHTML=[kpi("Total de FGs",fmtInt(rows.length),"Não conformidades críticas","alert",{danger:rows.length>0,meter:100}),kpi("Operadores com FG",fmtInt(operators),fmtPct(f.monitoring.length?operators/new Set(f.monitoring.map(x=>x.re)).size*100:NaN),"users",{danger:operators>0,meter:f.monitoring.length?operators/new Set(f.monitoring.map(x=>x.re)).size*100:0}),kpi("Origens",fmtInt(origins),"Fontes de identificação","layers",{meter:100}),kpi("Skills",fmtInt(skills),"Áreas com ocorrência","grid",{meter:100})].join("");
     renderRank("fg-reasons",countBy(rows,"fgReason").map(x=>({...x,color:"red"})),{limit:10,color:"red"});renderRank("fg-origins",countBy(rows,"origin"),{limit:10});renderRank("fg-skills",countBy(rows,"skill"),{limit:10,color:"gold"});
     const map=new Map();rows.forEach(x=>{const key=x.re||x.operator,r=map.get(key)||{operator:x.operator,re:x.re,supervisor:x.supervisor,rows:[]};r.rows.push(x);map.set(key,r);});const opRows=[...map.values()].map(x=>({...x,count:x.rows.length,reason:mode(x.rows,"fgReason"),origin:mode(x.rows,"origin"),skill:mode(x.rows,"skill")})).sort((a,b)=>b.count-a.count);
-    $("fg-operator-count").textContent=`${fmtInt(opRows.length)} operadores`;
-    $("fg-operators").innerHTML=opRows.map(x=>`<tr><td><strong>${escapeHtml(x.operator)}</strong></td><td>${escapeHtml(x.re)}</td><td>${escapeHtml(x.supervisor||"Não atribuída")}</td><td class="metric-danger">${fmtInt(x.count)}</td><td>${escapeHtml(x.reason)}</td><td>${escapeHtml(x.origin)}</td><td>${escapeHtml(x.skill)}</td></tr>`).join("")||`<tr><td colspan="7" class="empty">Sem faltas graves.</td></tr>`;
+    const paged=paginateRows(opRows,state.fgPage,state.fgPageSize);state.fgPage=paged.page;
+    $("fg-operator-count").textContent=opRows.length?`${fmtInt(opRows.length)} operadores · ${fmtInt(paged.start+1)}–${fmtInt(paged.end)}`:"0 operadores";
+    $("fg-operators").innerHTML=paged.rows.map(x=>`<tr><td><strong>${escapeHtml(x.operator)}</strong></td><td>${escapeHtml(x.re)}</td><td>${escapeHtml(x.supervisor||"Não atribuída")}</td><td class="metric-danger">${fmtInt(x.count)}</td><td>${escapeHtml(x.reason)}</td><td>${escapeHtml(x.origin)}</td><td>${escapeHtml(x.skill)}</td></tr>`).join("")||`<tr><td colspan="7" class="empty">Sem faltas graves.</td></tr>`;
+    syncPager("fg",paged,state.fgPageSize);
   }
 
   function comparisonMetric(monthValue){
@@ -266,9 +287,11 @@
   function renderOperators(operators){
     const visible=operators.filter(x=>state.operatorStatus==="all"||x.status===state.operatorStatus).sort((a,b)=>{const av=a[state.sort.key],bv=b[state.sort.key],dir=state.sort.direction==="asc"?1:-1;if(typeof av==="string")return av.localeCompare(bv,"pt-BR")*dir;return((Number.isFinite(av)?av:-Infinity)-(Number.isFinite(bv)?bv:-Infinity))*dir;});
     const counts={excellent:operators.filter(x=>x.status==="excellent").length,good:operators.filter(x=>x.status==="good").length,attention:operators.filter(x=>x.status==="attention").length};
-    $("operator-count").textContent=`${fmtInt(operators.length)} operadores no recorte`;
+    const paged=paginateRows(visible,state.operatorPage,state.operatorPageSize);state.operatorPage=paged.page;
+    $("operator-count").textContent=visible.length?`${fmtInt(visible.length)} operadores · ${fmtInt(paged.start+1)}–${fmtInt(paged.end)}`:"0 operadores";
     $("operator-summary").innerHTML=`<div class="summary-tile"><strong>${fmtInt(counts.excellent)}</strong><span>Destaques com média de 100%</span></div><div class="summary-tile warn"><strong>${fmtInt(counts.good)}</strong><span>Dentro da meta</span></div><div class="summary-tile danger"><strong>${fmtInt(counts.attention)}</strong><span>Para acompanhamento</span></div>`;
-    $("operators-table").innerHTML=visible.map(x=>`<tr><td><strong>${escapeHtml(x.operator)}</strong></td><td>${escapeHtml(x.re)}</td><td>${escapeHtml(x.supervisor||"Não atribuída")}</td><td>${fmtInt(x.evaluations)}</td><td class="${metricClass(x.quality)}">${fmtPct(x.quality)}</td><td class="${metricClass(x.isc)}">${fmtPct(x.isc)}</td><td>${fmtInt(x.calls)}</td><td>${fmtTime(x.tma)}</td><td class="${x.fg?"metric-danger":""}">${fmtInt(x.fg)}</td><td>${badge(x.status)}</td></tr>`).join("")||`<tr><td colspan="10" class="empty">Nenhum operador encontrado.</td></tr>`;
+    $("operators-table").innerHTML=paged.rows.map(x=>`<tr><td><strong>${escapeHtml(x.operator)}</strong></td><td>${escapeHtml(x.re)}</td><td>${escapeHtml(x.supervisor||"Não atribuída")}</td><td>${fmtInt(x.evaluations)}</td><td class="${metricClass(x.quality)}">${fmtPct(x.quality)}</td><td class="${metricClass(x.isc)}">${fmtPct(x.isc)}</td><td>${fmtInt(x.calls)}</td><td>${fmtTime(x.tma)}</td><td class="${x.fg?"metric-danger":""}">${fmtInt(x.fg)}</td><td>${badge(x.status)}</td></tr>`).join("")||`<tr><td colspan="10" class="empty">Nenhum operador encontrado.</td></tr>`;
+    syncPager("operator",paged,state.operatorPageSize);
   }
 
   function render(){
@@ -469,16 +492,27 @@
 
   function bind(){
     $("main-nav").addEventListener("click",e=>{const button=e.target.closest("[data-view]");if(button)switchView(button.dataset.view);});
-    [["month-filter","month"],["skill-filter","skill"],["form-filter","form"],["supervisor-filter","supervisor"]].forEach(([id,key])=>$(id).addEventListener("change",e=>{state[key]=e.target.value;state.specialPage=1;render();}));
-    let timer;$("operator-filter").addEventListener("input",e=>{clearTimeout(timer);timer=setTimeout(()=>{state.search=e.target.value.trim();state.specialPage=1;render();},180);});
-    $("clear-filters").addEventListener("click",()=>{state.skill="all";state.form="all";state.supervisor="all";state.search="";state.criteriaDimension="all";state.specialPage=1;$("skill-filter").value="all";$("form-filter").value="all";$("supervisor-filter").value="all";$("criteria-dimension-filter").value="all";$("operator-filter").value="";render();});
-    $("criteria-dimension-filter").addEventListener("change",e=>{state.criteriaDimension=e.target.value;renderQuality(filtered(),buildOperators(filtered()));});
-    $("operator-status-filter").addEventListener("change",e=>{state.operatorStatus=e.target.value;renderOperators(buildOperators(filtered()));});
+    [["month-filter","month"],["skill-filter","skill"],["form-filter","form"],["supervisor-filter","supervisor"]].forEach(([id,key])=>$(id).addEventListener("change",e=>{state[key]=e.target.value;resetListPages();render();}));
+    let timer;$("operator-filter").addEventListener("input",e=>{clearTimeout(timer);timer=setTimeout(()=>{state.search=e.target.value.trim();resetListPages();render();},180);});
+    $("clear-filters").addEventListener("click",()=>{state.skill="all";state.form="all";state.supervisor="all";state.search="";state.criteriaDimension="all";resetListPages();$("skill-filter").value="all";$("form-filter").value="all";$("supervisor-filter").value="all";$("criteria-dimension-filter").value="all";$("operator-filter").value="";render();});
+    $("criteria-dimension-filter").addEventListener("change",e=>{state.criteriaDimension=e.target.value;state.criteriaPage=1;renderQuality(filtered(),buildOperators(filtered()));});
+    $("operator-status-filter").addEventListener("change",e=>{state.operatorStatus=e.target.value;state.operatorPage=1;renderOperators(buildOperators(filtered()));});
     $("special-page-size").addEventListener("change",e=>{state.specialPageSize=Number(e.target.value)||50;state.specialPage=1;renderSpecial(filtered());});
     $("special-prev").addEventListener("click",()=>{state.specialPage=Math.max(1,state.specialPage-1);renderSpecial(filtered());});
     $("special-next").addEventListener("click",()=>{state.specialPage++;renderSpecial(filtered());});
     $("special-page-form").addEventListener("submit",e=>{e.preventDefault();state.specialPage=Math.max(1,Number($("special-page-input").value)||1);renderSpecial(filtered());});
-    document.querySelector(".sortable thead").addEventListener("click",e=>{const th=e.target.closest("[data-sort]");if(!th)return;const key=th.dataset.sort;state.sort.direction=state.sort.key===key&&state.sort.direction==="asc"?"desc":"asc";state.sort.key=key;renderOperators(buildOperators(filtered()));});
+    const bindPager=(prefix,pageKey,sizeKey,fallback)=>{
+      $(prefix+"-page-size").addEventListener("change",e=>{state[sizeKey]=normalizePageSize(e.target.value,fallback);state[pageKey]=1;render();});
+      $(prefix+"-prev").addEventListener("click",()=>{state[pageKey]=Math.max(1,state[pageKey]-1);render();});
+      $(prefix+"-next").addEventListener("click",()=>{state[pageKey]++;render();});
+      $(prefix+"-page-form").addEventListener("submit",e=>{e.preventDefault();state[pageKey]=Math.max(1,Number($(prefix+"-page-input").value)||1);render();});
+    };
+    bindPager("quality-skill","qualitySkillPage","qualitySkillPageSize",10);
+    bindPager("criteria","criteriaPage","criteriaPageSize",10);
+    bindPager("survey","surveyPage","surveyPageSize",25);
+    bindPager("fg","fgPage","fgPageSize",10);
+    bindPager("operator","operatorPage","operatorPageSize",10);
+    document.querySelector(".sortable thead").addEventListener("click",e=>{const th=e.target.closest("[data-sort]");if(!th)return;const key=th.dataset.sort;state.sort.direction=state.sort.key===key&&state.sort.direction==="asc"?"desc":"asc";state.sort.key=key;state.operatorPage=1;renderOperators(buildOperators(filtered()));});
     $("side-export").addEventListener("click",exportCsv);
     $("theme-toggle").addEventListener("click",()=>applyTheme(document.body.classList.contains("light")?"dark":"light"));
     $("mobile-filter-toggle").addEventListener("click",e=>{const open=$("dashboard-filters").classList.toggle("expanded");e.currentTarget.setAttribute("aria-expanded",String(open));});
