@@ -3,3 +3,226 @@
 @media(max-width:1200px){.app-shell{grid-template-columns:190px minmax(0,1fr)}.main-content{padding:22px}.kpi-grid{grid-template-columns:repeat(3,1fr)}.dashboard-filters{grid-template-columns:repeat(3,1fr)}.content-grid.three{grid-template-columns:1fr 1fr}.comparison-charts{grid-template-columns:1fr}.quartile-detail{grid-template-columns:1fr 1fr}}
 @media(max-width:800px){.app-shell{display:block}.sidebar{position:relative;width:100%;height:auto;padding:12px;display:grid;grid-template-columns:1fr auto;gap:10px}.main-nav{grid-column:1/-1;grid-template-columns:repeat(2,1fr)}.sidebar-foot{display:none}.export-button{margin:0}.main-content{padding:16px}.masthead{grid-template-columns:1fr}.masthead h1{font-size:27px}.reference-card{flex-wrap:wrap}.reference-card span{margin-left:0;width:100%}.mobile-filter-toggle{display:block;margin-bottom:8px;border-color:var(--line);background:#0d2034;color:var(--text)}.dashboard-filters{display:none;grid-template-columns:1fr 1fr}.dashboard-filters.expanded{display:grid}.kpi-grid,.kpi-grid.four{grid-template-columns:1fr 1fr}.content-grid.two,.content-grid.three{grid-template-columns:1fr}.operator-summary,.quartile-detail{grid-template-columns:1fr}.drop-zone{align-items:flex-start;flex-wrap:wrap}.drop-zone small{margin-left:0}.admin-settings{grid-template-columns:1fr}.pager{justify-content:flex-start;flex-wrap:wrap}}
 @media(max-width:520px){.dashboard-filters,.kpi-grid,.kpi-grid.four{grid-template-columns:1fr}.main-nav{grid-template-columns:1fr 1fr}.main-content{padding:12px}.masthead-actions{width:100%}.reference-card strong{width:100%}.quartile-columns{overflow-x:auto;justify-content:flex-start}.column-item{min-width:92px}.operator-tools{align-items:stretch;flex-direction:column}}
+
+
+/* =========================================================
+   GRÁFICOS — LEGIBILIDADE DIA / NOITE
+   Mantém a identidade visual do painel e altera somente
+   contraste, desenho dos gráficos e leitura dos rótulos.
+   ========================================================= */
+body{
+  --chart-grid:rgba(126,168,200,.16);
+  --chart-axis:rgba(143,184,214,.48);
+  --chart-label:#edf6ff;
+  --chart-muted:#9ab2c7;
+  --chart-target:#a8bfd1;
+  --chart-area:rgba(22,217,245,.10);
+  --chart-halo:#0d1e31;
+  --chart-panel:#0d1e31;
+}
+body.light{
+  --chart-grid:rgba(64,104,138,.15);
+  --chart-axis:rgba(84,124,156,.42);
+  --chart-label:#172536;
+  --chart-muted:#60788f;
+  --chart-target:#6685a0;
+  --chart-area:rgba(14,190,226,.08);
+  --chart-halo:#ffffff;
+  --chart-panel:#ffffff;
+}
+
+.trend-panel{
+  position:relative;
+  overflow:hidden;
+}
+.trend-chart{
+  display:block;
+  width:100%;
+  max-width:100%;
+  height:auto;
+  overflow:visible;
+}
+.trend-chart text{
+  font-family:Inter,Segoe UI,Arial,sans-serif;
+}
+.chart-grid-line{
+  stroke:var(--chart-grid);
+  stroke-width:1;
+  vector-effect:non-scaling-stroke;
+}
+.chart-axis-line{
+  stroke:var(--chart-axis);
+  stroke-width:1.15;
+  vector-effect:non-scaling-stroke;
+}
+.chart-axis-label{
+  fill:var(--chart-muted);
+  font-size:12px;
+  font-weight:650;
+}
+.chart-month-label{
+  fill:var(--chart-label);
+  font-size:13px;
+  font-weight:800;
+  letter-spacing:.02em;
+}
+.chart-area{
+  fill:var(--chart-area);
+  stroke:none;
+}
+.chart-line{
+  fill:none;
+  stroke:var(--cyan);
+  stroke-width:3.2;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  vector-effect:non-scaling-stroke;
+  filter:drop-shadow(0 0 4px rgba(22,217,245,.20));
+}
+.chart-point{
+  fill:var(--cyan);
+  stroke:var(--chart-panel);
+  stroke-width:3;
+  vector-effect:non-scaling-stroke;
+  filter:drop-shadow(0 0 4px rgba(22,217,245,.28));
+}
+.chart-value-label{
+  fill:var(--chart-label);
+  font-size:13px;
+  font-weight:850;
+  paint-order:stroke;
+  stroke:var(--chart-halo);
+  stroke-width:5px;
+  stroke-linejoin:round;
+}
+.chart-target-line{
+  fill:none;
+  stroke:var(--chart-target);
+  stroke-width:1.8;
+  stroke-dasharray:7 6;
+  vector-effect:non-scaling-stroke;
+}
+.chart-target-label,
+.chart-target-value-label{
+  fill:var(--chart-target);
+  font-size:12px;
+  font-weight:750;
+  paint-order:stroke;
+  stroke:var(--chart-halo);
+  stroke-width:4px;
+  stroke-linejoin:round;
+}
+.chart-line.target-series{
+  stroke:var(--chart-target);
+  stroke-width:2.1;
+  stroke-dasharray:7 6;
+  filter:none;
+}
+.chart-point.target-point{
+  fill:var(--chart-target);
+  stroke:var(--chart-panel);
+  filter:none;
+}
+.chart-bar{
+  fill:var(--cyan);
+  stroke:none;
+  filter:drop-shadow(0 0 5px rgba(22,217,245,.18));
+}
+.chart-legend{
+  display:flex;
+  justify-content:flex-end;
+  align-items:center;
+  gap:16px;
+  margin:-2px 4px 8px;
+  color:var(--muted);
+  font-size:9px;
+  font-weight:700;
+}
+.chart-legend span{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+}
+.chart-legend i{
+  display:inline-block;
+  width:18px;
+  height:3px;
+  border-radius:99px;
+}
+.chart-legend i.actual{background:var(--cyan)}
+.chart-legend i.target{
+  height:0;
+  border-top:2px dashed var(--chart-target);
+  border-radius:0;
+}
+
+/* Quartis — mesma linguagem cromática do painel oficial */
+.column-bar{
+  box-shadow:0 0 10px rgba(22,217,245,.10);
+}
+.column-bar.q1{background:linear-gradient(180deg,#31dcff,#12bfe9)}
+.column-bar.q2{background:linear-gradient(180deg,#45edb7,#18c98f)}
+.column-bar.q3{background:linear-gradient(180deg,#ffd058,#f2a915)}
+.column-bar.q4{background:linear-gradient(180deg,#ff7186,#ed3658)}
+.column-value{color:var(--text)}
+.column-value small{color:var(--muted)}
+
+/* Barras horizontais e elementos analíticos */
+.bar-fill{
+  background:linear-gradient(90deg,#11c8ef,#28e2ef);
+  box-shadow:0 0 8px rgba(22,217,245,.15);
+}
+.bar-fill.gold{background:linear-gradient(90deg,#ffd058,#f2a915)}
+.bar-fill.red{background:linear-gradient(90deg,#ff7186,#ed3658)}
+.stack-proc{background:#15e2ac}
+.stack-improc{background:#ff526d}
+.stack-neutral{background:#6e879c}
+
+/* Correções de contraste indispensáveis no modo dia */
+.light .rank-name,
+.light .podium-name,
+.light .stack-row strong,
+.light td strong{
+  color:#243b50;
+}
+.light .insight{
+  color:#40596f;
+}
+.light .legend-row span{
+  color:#4e667b;
+}
+.light .legend-row strong,
+.light .column-value,
+.light .donut strong{
+  color:#172536;
+}
+.light .column-bar,
+.light .bar-fill,
+.light .chart-line,
+.light .chart-point,
+.light .chart-bar{
+  filter:none;
+  box-shadow:none;
+}
+.light .trend-panel{
+  border-color:#cbd9e5;
+}
+.light .trend-delta.metric-good{color:#00a77d!important}
+.light .trend-delta.metric-danger{color:#d9475f!important}
+
+/* Mobile: preserva o formato do painel e amplia a leitura */
+@media(max-width:800px){
+  .trend-panel{padding:15px}
+  .trend-panel header{margin-bottom:6px}
+  .trend-chart{min-height:220px}
+  .chart-axis-label{font-size:11px}
+  .chart-month-label{font-size:12px}
+  .chart-value-label{font-size:12px}
+  .chart-target-label,.chart-target-value-label{font-size:11px}
+  .chart-legend{justify-content:center;margin-top:0}
+}
+@media(max-width:520px){
+  .quartile-columns{gap:6px}
+  .column-item{min-width:82px}
+  .column-label{font-size:8px}
+}
