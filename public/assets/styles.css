@@ -813,3 +813,73 @@ body.light{
   .column-value{font-size:11px!important}
   .origin-bars{grid-template-columns:repeat(6,74px)}
 }
+
+
+/* =========================================================
+   PAGINAÇÃO + ENQUADRAMENTO RESPONSIVO
+   ========================================================= */
+html,body{max-width:100%;overflow-x:hidden}
+.app-shell,.main-content,.view,.content-grid,.panel,.table-panel{min-width:0;max-width:100%}
+.table-scroll{width:100%;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
+
+.quality-summary-panel{overflow:hidden}
+.summary-table-wrap{width:100%;max-width:100%;overflow:hidden}
+.compact-summary-table{
+  width:100%!important;
+  min-width:0!important;
+  table-layout:fixed;
+}
+.compact-summary-table td{
+  padding:10px 8px;
+  overflow-wrap:anywhere;
+}
+.compact-summary-table td:first-child{width:auto}
+.compact-summary-table td:nth-child(2){width:72px;text-align:center}
+.compact-summary-table td:nth-child(3){width:92px;text-align:right}
+
+.data-pager{
+  width:100%;
+  border-top:1px solid rgba(100,132,160,.16);
+  margin-top:8px;
+  padding:12px 0 0!important;
+  justify-content:flex-start!important;
+  flex-wrap:wrap;
+}
+.data-pager form{display:flex;align-items:center;gap:6px}
+.data-pager strong{min-width:48px;text-align:center;font-size:10px;color:var(--text)}
+.data-pager select{min-width:72px}
+.data-pager input{width:64px!important;min-width:64px}
+.data-pager button{
+  min-height:34px;
+  border-radius:8px;
+  cursor:pointer;
+}
+.data-pager button:not(:disabled):hover{border-color:var(--cyan);color:var(--cyan)}
+.light .data-pager button{background:#f5f8fb!important;color:#213a50!important}
+.light .data-pager strong{color:#172536}
+
+@media(max-width:800px){
+  .main-content,.view,.content-grid,.panel,.table-panel{width:100%!important;max-width:100%!important;min-width:0!important}
+  .quality-summary-panel{width:100%!important}
+  .compact-summary-table td{font-size:9px;padding:9px 6px}
+  .compact-summary-table td:nth-child(2){width:58px}
+  .compact-summary-table td:nth-child(3){width:76px}
+  .data-pager{
+    display:grid!important;
+    grid-template-columns:auto auto auto auto;
+    align-items:center;
+    gap:8px!important;
+  }
+  .data-pager>label{grid-column:1/-1}
+  .data-pager form{
+    grid-column:1/-1;
+    justify-content:flex-start;
+  }
+}
+@media(max-width:520px){
+  .data-pager{grid-template-columns:1fr auto auto 1fr}
+  .data-pager>button{padding:7px 8px!important;font-size:9px}
+  .data-pager strong{font-size:9px}
+  .data-pager form label{font-size:9px}
+  .compact-summary-table td:first-child{white-space:normal}
+}
