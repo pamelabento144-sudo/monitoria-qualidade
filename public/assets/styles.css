@@ -922,27 +922,40 @@ html,body{max-width:100%;overflow-x:hidden}
   .table-panel>header select{min-width:150px}
 }
 
-/* Logo MQ por tema — modelos aprovados */
+/* Logo MQ por tema — arquivos transparentes, sem moldura */
 .brand-logo-block{
   display:flex!important;
   align-items:center!important;
-  justify-content:center!important;
-  overflow:hidden;
+  justify-content:flex-start!important;
+  width:100%!important;
+  min-height:0!important;
+  padding:0!important;
+  overflow:visible!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+.light .brand-logo-block{
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
 }
 .brand-logo{
   display:block;
-  width:auto;
-  max-width:100%;
+  width:min(100%,310px);
   height:auto;
-  max-height:88px;
+  max-height:none;
   object-fit:contain;
+  object-position:left center;
+  filter:none!important;
 }
 .brand-logo-light{display:none}
 body.light .brand-logo-dark{display:none}
 body.light .brand-logo-light{display:block}
 @media(max-width:800px){
-  .brand-logo{max-height:78px}
+  .brand-logo{width:min(100%,290px)}
 }
 @media(max-width:520px){
-  .brand-logo{max-height:68px}
+  .brand-logo{width:min(100%,250px)}
 }
