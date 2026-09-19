@@ -32,7 +32,7 @@
   <aside class="sidebar">
     <div class="brand-block"><div class="brand-mark">MQ</div><div><strong>MONITORIA</strong><span>DE QUALIDADE</span></div></div>
     <nav id="main-nav" class="main-nav" aria-label="Navegação principal">
-      <button class="nav-item active" data-view="general"><span>01</span><b>Visão Geral</b></button>
+      <button class="nav-item active" data-view="general"><span>01</span><b>Painel Geral</b></button>
       <button class="nav-item" data-view="special"><span>02</span><b>Análises Especiais</b></button>
       <button class="nav-item" data-view="quality"><span>03</span><b>Qualidade</b></button>
       <button class="nav-item" data-view="survey"><span>04</span><b>Pesquisa ISC</b></button>
@@ -57,7 +57,7 @@
       <div class="reference-card"><small id="reference-caption">MÊS DE REFERÊNCIA</small><strong id="reference-label">AGOSTO/2026</strong><span id="last-update">Dados carregados do relatório-base</span></div>
     </header>
 
-    <button id="mobile-filter-toggle" class="mobile-filter-toggle" aria-expanded="false">Filtros</button>
+    <button id="mobile-filter-toggle" class="mobile-filter-toggle" aria-expanded="false"><span>▱</span> Filtros de consulta <b>›</b></button>
     <section id="dashboard-filters" class="dashboard-filters">
       <label id="month-filter-group">Mês<select id="month-filter"></select></label>
       <label id="skill-filter-group">Skill<select id="skill-filter"></select></label>
@@ -68,6 +68,10 @@
     </section>
 
     <section class="view active" id="general">
+      <div class="section-identity">
+        <span class="section-number">01</span>
+        <div><p>VISÃO CONSOLIDADA</p><h2>Painel Geral</h2></div>
+      </div>
       <div id="general-kpis" class="kpi-grid"></div>
       <div class="content-grid two">
         <article class="panel"><header><div><span>QUALIDADE</span><h2>Quartis da Qualidade</h2></div></header><div id="quality-quartiles" class="quartile-columns"></div></article>
