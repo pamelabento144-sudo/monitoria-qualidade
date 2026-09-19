@@ -26,6 +26,10 @@ Foram realizados testes isolados de:
 5. importação de XLSX real;
 6. rejeição de XLSX inválido sem sobrescrever os dados válidos anteriores.
 
+## Ambiente
+
+As variáveis administrativas e de persistência do projeto de homologação foram salvas na Vercel. Este registro também força um novo deployment para que o runtime leia as configurações atualizadas.
+
 ## Observação de privacidade
 
 Dados reais utilizados na homologação não fazem parte deste repositório. A base versionada é vazia por segurança.
