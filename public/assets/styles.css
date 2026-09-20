@@ -1334,3 +1334,76 @@ body.light #general .criteria-offender-block{
     gap:7px!important;
   }
 }
+
+
+/* =========================================================
+   TABELAS — VALORES CENTRALIZADOS
+   Textos descritivos permanecem à esquerda; valores ficam
+   centralizados para leitura e alinhamento visual.
+   ========================================================= */
+
+/* Resumos de Qualidade: quantidade e percentual centralizados. */
+.compact-summary-table td:nth-child(2),
+.compact-summary-table td:nth-child(3){
+  text-align:center!important;
+}
+
+/* Análises Especiais — RE + Total/Procedente/Improcedente. */
+#special-operators-table th:first-child,
+#special-operators-table td:first-child,
+#special-operators-table th:nth-last-child(3),
+#special-operators-table td:nth-last-child(3),
+#special-operators-table th:nth-last-child(2),
+#special-operators-table td:nth-last-child(2),
+#special-operators-table th:nth-last-child(1),
+#special-operators-table td:nth-last-child(1){
+  text-align:center!important;
+}
+
+/* Pesquisa ISC — RE, Respostas, P1, P2, P3, ISC e Quartil.
+   nth-last-child mantém a regra correta mesmo quando Supervisão é ocultada. */
+#survey-operators-table th:first-child,
+#survey-operators-table td:first-child,
+#survey-operators-table th:nth-last-child(-n+6),
+#survey-operators-table td:nth-last-child(-n+6){
+  text-align:center!important;
+}
+#survey-operators-table td:nth-last-child(1) .quartile-badge,
+#survey-operators-table td:nth-last-child(1) .badge{
+  margin-inline:auto;
+}
+
+/* Falta Grave — RE e quantidade de FGs. */
+#fg-operators-table th:first-child,
+#fg-operators-table td:first-child,
+#fg-operators-table th:nth-last-child(4),
+#fg-operators-table td:nth-last-child(4){
+  text-align:center!important;
+}
+
+/* Itens Aferidos — Peso, Total, Acertos, Erros e percentuais. */
+#criteria-items-table th:nth-child(n+3),
+#criteria-items-table td:nth-child(n+3){
+  text-align:center!important;
+}
+
+/* Operadores — tudo que é indicador/valor; nome permanece à esquerda. */
+#operators-main-table th:not(:nth-child(2)),
+#operators-main-table td:not(:nth-child(2)){
+  text-align:center!important;
+}
+#operators-main-table td .badge{
+  margin-inline:auto;
+}
+
+/* Comparativo Mensal — primeira coluna descritiva; demais valores centralizados. */
+#comparison .table-panel table th:not(:first-child),
+#comparison .table-panel table td:not(:first-child){
+  text-align:center!important;
+}
+
+/* Melhor equilíbrio vertical das células no mobile e desktop. */
+.table-panel td,
+.compact-summary-table td{
+  vertical-align:middle!important;
+}
