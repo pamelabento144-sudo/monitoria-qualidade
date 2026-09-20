@@ -1227,3 +1227,39 @@ body.light #general .origin-bar-horizontal-track{background:#e8f2f7}
   display:block;
   width:100%;
 }
+
+
+/* =========================================================
+   FAIXAS DE DESEMPENHO APROVADAS
+   < 90% vermelho | 90–94,99% amarelo | >= 95% verde
+   ========================================================= */
+.bar-fill.red,
+.meter span.red{
+  background:linear-gradient(90deg,#ff6b7f,#ef405f)!important;
+}
+.bar-fill.gold,
+.meter span.gold{
+  background:linear-gradient(90deg,#ffd75a,#f2b319)!important;
+}
+.bar-fill.green,
+.meter span.green{
+  background:linear-gradient(90deg,#45e8b0,#18c98b)!important;
+}
+
+/* Falta Grave: indicador crítico com borda vermelha nos dois temas. */
+.kpi-card.danger{
+  border-color:#ef405f!important;
+  box-shadow:0 0 0 1px rgba(239,64,95,.10),0 0 18px rgba(239,64,95,.08)!important;
+}
+.kpi-card.danger .kpi-icon{
+  color:#ff526d!important;
+}
+body.light .kpi-card.danger{
+  border-color:#ef405f!important;
+  box-shadow:0 0 0 1px rgba(239,64,95,.08),0 0 14px rgba(239,64,95,.06)!important;
+}
+
+/* Valores percentuais acompanham a cor da barra. */
+.rank-value.metric-danger,.kpi-value.metric-danger{color:var(--red)!important}
+.rank-value.metric-warn,.kpi-value.metric-warn{color:var(--gold)!important}
+.rank-value.metric-good,.kpi-value.metric-good{color:var(--green)!important}
