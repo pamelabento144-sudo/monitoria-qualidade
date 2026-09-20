@@ -959,3 +959,131 @@ body.light .brand-logo-light{display:block}
 @media(max-width:520px){
   .brand-logo{width:min(100%,250px)}
 }
+
+
+/* =========================================================
+   PAINEL GERAL — DENSIDADE E ORGANIZAÇÃO DO FLOOT
+   Escopo proposital: somente Visão Geral.
+   Não altera cálculos, dados ou os demais painéis.
+   ========================================================= */
+
+/* No Floot, o Painel Geral começa diretamente pelos KPIs. */
+#general .section-identity{
+  display:none!important;
+}
+
+/* Desktop: filtros visíveis e compactos, como no preview do Floot. */
+@media(min-width:801px){
+  body:has(#general.view.active) #mobile-filter-toggle{
+    display:none!important;
+  }
+  body:has(#general.view.active) #dashboard-filters{
+    display:grid!important;
+    grid-template-columns:minmax(130px,.9fr) minmax(170px,1fr) minmax(220px,1.35fr) auto!important;
+    gap:10px!important;
+    padding:13px!important;
+    margin:0 0 18px!important;
+    border-radius:14px!important;
+    background:rgba(12,28,47,.72)!important;
+  }
+  body.light:has(#general.view.active) #dashboard-filters{
+    background:#fff!important;
+  }
+}
+
+/* Os cinco indicadores ficam na mesma linha em desktop amplo. */
+#general #general-kpis{
+  display:grid!important;
+  grid-template-columns:repeat(5,minmax(0,1fr))!important;
+  gap:12px!important;
+  margin:0 0 14px!important;
+}
+#general #general-kpis .kpi-card{
+  grid-column:auto!important;
+  min-height:138px!important;
+  padding:16px!important;
+  border-radius:14px!important;
+}
+#general #general-kpis .kpi-card:nth-child(5){
+  grid-column:auto!important;
+}
+#general #general-kpis .kpi-card::after{
+  width:82px!important;
+  height:82px!important;
+  right:-24px!important;
+  top:-28px!important;
+}
+#general #general-kpis .kpi-label{
+  font-size:9px!important;
+  letter-spacing:.07em!important;
+}
+#general #general-kpis .kpi-icon{
+  width:36px!important;
+  height:36px!important;
+  right:9px!important;
+  top:8px!important;
+}
+#general #general-kpis .kpi-icon svg{
+  width:17px!important;
+  height:17px!important;
+}
+#general #general-kpis .kpi-value{
+  margin:14px 0 5px!important;
+  font-size:26px!important;
+}
+#general #general-kpis .kpi-foot{
+  min-height:26px!important;
+  font-size:10px!important;
+}
+#general #general-kpis .meter{
+  height:4px!important;
+  margin-top:10px!important;
+  border:0!important;
+}
+
+/* Ritmo vertical do primeiro painel. */
+#general>.content-grid{
+  margin:14px 0!important;
+}
+
+/* Responsividade igual ao princípio do Floot: 5 > 3 > 2 > 1. */
+@media(max-width:1200px) and (min-width:801px){
+  #general #general-kpis{
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  }
+}
+@media(max-width:800px){
+  body:has(#general.view.active) #dashboard-filters{
+    display:none!important;
+  }
+  body:has(#general.view.active) #dashboard-filters.expanded{
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:10px!important;
+    padding:13px!important;
+    margin:0 0 14px!important;
+    border-radius:14px!important;
+  }
+  body:has(#general.view.active) #mobile-filter-toggle{
+    display:flex!important;
+  }
+  #general #general-kpis{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:10px!important;
+  }
+  #general #general-kpis .kpi-card{
+    min-height:132px!important;
+    padding:14px!important;
+  }
+}
+@media(max-width:520px){
+  body:has(#general.view.active) #dashboard-filters.expanded{
+    grid-template-columns:1fr!important;
+  }
+  #general #general-kpis{
+    grid-template-columns:1fr!important;
+  }
+  #general #general-kpis .kpi-card{
+    min-height:124px!important;
+  }
+}
