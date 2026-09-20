@@ -108,7 +108,8 @@
   function aggregateCriteria(items){const map=new Map();items.forEach(x=>{const key=x.criterion||"Não informado",r=map.get(key)||{criterion:key,kind:x.kind,weight:x.weight,hits:0,errors:0,total:0};r.hits+=+x.hits||0;r.errors+=+x.errors||0;r.total+=+x.total||0;r.weight=Math.max(r.weight,+x.weight||0);map.set(key,r);});return[...map.values()].map(x=>({...x,accuracy:x.total?x.hits/x.total*100:NaN,errorRate:x.total?x.errors/x.total*100:NaN})).filter(x=>x.total>0);}
 
   function renderRank(target,items,{limit=7,format=fmtInt,color="",maxValue=null,performance=false}={}){
-    const list=items.slice(0,limit),max=maxValue||Math.max(1,...list.map(x=>+x.value||0));
+    const ordered=[...items].sort((a,b)=>(Number(b.value)||0)-(Number(a.value)||0));
+    const list=ordered.slice(0,limit),max=maxValue||Math.max(1,...list.map(x=>+x.value||0));
     $(target).innerHTML=list.length?list.map(x=>{const tone=x.color||color||(performance?performanceColor(x.value):"");const valueClass=performance?metricClass(x.value):"";return`<div class="rank-row"><span class="rank-name" title="${escapeHtml(x.label)}">${escapeHtml(shorten(x.label,45))}</span><div class="bar-track"><div class="bar-fill ${tone}" style="width:${Math.max(2,(+x.value||0)/max*100)}%"></div></div><strong class="rank-value ${valueClass}">${format(x.value)}</strong></div>`;}).join(""):empty();
   }
 
@@ -124,7 +125,7 @@
   }
 
   function renderOriginBars(target,items){
-    const rows=items.slice(0,6),max=Math.max(1,...rows.map(x=>x.value)),total=sum(rows,x=>x.value);
+    const rows=[...items].sort((a,b)=>(Number(b.value)||0)-(Number(a.value)||0)).slice(0,6),max=Math.max(1,...rows.map(x=>x.value)),total=sum(rows,x=>x.value);
     if(!rows.length){$(target).innerHTML=empty();return;}
     $(target).innerHTML=`<div class="origin-bar-list">${rows.map((x,i)=>`<div class="origin-bar-row"><div class="origin-bar-head"><strong title="${escapeHtml(x.label)}">${escapeHtml(x.label)}</strong><span>${fmtInt(x.value)} · ${fmtPct(total?x.value/total*100:NaN)}</span></div><div class="origin-bar-horizontal-track"><span class="origin-bar-horizontal-fill c${i+1}" style="width:${Math.max(4,x.value/max*100)}%"></span></div></div>`).join("")}</div>`;
   }
@@ -135,12 +136,14 @@
   function isSpecial(row){return Boolean(specialCategory(row.origin));}
 
   function renderSplit(target,values){
-    const valid=values.filter(x=>Number.isFinite(x.average)&&x.count>0);const best=[...valid].sort((a,b)=>b.average-a.average).slice(0,3),worst=[...valid].sort((a,b)=>a.average-b.average).slice(0,3);
+    const valid=values.filter(x=>Number.isFinite(x.average)&&x.count>0);
+    const best=[...valid].sort((a,b)=>b.average-a.average).slice(0,3);
+    const worst=[...valid].sort((a,b)=>a.average-b.average).slice(0,3).sort((a,b)=>b.average-a.average);
     const rows=(list)=>`<div class="rank-list">${list.map(x=>`<div class="rank-row"><span class="rank-name" title="${escapeHtml(x.label)}">${escapeHtml(shorten(x.label,36))}</span><div class="bar-track"><div class="bar-fill ${performanceColor(x.average)}" style="width:${Math.max(2,x.average)}%"></div></div><strong class="rank-value ${metricClass(x.average,95)}">${fmtPct(x.average)}</strong></div>`).join("")}</div>`;
     $(target).innerHTML=valid.length?`<div class="split-block"><div class="split-title">Melhor desempenho</div>${rows(best)}</div><div class="split-block negative"><div class="split-title">Maiores oportunidades</div>${rows(worst)}</div>`:empty();
   }
 
-  function renderPodium(target,items,format){$(target).innerHTML=items.length?items.slice(0,3).map((x,i)=>`<div class="podium-entry"><span class="podium-number">${i+1}</span><span class="podium-name" title="${escapeHtml(x.label)}">${escapeHtml(shorten(x.label,31))}</span><div class="bar-track"><div class="bar-fill ${x.color||""}" style="width:${Math.max(4,x.width||70)}%"></div></div><strong class="podium-value">${format(x.value)}</strong></div>`).join(""):empty();}
+  function renderPodium(target,items,format){const ordered=[...items].sort((a,b)=>(Number(b.value)||0)-(Number(a.value)||0));$(target).innerHTML=ordered.length?ordered.slice(0,3).map((x,i)=>`<div class="podium-entry"><span class="podium-number">${i+1}</span><span class="podium-name" title="${escapeHtml(x.label)}">${escapeHtml(shorten(x.label,31))}</span><div class="bar-track"><div class="bar-fill ${x.color||""}" style="width:${Math.max(4,x.width||70)}%"></div></div><strong class="podium-value">${format(x.value)}</strong></div>`).join(""):empty();}
 
   function renderGeneral(f,operators){
     const notes=f.monitoring.map(x=>x.note).filter(Number.isFinite),quality=average(notes),iscValue=isc(f.satisfaction),tmaValue=weighted(f.tma),tmaTarget=state.month!=="all"?tmaTargetFor(state.month):NaN,fg=f.monitoring.filter(x=>x.fg).length;
@@ -154,7 +157,7 @@
     renderColumns("quality-quartiles",quartileStats(operators.filter(x=>Number.isFinite(x.quality)).map(x=>({value:x.quality}))));
     renderColumns("survey-quartiles",quartileStats(operators.filter(x=>Number.isFinite(x.isc)).map(x=>({value:x.isc}))));
     const originMap=new Map();f.monitoring.forEach(x=>{const key=generalOriginCategory(x.origin);originMap.set(key,(originMap.get(key)||0)+1);});const origins=[...originMap].map(([label,value])=>({label,value})).sort((a,b)=>b.value-a.value);renderOriginBars("general-origin",origins);
-    const allCriteria=aggregateCriteria(f.criteria),bestCriteria=[...allCriteria].sort((a,b)=>b.accuracy-a.accuracy).slice(0,5),offenderCriteria=[...allCriteria].filter(x=>Number.isFinite(x.accuracy)&&x.accuracy<qualityTarget()).sort((a,b)=>a.accuracy-b.accuracy).slice(0,5);
+    const allCriteria=aggregateCriteria(f.criteria),bestCriteria=[...allCriteria].sort((a,b)=>b.accuracy-a.accuracy).slice(0,5),offenderCriteria=[...allCriteria].filter(x=>Number.isFinite(x.accuracy)&&x.accuracy<qualityTarget()).sort((a,b)=>b.accuracy-a.accuracy).slice(0,5);
     renderRank("best-criteria",bestCriteria.map(x=>({label:x.criterion,value:x.accuracy})),{limit:5,format:fmtPct,maxValue:100,performance:true});
     const criteriaOverview=$("criteria-overview"),offenderBlock=$("general-offenders-block");
     if(offenderCriteria.length){
