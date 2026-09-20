@@ -465,9 +465,12 @@
         bar.style.width="86%";label.textContent="Publicando os dados consolidados...";
         const save=await fetch("/api/admin/data",{method:"POST",headers:{"content-type":"application/json","x-file-name":encodeURIComponent(file.name),"x-import-records":String(result.monitoring?.length||0)},body:JSON.stringify(result)});
         if(!save.ok)throw new Error(await apiError(save,"Não foi possível atualizar os painéis."));
-        data=result;state.month="all";state.skill="all";state.form="all";state.supervisor="all";state.search="";state.criteriaDimension="all";state.specialPage=1;$("criteria-dimension-filter").value="all";populateFilters(true);updateHeader();render();updateLastUpdatedLabel(result.meta.importedAt);
-        $("admin-latest").textContent=`Último envio: ${file.name} · ${formatAdminDateTime(result.meta.importedAt)}`;
-        toast("Relatório validado e painéis atualizados com sucesso.");
+        const saved=await save.json();
+        await loadServerState();
+        state.month="all";state.skill="all";state.form="all";state.supervisor="all";state.search="";state.criteriaDimension="all";state.specialPage=1;$("criteria-dimension-filter").value="all";populateFilters(true);updateHeader();render();updateLastUpdatedLabel(saved.importedAt||data.meta?.importedAt);
+        const monthInfo=Array.isArray(saved.months)&&saved.months.length?` · Meses: ${saved.months.join(", ")}`:"";
+        $("admin-latest").textContent=`Último envio: ${file.name} · ${formatAdminDateTime(saved.importedAt||data.meta?.importedAt)}${monthInfo}`;
+        toast(saved.merged?"Importação concluída. Meses enviados atualizados e demais períodos preservados.":"Relatório validado e painéis atualizados com sucesso.");
       }else{
         bar.style.width="12%";label.textContent="Validando e armazenando o anexo...";
         const upload=await fetch("/api/admin/import",{method:"POST",headers:{"content-type":file.type||"application/octet-stream","x-file-name":encodeURIComponent(file.name)},body:file});
