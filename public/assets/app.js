@@ -29,8 +29,8 @@
   const weighted=(items,valueKey="tma",weightKey="calls")=>{const weight=sum(items,x=>x[weightKey]);return weight?sum(items,x=>(+x[valueKey]||0)*(+x[weightKey]||0))/weight:NaN;};
   const qualityTarget=()=>Number(data.meta?.qualityTarget)||90;
   const satisfactionTarget=()=>Number(data.meta?.satisfactionTarget)||90;
-  const metricClass=(value,target=qualityTarget())=>!Number.isFinite(value)?"":value>=target?"metric-good":value>=target-5?"metric-warn":"metric-danger";
-  const performanceColor=(value)=>!Number.isFinite(value)?"":value>=95?"":value>=90?"gold":"red";
+  const metricClass=(value)=>!Number.isFinite(value)?"":value>=95?"metric-good":value>=90?"metric-warn":"metric-danger";
+  const performanceColor=(value)=>!Number.isFinite(value)?"":value>=95?"green":value>=90?"gold":"red";
   const monthNumber=(m)=>monthOrder[m]||(/^\d{4}-(\d{2})$/.test(m)?Number(m.slice(5)):99);
   const monthYear=(m)=>/^\d{4}-\d{2}$/.test(m)?Number(m.slice(0,4)):2026;
   const monthLabel=(m)=>monthNames[m]?`${monthNames[m]}/2026`:/^\d{4}-\d{2}$/.test(m)?new Intl.DateTimeFormat("pt-BR",{month:"long",year:"numeric",timeZone:"UTC"}).format(new Date(`${m}-01T00:00:00Z`)).toUpperCase():m;
@@ -83,7 +83,7 @@
     return[...map.values()].map(x=>{const quality=x.evaluations?x.qualitySum/x.evaluations:NaN;const all=[0,0,0,0,0];["p1","p2","p3"].forEach(q=>x.sat[q].forEach((v,i)=>all[i]+=v));const iscValue=iscFromCounts(all),tma=x.calls?x.tmaWeighted/x.calls:NaN,qTarget=qualityTarget(),iTarget=satisfactionTarget();const status=x.fg>0||(Number.isFinite(quality)&&quality<qTarget)||(Number.isFinite(iscValue)&&iscValue<iTarget)?"attention":quality===100&&(!Number.isFinite(iscValue)||iscValue>=iTarget)?"excellent":"good";return{...x,quality,isc:iscValue,tma,status,quartileQuality:quartile(quality),quartileIsc:quartile(iscValue)};});
   }
 
-  function kpi(label,value,foot,icon,{danger=false,meter=null}={}){return`<article class="kpi-card ${danger?"danger":""}"><div class="kpi-label"><span>${label}</span><span class="kpi-icon">${iconSvg(icon)}</span></div><div class="kpi-value">${value}</div><div class="kpi-foot">${foot}</div>${meter==null?"":`<div class="meter"><span style="width:${Math.max(0,Math.min(100,meter))}%"></span></div>`}</article>`;}
+  function kpi(label,value,foot,icon,{danger=false,meter=null,performance=false}={}){const tone=performance?performanceColor(meter):danger?"red":"";return`<article class="kpi-card ${danger?"danger":""}"><div class="kpi-label"><span>${label}</span><span class="kpi-icon">${iconSvg(icon)}</span></div><div class="kpi-value ${performance?metricClass(meter):""}">${value}</div><div class="kpi-foot">${foot}</div>${meter==null?"":`<div class="meter"><span class="${tone}" style="width:${Math.max(0,Math.min(100,meter))}%"></span></div>`}</article>`;}
   function badge(status){return status==="excellent"?'<span class="badge">Destaque</span>':status==="good"?'<span class="badge warn">Dentro da meta</span>':'<span class="badge danger">Acompanhamento</span>';}
   function quartileBadge(value){const q=Number(value);return Number.isFinite(q)&&q>=1&&q<=4?`<span class="quartile-pill q${q}">${q}º Quartil</span>`:'<span class="quartile-pill none">—</span>';}
   function empty(message="Sem dados para os filtros selecionados."){return`<div class="empty">${message}</div>`;}
@@ -107,9 +107,9 @@
   function countBy(items,key){const map=new Map();items.forEach(x=>{const label=x[key]||"Não informado";map.set(label,(map.get(label)||0)+1);});return[...map].map(([label,value])=>({label,value})).sort((a,b)=>b.value-a.value);}
   function aggregateCriteria(items){const map=new Map();items.forEach(x=>{const key=x.criterion||"Não informado",r=map.get(key)||{criterion:key,kind:x.kind,weight:x.weight,hits:0,errors:0,total:0};r.hits+=+x.hits||0;r.errors+=+x.errors||0;r.total+=+x.total||0;r.weight=Math.max(r.weight,+x.weight||0);map.set(key,r);});return[...map.values()].map(x=>({...x,accuracy:x.total?x.hits/x.total*100:NaN,errorRate:x.total?x.errors/x.total*100:NaN})).filter(x=>x.total>0);}
 
-  function renderRank(target,items,{limit=7,format=fmtInt,color="",maxValue=null}={}){
+  function renderRank(target,items,{limit=7,format=fmtInt,color="",maxValue=null,performance=false}={}){
     const list=items.slice(0,limit),max=maxValue||Math.max(1,...list.map(x=>+x.value||0));
-    $(target).innerHTML=list.length?list.map(x=>`<div class="rank-row"><span class="rank-name" title="${escapeHtml(x.label)}">${escapeHtml(shorten(x.label,45))}</span><div class="bar-track"><div class="bar-fill ${x.color||color}" style="width:${Math.max(2,(+x.value||0)/max*100)}%"></div></div><strong class="rank-value">${format(x.value)}</strong></div>`).join(""):empty();
+    $(target).innerHTML=list.length?list.map(x=>{const tone=x.color||color||(performance?performanceColor(x.value):"");const valueClass=performance?metricClass(x.value):"";return`<div class="rank-row"><span class="rank-name" title="${escapeHtml(x.label)}">${escapeHtml(shorten(x.label,45))}</span><div class="bar-track"><div class="bar-fill ${tone}" style="width:${Math.max(2,(+x.value||0)/max*100)}%"></div></div><strong class="rank-value ${valueClass}">${format(x.value)}</strong></div>`;}).join(""):empty();
   }
 
   function renderColumns(target,stats){
@@ -145,17 +145,17 @@
   function renderGeneral(f,operators){
     const notes=f.monitoring.map(x=>x.note).filter(Number.isFinite),quality=average(notes),iscValue=isc(f.satisfaction),tmaValue=weighted(f.tma),tmaTarget=state.month!=="all"?tmaTargetFor(state.month):NaN,fg=f.monitoring.filter(x=>x.fg).length;
     $("general-kpis").innerHTML=[
-      kpi("Qualidade Geral",fmtPct(quality),`Meta ≥ <strong>${fmtPct(qualityTarget())}</strong>`,"star",{meter:quality}),
+      kpi("Qualidade Geral",fmtPct(quality),`Meta ≥ <strong>${fmtPct(qualityTarget())}</strong>`,"star",{meter:quality,performance:true}),
       kpi("Monitorias",fmtInt(notes.length),"Avaliações realizadas","headset",{meter:100}),
-      kpi("Pesquisa (ISC)",fmtPct(iscValue),`Meta ≥ <strong>${fmtPct(satisfactionTarget())}</strong>`,"survey",{meter:iscValue}),
+      kpi("Pesquisa (ISC)",fmtPct(iscValue),`Meta ≥ <strong>${fmtPct(satisfactionTarget())}</strong>`,"survey",{meter:iscValue,performance:true}),
       kpi("TMA Geral",fmtTime(tmaValue),Number.isFinite(tmaTarget)?`Meta do mês: <strong>${fmtTimeFull(tmaTarget)}</strong>`:`${fmtInt(sum(f.tma,x=>x.calls))} atendimentos`,"clock",{meter:Math.min(100,tmaValue&&Number.isFinite(tmaTarget)?tmaTarget/tmaValue*100:0)}),
-      kpi("Falta Grave",fmtInt(fg),`${fmtPct(notes.length?fg/notes.length*100:NaN)} sobre monitorias`,"alert",{danger:fg>0,meter:notes.length?fg/notes.length*100:0})
+      kpi("Falta Grave",fmtInt(fg),`${fmtPct(notes.length?fg/notes.length*100:NaN)} sobre monitorias`,"alert",{danger:true,meter:notes.length?fg/notes.length*100:0})
     ].join("");
     renderColumns("quality-quartiles",quartileStats(operators.filter(x=>Number.isFinite(x.quality)).map(x=>({value:x.quality}))));
     renderColumns("survey-quartiles",quartileStats(operators.filter(x=>Number.isFinite(x.isc)).map(x=>({value:x.isc}))));
     const originMap=new Map();f.monitoring.forEach(x=>{const key=generalOriginCategory(x.origin);originMap.set(key,(originMap.get(key)||0)+1);});const origins=[...originMap].map(([label,value])=>({label,value})).sort((a,b)=>b.value-a.value);renderOriginBars("general-origin",origins);
     const allCriteria=aggregateCriteria(f.criteria),bestCriteria=[...allCriteria].sort((a,b)=>b.accuracy-a.accuracy).slice(0,5),offenderCriteria=[...allCriteria].filter(x=>Number.isFinite(x.accuracy)&&x.accuracy<qualityTarget()).sort((a,b)=>a.accuracy-b.accuracy).slice(0,5);
-    renderRank("best-criteria",bestCriteria.map(x=>({label:x.criterion,value:x.accuracy})),{limit:5,format:fmtPct,maxValue:100});
+    renderRank("best-criteria",bestCriteria.map(x=>({label:x.criterion,value:x.accuracy})),{limit:5,format:fmtPct,maxValue:100,performance:true});
     const criteriaOverview=$("criteria-overview"),offenderBlock=$("general-offenders-block");
     if(offenderCriteria.length){
       criteriaOverview?.classList.add("has-offenders");criteriaOverview?.classList.remove("no-offenders");offenderBlock?.classList.remove("hidden");
@@ -189,13 +189,13 @@
 
   function renderQuality(f,operators){
     const notes=f.monitoring.map(x=>x.note).filter(Number.isFinite),quality=average(notes),maxOps=operators.filter(x=>x.evaluations>0&&Math.abs(x.quality-100)<.0001).length,below=operators.filter(x=>x.evaluations>0&&x.quality<qualityTarget()).length;
-    $("quality-kpis").innerHTML=[kpi("Total de Monitorias",fmtInt(notes.length),"Atendimentos avaliados","headset",{meter:100}),kpi("Média Geral",fmtPct(quality),`Meta ≥ ${fmtPct(qualityTarget())}`,"star",{meter:quality}),kpi("Alta Performance",fmtInt(maxOps),"Operadores com média de 100%","arrow-up",{meter:operators.length?maxOps/operators.length*100:0}),kpi("Abaixo da Meta",fmtInt(below),`Operadores abaixo de ${fmtPct(qualityTarget())}`,"arrow-down",{danger:below>0,meter:operators.length?below/operators.length*100:0})].join("");
+    $("quality-kpis").innerHTML=[kpi("Total de Monitorias",fmtInt(notes.length),"Atendimentos avaliados","headset",{meter:100}),kpi("Média Geral",fmtPct(quality),`Meta ≥ ${fmtPct(qualityTarget())}`,"star",{meter:quality,performance:true}),kpi("Alta Performance",fmtInt(maxOps),"Operadores com média de 100%","arrow-up",{meter:operators.length?maxOps/operators.length*100:0}),kpi("Abaixo da Meta",fmtInt(below),`Operadores abaixo de ${fmtPct(qualityTarget())}`,"arrow-down",{danger:below>0,meter:operators.length?below/operators.length*100:0})].join("");
     const table=(target,rows)=>{$(target).innerHTML=rows.map(x=>`<tr><td><strong>${escapeHtml(x.label)}</strong></td><td>${fmtInt(x.count)}</td><td class="${metricClass(x.average)}">${fmtPct(x.average)}</td></tr>`).join("")||`<tr><td colspan="3" class="empty">Sem dados.</td></tr>`;};
     const originRows=aggregate(f.monitoring,"origin").sort((a,b)=>b.count-a.count),skillRows=aggregate(f.monitoring,"skill").sort((a,b)=>b.count-a.count),formRows=aggregate(f.monitoring,"form").sort((a,b)=>b.count-a.count);
     table("quality-origin-table",originRows);
     const skillPaged=paginateRows(skillRows,state.qualitySkillPage,state.qualitySkillPageSize);state.qualitySkillPage=skillPaged.page;table("quality-skill-table",skillPaged.rows);syncPager("quality-skill",skillPaged,state.qualitySkillPageSize);
     table("quality-form-table",formRows);
-    renderRank("quality-type-chart",aggregate(f.monitoring,"monitoringType").sort((a,b)=>b.count-a.count).map(x=>({label:x.label,value:x.average,sub:x.count})),{limit:8,format:fmtPct,maxValue:100});
+    renderRank("quality-type-chart",aggregate(f.monitoring,"monitoringType").sort((a,b)=>b.count-a.count).map(x=>({label:x.label,value:x.average,sub:x.count})),{limit:8,format:fmtPct,maxValue:100,performance:true});
     const criteria=aggregateCriteria(f.criteria).sort((a,b)=>b.errorRate-a.errorRate),offenders=criteria.filter(x=>x.errors>0).slice(0,3);
     $("criteria-offenders").innerHTML=offenders.length?offenders.map((x,index)=>`<div class="offender-card"><span class="offender-position">${index+1}</span><div class="offender-copy"><strong title="${escapeHtml(x.criterion)}">${escapeHtml(shorten(x.criterion,72))}</strong><span>${escapeHtml(x.kind||"Dimensão não informada")} · ${fmtInt(x.errors)} erro(s) em ${fmtInt(x.total)} aplicações</span></div><div class="offender-rate"><strong>${fmtPct(x.errorRate)}</strong><span>erro</span></div></div>`).join(""):empty("Nenhum critério ofensor no recorte selecionado.");
     const visibleCriteria=criteria.filter(x=>state.criteriaDimension==="all"||normalize(x.kind)===normalize(state.criteriaDimension));
@@ -207,7 +207,7 @@
   function operatorSurveyRows(items){return items.map(x=>{const p1=iscFromCounts(x.p1||[]),p2=iscFromCounts(x.p2||[]),p3=iscFromCounts(x.p3||[]),all=[0,0,0,0,0];["p1","p2","p3"].forEach(q=>(x[q]||[]).forEach((v,i)=>all[i]+=+v||0));return{...x,p1Score:p1,p2Score:p2,p3Score:p3,isc:iscFromCounts(all),responses:sum(all),quartile:quartile(iscFromCounts(all))};}).filter(x=>x.responses>0);}
   function renderSurvey(f){
     const overall=isc(f.satisfaction),p1=isc(f.satisfaction,"p1"),p2=isc(f.satisfaction,"p2"),p3=isc(f.satisfaction,"p3"),responses=sum(questionCounts(f.satisfaction));
-    $("survey-kpis").innerHTML=[kpi("ISC Geral",fmtPct(overall),"P1 + P2 + P3","survey",{meter:overall}),kpi("P1 Atendimento",fmtPct(p1),"Notas 4 e 5","check",{meter:p1}),kpi("P2 Cordialidade",fmtPct(p2),"Notas 4 e 5","check",{meter:p2}),kpi("P3 Clareza",fmtPct(p3),"Notas 4 e 5","check",{meter:p3}),kpi("Respondidas",fmtInt(responses),"Somatório de P1, P2 e P3","clipboard",{meter:100})].join("");
+    $("survey-kpis").innerHTML=[kpi("ISC Geral",fmtPct(overall),"P1 + P2 + P3","survey",{meter:overall,performance:true}),kpi("P1 Atendimento",fmtPct(p1),"Notas 4 e 5","check",{meter:p1,performance:true}),kpi("P2 Cordialidade",fmtPct(p2),"Notas 4 e 5","check",{meter:p2,performance:true}),kpi("P3 Clareza",fmtPct(p3),"Notas 4 e 5","check",{meter:p3,performance:true}),kpi("Respondidas",fmtInt(responses),"Somatório de P1, P2 e P3","clipboard",{meter:100})].join("");
     const allRows=operatorSurveyRows(f.satisfaction).sort((a,b)=>b.isc-a.isc),stats=quartileStats(allRows.map(x=>({value:x.isc})));
     $("survey-quartile-detail").innerHTML=stats.map(x=>`<div class="quartile-card"><span class="quartile-badge">Q${x.q}</span><div><strong>${fmtInt(x.count)}</strong><small>${x.range}</small></div><div><strong>${fmtPct(x.average)}</strong><small>Média do quartil</small></div></div>`).join("");
     const rows=state.surveyQuartile==="all"?allRows:allRows.filter(x=>String(x.quartile)===String(state.surveyQuartile));
