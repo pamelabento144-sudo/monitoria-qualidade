@@ -335,10 +335,10 @@
     const months=sortMonths(new Set([...data.monitoring,...data.satisfaction,...data.tma,...(data.skillTma||[])].map(x=>x.m).filter(Boolean)));
     const skills=[...new Set([...data.monitoring,...data.criteria,...(data.skillTma||[])].map(x=>x.skill).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"pt-BR"));
     const forms=[...new Set([...data.monitoring,...data.criteria].map(x=>x.form).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"pt-BR"));
-    const supervisors=[...new Set([...data.monitoring,...data.satisfaction,...data.tma].map(x=>x.supervisor).filter(x=>x&&!normalize(x).startsWith("aline fernandes")))].sort((a,b)=>a.localeCompare(b,"pt-BR"));
+    const supervisors=(Array.isArray(data.supervisors)&&data.supervisors.length?data.supervisors:[...new Set([...data.monitoring,...data.satisfaction,...data.tma].map(x=>x.supervisor).filter(x=>x&&!normalize(x).startsWith("aline fernandes")))]).sort((a,b)=>a.localeCompare(b,"pt-BR"));
     const latest=months.at(-1)||"all";if(reset||!months.includes(state.month))state.month=latest;
     $("month-filter").innerHTML=options(months,"Todos os meses");$("skill-filter").innerHTML=options(skills,"Todas as skills");$("form-filter").innerHTML=options(forms,"Todas as aferições");$("supervisor-filter").innerHTML=options(supervisors,"Todas as supervisões");
-    $("month-filter").value=state.month;$("skill-filter").value=state.skill;$("form-filter").value=state.form;$("supervisor-filter").value=state.supervisor;
+    if(state.supervisor!=="all"&&!supervisors.includes(state.supervisor))state.supervisor="all";$("month-filter").value=state.month;$("skill-filter").value=state.skill;$("form-filter").value=state.form;$("supervisor-filter").value=state.supervisor;
   }
 
   function updateFilterVisibility(){
