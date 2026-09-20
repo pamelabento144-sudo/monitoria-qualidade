@@ -96,7 +96,7 @@
     <section class="view" id="special">
       <div id="special-kpis" class="kpi-grid four"></div>
       <div class="content-grid three"><article class="panel"><h2>Origem e Procedência</h2><div id="special-origin"></div></article><article class="panel"><h2>Por Skill</h2><div id="special-skills"></div></article><article class="panel"><h2>Por Ficha</h2><div id="special-forms"></div></article></div>
-      <article class="panel table-panel"><header><div><h2>Operadores Analisados</h2><span id="special-operator-count"></span></div></header><div class="table-scroll"><table><thead><tr><th>Operador</th><th>RE</th><th>Supervisão</th><th>Skill</th><th>Total</th><th>Procedente</th><th>Improcedente</th></tr></thead><tbody id="special-operators"></tbody></table></div><footer class="pager"><label>Por página<select id="special-page-size"><option>25</option><option selected>50</option><option>100</option><option>200</option></select></label><button id="special-prev">Anterior</button><strong id="special-page-indicator">1 de 1</strong><button id="special-next">Próxima</button><form id="special-page-form"><label>Ir para <input id="special-page-input" type="number" min="1" value="1"></label><button>Ir</button></form></footer></article>
+      <article class="panel table-panel"><header><div><h2>Operadores Analisados</h2><span id="special-operator-count"></span></div></header><div class="table-scroll"><table id="special-operators-table"><thead><tr><th>RE</th><th>Operador</th><th id="special-supervisor-header">Supervisão</th><th>Skill</th><th>Total</th><th>Procedente</th><th>Improcedente</th></tr></thead><tbody id="special-operators"></tbody></table></div><footer class="pager"><label>Por página<select id="special-page-size"><option>25</option><option selected>50</option><option>100</option><option>200</option></select></label><button id="special-prev">Anterior</button><strong id="special-page-indicator">1 de 1</strong><button id="special-next">Próxima</button><form id="special-page-form"><label>Ir para <input id="special-page-input" type="number" min="1" value="1"></label><button>Ir</button></form></footer></article>
     </section>
 
     <section class="view" id="quality">
@@ -124,7 +124,7 @@
 
     <section class="view" id="survey">
       <div id="survey-kpis" class="kpi-grid"></div><div id="survey-quartile-detail" class="quartile-detail"></div>
-      <article class="panel table-panel"><header><div><h2>Pesquisa por Operador</h2><span id="survey-operator-count"></span></div><label>Quartil<select id="survey-quartile-filter"><option value="all">Todos</option><option value="1">1º Quartil</option><option value="2">2º Quartil</option><option value="3">3º Quartil</option><option value="4">4º Quartil</option></select></label></header><div class="table-scroll"><table><thead><tr><th>Operador</th><th>RE</th><th>Supervisão</th><th>Respostas</th><th>P1</th><th>P2</th><th>P3</th><th>ISC</th><th>Quartil</th></tr></thead><tbody id="survey-table"></tbody></table></div>
+      <article class="panel table-panel"><header><div><h2>Pesquisa por Operador</h2><span id="survey-operator-count"></span></div><label>Quartil<select id="survey-quartile-filter"><option value="all">Todos</option><option value="1">1º Quartil</option><option value="2">2º Quartil</option><option value="3">3º Quartil</option><option value="4">4º Quartil</option></select></label></header><div class="table-scroll"><table id="survey-operators-table"><thead><tr><th>RE</th><th>Operador</th><th id="survey-supervisor-header">Supervisão</th><th>Respostas</th><th>P1</th><th>P2</th><th>P3</th><th>ISC</th><th>Quartil</th></tr></thead><tbody id="survey-table"></tbody></table></div>
         <footer class="pager data-pager">
           <label>Por página<select id="survey-page-size"><option value="25" selected>25</option><option value="50">50</option><option value="100">100</option><option value="all">Todos</option></select></label>
           <button type="button" id="survey-prev">Anterior</button><strong id="survey-page-indicator">1 de 1</strong><button type="button" id="survey-next">Próxima</button>
@@ -162,6 +162,6 @@
 </div>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 <script src="/assets/dashboard-data.js"></script>
-<script src="/assets/app.js?v=20260920-fg-supervisor1"></script>
+<script src="/assets/app.js?v=20260920-hide-supervisor-alltables1"></script>
 </body>
 </html>
