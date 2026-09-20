@@ -6,10 +6,13 @@
   <meta name="theme-color" content="#07111f" />
   <title>Monitoria de Qualidade — Painel Geral</title>
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="/assets/styles.css?v=20260920-table-center1" />
+  <link rel="stylesheet" href="/assets/styles.css?v=20260920-nav-icons1" />
 </head>
 <body>
 <svg class="svg-sprite" aria-hidden="true" width="0" height="0">
+  <symbol id="icon-home" viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10.5V20h13v-9.5M9 20v-6h6v6"/></symbol>
+  <symbol id="icon-chart" viewBox="0 0 24 24"><path d="M4 20V10h4v10M10 20V4h4v16M16 20v-7h4v7M3 20h18"/></symbol>
+  <symbol id="icon-trend" viewBox="0 0 24 24"><path d="m4 16 5-5 4 4 7-8"/><path d="M15 7h5v5"/></symbol>
   <symbol id="icon-star" viewBox="0 0 24 24"><path d="m12 3 2.7 5.5 6 .9-4.4 4.2 1.1 6-5.4-2.8-5.4 2.8 1.1-6-4.4-4.2 6-.9Z"/></symbol>
   <symbol id="icon-headset" viewBox="0 0 24 24"><path d="M4 13v-1a8 8 0 0 1 16 0v1M4 13h3v6H5a1 1 0 0 1-1-1Zm16 0h-3v6h2a1 1 0 0 0 1-1ZM17 19c0 2-2 2-5 2"/></symbol>
   <symbol id="icon-survey" viewBox="0 0 24 24"><path d="M5 4h14v16H5zM8 9h8M8 13h6M8 17h4"/></symbol>
@@ -32,13 +35,13 @@
   <aside class="sidebar">
     <div class="brand-block brand-logo-block" aria-label="MQ — Monitoria de Qualidade"><img class="brand-logo brand-logo-dark" src="/api/logo?mode=dark&v=20260919-logo2" alt="MQ — Monitoria de Qualidade — Excelência que gera resultados"><img class="brand-logo brand-logo-light" src="/api/logo?mode=light&v=20260919-logo2" alt="MQ — Monitoria de Qualidade — Excelência que gera resultados"></div>
     <nav id="main-nav" class="main-nav" aria-label="Navegação principal">
-      <button class="nav-item active" data-view="general"><b>Painel Geral</b></button>
-      <button class="nav-item" data-view="special"><b>Análises Especiais</b></button>
-      <button class="nav-item" data-view="quality"><b>Qualidade</b></button>
-      <button class="nav-item" data-view="survey"><b>Pesquisa ISC</b></button>
-      <button class="nav-item" data-view="fg"><b>Falta Grave</b></button>
-      <button class="nav-item" data-view="comparison"><b>Comparativo Mensal</b></button>
-      <button class="nav-item" data-view="operators"><b>Operadores</b></button>
+      <button class="nav-item active" data-view="general"><span class="nav-icon"><svg aria-hidden="true"><use href="#icon-home"></use></svg></span><b>Painel Geral</b></button>
+      <button class="nav-item" data-view="special"><span class="nav-icon"><svg aria-hidden="true"><use href="#icon-chart"></use></svg></span><b>Análises Especiais</b></button>
+      <button class="nav-item" data-view="quality"><span class="nav-icon"><svg aria-hidden="true"><use href="#icon-star"></use></svg></span><b>Qualidade</b></button>
+      <button class="nav-item" data-view="survey"><span class="nav-icon"><svg aria-hidden="true"><use href="#icon-clipboard"></use></svg></span><b>Pesquisa ISC</b></button>
+      <button class="nav-item" data-view="fg"><span class="nav-icon"><svg aria-hidden="true"><use href="#icon-alert"></use></svg></span><b>Falta Grave</b></button>
+      <button class="nav-item" data-view="comparison"><span class="nav-icon"><svg aria-hidden="true"><use href="#icon-trend"></use></svg></span><b>Comparativo Mensal</b></button>
+      <button class="nav-item" data-view="operators"><span class="nav-icon"><svg aria-hidden="true"><use href="#icon-users"></use></svg></span><b>Operadores</b></button>
     </nav>
     <button id="side-export" class="export-button">Exportar CSV</button>
     <div class="sidebar-foot"><span>Central SP156</span><small>Monitoria de Qualidade</small></div>
