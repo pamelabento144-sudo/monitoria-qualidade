@@ -124,9 +124,9 @@
   }
 
   function renderOriginBars(target,items){
-    const rows=items.slice(0,6),max=Math.max(1,...rows.map(x=>x.value));
+    const rows=items.slice(0,6),max=Math.max(1,...rows.map(x=>x.value)),total=sum(rows,x=>x.value);
     if(!rows.length){$(target).innerHTML=empty();return;}
-    $(target).innerHTML=`<div class="origin-bars">${rows.map((x,i)=>`<div class="origin-bar-item"><strong>${fmtInt(x.value)}</strong><div class="origin-bar-track"><span class="origin-bar-fill c${i+1}" style="height:${Math.max(8,x.value/max*100)}%"></span></div><small title="${escapeHtml(x.label)}">${escapeHtml(shorten(x.label,14))}</small></div>`).join("")}</div>`;
+    $(target).innerHTML=`<div class="origin-bar-list">${rows.map((x,i)=>`<div class="origin-bar-row"><div class="origin-bar-head"><strong title="${escapeHtml(x.label)}">${escapeHtml(x.label)}</strong><span>${fmtInt(x.value)} · ${fmtPct(total?x.value/total*100:NaN)}</span></div><div class="origin-bar-horizontal-track"><span class="origin-bar-horizontal-fill c${i+1}" style="width:${Math.max(4,x.value/max*100)}%"></span></div></div>`).join("")}</div>`;
   }
 
   function generalOriginCategory(origin){const n=normalize(origin);if(n.includes("cronograma"))return"Cronograma";if(n.includes("auditoria"))return"Auditoria";if(n.includes("reclam"))return"Reclamação";if(n.includes("elogio"))return"Elogio";if(n.includes("oficio")||n.includes("carta"))return"Ofício/Carta";return"Outros";}
@@ -154,7 +154,16 @@
     renderColumns("quality-quartiles",quartileStats(operators.filter(x=>Number.isFinite(x.quality)).map(x=>({value:x.quality}))));
     renderColumns("survey-quartiles",quartileStats(operators.filter(x=>Number.isFinite(x.isc)).map(x=>({value:x.isc}))));
     const originMap=new Map();f.monitoring.forEach(x=>{const key=generalOriginCategory(x.origin);originMap.set(key,(originMap.get(key)||0)+1);});const origins=[...originMap].map(([label,value])=>({label,value})).sort((a,b)=>b.value-a.value);renderOriginBars("general-origin",origins);
-    const criteria=aggregateCriteria(f.criteria).sort((a,b)=>b.accuracy-a.accuracy).slice(0,5);renderRank("best-criteria",criteria.map(x=>({label:x.criterion,value:x.accuracy})),{limit:5,format:fmtPct,maxValue:100});
+    const allCriteria=aggregateCriteria(f.criteria),bestCriteria=[...allCriteria].sort((a,b)=>b.accuracy-a.accuracy).slice(0,5),offenderCriteria=[...allCriteria].filter(x=>Number.isFinite(x.accuracy)&&x.accuracy<qualityTarget()).sort((a,b)=>a.accuracy-b.accuracy).slice(0,5);
+    renderRank("best-criteria",bestCriteria.map(x=>({label:x.criterion,value:x.accuracy})),{limit:5,format:fmtPct,maxValue:100});
+    const criteriaOverview=$("criteria-overview"),offenderBlock=$("general-offenders-block");
+    if(offenderCriteria.length){
+      criteriaOverview?.classList.add("has-offenders");criteriaOverview?.classList.remove("no-offenders");offenderBlock?.classList.remove("hidden");
+      renderRank("general-criteria-offenders",offenderCriteria.map(x=>({label:x.criterion,value:x.accuracy,color:"red"})),{limit:5,format:fmtPct,maxValue:100,color:"red"});
+    }else{
+      criteriaOverview?.classList.remove("has-offenders");criteriaOverview?.classList.add("no-offenders");offenderBlock?.classList.add("hidden");
+      if($("general-criteria-offenders"))$("general-criteria-offenders").innerHTML="";
+    }
     renderSplit("form-performance",aggregate(f.monitoring,"form"));renderSplit("skill-performance",aggregate(f.monitoring,"skill"));
     const qualityTop=operators.filter(x=>x.evaluations>0).sort((a,b)=>b.quality-a.quality).map(x=>({label:x.operator,value:x.quality,width:x.quality}));
     const fgTop=operators.filter(x=>x.fg>0).sort((a,b)=>b.fg-a.fg).map(x=>({label:x.operator,value:x.fg,width:Math.min(100,x.fg*22),color:"red"}));
