@@ -1407,3 +1407,54 @@ body.light #general .criteria-offender-block{
 .compact-summary-table td{
   vertical-align:middle!important;
 }
+
+
+/* =========================================================
+   ÍCONES DE IDENTIFICAÇÃO — NAVEGAÇÃO
+   Visual aprovado: outline ciano, elegante e discreto.
+   ========================================================= */
+.main-nav .nav-item{
+  grid-template-columns:24px minmax(0,1fr)!important;
+  gap:10px!important;
+  align-items:center!important;
+}
+.main-nav .nav-item .nav-icon{
+  width:24px;
+  height:24px;
+  display:grid;
+  place-items:center;
+  color:var(--cyan)!important;
+  flex:none;
+}
+.main-nav .nav-item .nav-icon svg{
+  width:20px;
+  height:20px;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.8;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+.main-nav .nav-item b{
+  min-width:0;
+}
+.main-nav .nav-item.active .nav-icon{
+  filter:drop-shadow(0 0 6px rgba(22,217,245,.34));
+}
+body.light .main-nav .nav-item .nav-icon{
+  color:#0798c5!important;
+}
+@media(max-width:800px){
+  .main-nav .nav-item{
+    grid-template-columns:20px max-content!important;
+    gap:7px!important;
+  }
+  .main-nav .nav-item .nav-icon{
+    width:20px;
+    height:20px;
+  }
+  .main-nav .nav-item .nav-icon svg{
+    width:18px;
+    height:18px;
+  }
+}
