@@ -1216,3 +1216,14 @@ body.light #general .origin-bar-horizontal-track{background:#e8f2f7}
     grid-column:auto;
   }
 }
+
+
+/* Navegação principal sem numeração */
+.main-nav .nav-item{
+  grid-template-columns:1fr!important;
+  gap:0!important;
+}
+.main-nav .nav-item>b{
+  display:block;
+  width:100%;
+}
