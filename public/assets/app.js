@@ -186,7 +186,9 @@
     const opMap=new Map();rows.forEach(x=>{const key=x.re||x.operator,r=opMap.get(key)||{operator:x.operator,re:x.re,supervisor:x.supervisor,rows:[]};r.rows.push(x);opMap.set(key,r);});const opRows=[...opMap.values()].map(x=>({...x,total:x.rows.length,proper:x.rows.filter(y=>procedure(y.origin)==="proper").length,improper:x.rows.filter(y=>procedure(y.origin)==="improper").length,skill:mode(x.rows,"skill")})).sort((a,b)=>b.total-a.total);
     const pageSize=state.specialPageSize,totalPages=Math.max(1,Math.ceil(opRows.length/pageSize));state.specialPage=Math.min(Math.max(1,state.specialPage),totalPages);const start=(state.specialPage-1)*pageSize,pageRows=opRows.slice(start,start+pageSize),end=Math.min(start+pageSize,opRows.length);
     $("special-operator-count").textContent=opRows.length?`${fmtInt(opRows.length)} operadores · ${fmtInt(start+1)}–${fmtInt(end)}`:"0 operadores";
-    $("special-operators").innerHTML=pageRows.map(x=>`<tr><td><strong>${escapeHtml(x.operator)}</strong></td><td>${escapeHtml(x.re)}</td><td>${escapeHtml(x.supervisor||"Não atribuída")}</td><td>${escapeHtml(x.skill)}</td><td>${fmtInt(x.total)}</td><td class="metric-good">${fmtInt(x.proper)}</td><td class="metric-danger">${fmtInt(x.improper)}</td></tr>`).join("")||`<tr><td colspan="7" class="empty">Sem análises especiais.</td></tr>`;
+    const hideSupervisor=state.supervisor!=="all";
+    $("special-supervisor-header")?.classList.toggle("hidden",hideSupervisor);
+    $("special-operators").innerHTML=pageRows.map(x=>`<tr><td>${escapeHtml(x.re)}</td><td><strong>${escapeHtml(x.operator)}</strong></td>${hideSupervisor?"":`<td>${escapeHtml(x.supervisor||"Não atribuída")}</td>`}<td>${escapeHtml(x.skill)}</td><td>${fmtInt(x.total)}</td><td class="metric-good">${fmtInt(x.proper)}</td><td class="metric-danger">${fmtInt(x.improper)}</td></tr>`).join("")||`<tr><td colspan="${hideSupervisor?6:7}" class="empty">Sem análises especiais.</td></tr>`;
     $("special-page-size").value=String(pageSize);$("special-page-indicator").textContent=`${state.specialPage} de ${totalPages}`;$("special-prev").disabled=state.specialPage<=1;$("special-next").disabled=state.specialPage>=totalPages;$("special-page-input").max=String(totalPages);$("special-page-input").value=String(state.specialPage);
   }
 
@@ -216,7 +218,9 @@
     const rows=state.surveyQuartile==="all"?allRows:allRows.filter(x=>String(x.quartile)===String(state.surveyQuartile));
     const paged=paginateRows(rows,state.surveyPage,state.surveyPageSize);state.surveyPage=paged.page;
     $("survey-operator-count").textContent=rows.length?`${fmtInt(rows.length)} operadores · ${fmtInt(paged.start+1)}–${fmtInt(paged.end)}`:"0 operadores";
-    $("survey-table").innerHTML=paged.rows.map(x=>`<tr><td><strong>${escapeHtml(x.operator)}</strong></td><td>${escapeHtml(x.re)}</td><td>${escapeHtml(x.supervisor||"Não atribuída")}</td><td>${fmtInt(x.responses)}</td><td class="${metricClass(x.p1Score)}">${fmtPct(x.p1Score)}</td><td class="${metricClass(x.p2Score)}">${fmtPct(x.p2Score)}</td><td class="${metricClass(x.p3Score)}">${fmtPct(x.p3Score)}</td><td class="${metricClass(x.isc)}">${fmtPct(x.isc)}</td><td>${quartileBadge(x.quartile)}</td></tr>`).join("")||`<tr><td colspan="9" class="empty">Sem respostas de pesquisa para o quartil selecionado.</td></tr>`;
+    const hideSupervisor=state.supervisor!=="all";
+    $("survey-supervisor-header")?.classList.toggle("hidden",hideSupervisor);
+    $("survey-table").innerHTML=paged.rows.map(x=>`<tr><td>${escapeHtml(x.re)}</td><td><strong>${escapeHtml(x.operator)}</strong></td>${hideSupervisor?"":`<td>${escapeHtml(x.supervisor||"Não atribuída")}</td>`}<td>${fmtInt(x.responses)}</td><td class="${metricClass(x.p1Score)}">${fmtPct(x.p1Score)}</td><td class="${metricClass(x.p2Score)}">${fmtPct(x.p2Score)}</td><td class="${metricClass(x.p3Score)}">${fmtPct(x.p3Score)}</td><td class="${metricClass(x.isc)}">${fmtPct(x.isc)}</td><td>${quartileBadge(x.quartile)}</td></tr>`).join("")||`<tr><td colspan="${hideSupervisor?8:9}" class="empty">Sem respostas de pesquisa para o quartil selecionado.</td></tr>`;
     syncPager("survey",paged,state.surveyPageSize);
   }
 
