@@ -227,7 +227,9 @@
     const map=new Map();rows.forEach(x=>{const key=x.re||x.operator,r=map.get(key)||{operator:x.operator,re:x.re,supervisor:x.supervisor,rows:[]};r.rows.push(x);map.set(key,r);});const opRows=[...map.values()].map(x=>({...x,count:x.rows.length,reason:mode(x.rows,"fgReason"),origin:mode(x.rows,"origin"),skill:mode(x.rows,"skill")})).sort((a,b)=>b.count-a.count);
     const paged=paginateRows(opRows,state.fgPage,state.fgPageSize);state.fgPage=paged.page;
     $("fg-operator-count").textContent=opRows.length?`${fmtInt(opRows.length)} operadores · ${fmtInt(paged.start+1)}–${fmtInt(paged.end)}`:"0 operadores";
-    $("fg-operators").innerHTML=paged.rows.map(x=>`<tr><td><strong>${escapeHtml(x.operator)}</strong></td><td>${escapeHtml(x.re)}</td><td>${escapeHtml(x.supervisor||"Não atribuída")}</td><td class="metric-danger">${fmtInt(x.count)}</td><td>${escapeHtml(x.reason)}</td><td>${escapeHtml(x.origin)}</td><td>${escapeHtml(x.skill)}</td></tr>`).join("")||`<tr><td colspan="7" class="empty">Sem faltas graves.</td></tr>`;
+    const hideSupervisor=state.supervisor!=="all";
+    $("fg-supervisor-header")?.classList.toggle("hidden",hideSupervisor);
+    $("fg-operators").innerHTML=paged.rows.map(x=>`<tr><td>${escapeHtml(x.re)}</td><td><strong>${escapeHtml(x.operator)}</strong></td>${hideSupervisor?"":`<td>${escapeHtml(x.supervisor||"Não atribuída")}</td>`}<td class="metric-danger">${fmtInt(x.count)}</td><td>${escapeHtml(x.reason)}</td><td>${escapeHtml(x.origin)}</td><td>${escapeHtml(x.skill)}</td></tr>`).join("")||`<tr><td colspan="${hideSupervisor?6:7}" class="empty">Sem faltas graves.</td></tr>`;
     syncPager("fg",paged,state.fgPageSize);
   }
 
