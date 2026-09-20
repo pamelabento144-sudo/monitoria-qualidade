@@ -1087,3 +1087,132 @@ body.light .brand-logo-light{display:block}
     min-height:124px!important;
   }
 }
+
+
+/* =========================================================
+   PAINEL GERAL — ORIGEM, CRITÉRIOS E DENSIDADE DOS QUADRANTES
+   ========================================================= */
+.section-number{display:none!important}
+
+#general .content-grid.three{
+  grid-template-columns:1fr 1.05fr 1fr!important;
+  gap:14px!important;
+  align-items:stretch;
+}
+#general .content-grid.three>.panel{
+  min-height:0!important;
+  padding:16px!important;
+}
+#general .content-grid.three>.panel header{
+  margin-bottom:10px!important;
+}
+
+/* Origem: barras horizontais, sem rolagem e com melhor comparação. */
+#general #general-origin{min-height:0}
+#general .origin-bar-list{
+  display:grid;
+  gap:12px;
+  padding:4px 0 2px;
+}
+#general .origin-bar-row{
+  display:grid;
+  gap:6px;
+}
+#general .origin-bar-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  font-size:10px;
+}
+#general .origin-bar-head strong{
+  min-width:0;
+  color:var(--text);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+#general .origin-bar-head span{
+  flex:none;
+  color:var(--muted);
+  font-weight:800;
+}
+#general .origin-bar-horizontal-track{
+  height:10px;
+  border:1px solid rgba(55,137,178,.34);
+  border-radius:999px;
+  overflow:hidden;
+  background:#05283f;
+}
+#general .origin-bar-horizontal-fill{
+  display:block;
+  height:100%;
+  min-width:4px;
+  border-radius:999px;
+}
+#general .origin-bar-horizontal-fill.c1{background:linear-gradient(90deg,#33d5fd,#16afea)}
+#general .origin-bar-horizontal-fill.c2{background:linear-gradient(90deg,#4cf0b0,#22c984)}
+#general .origin-bar-horizontal-fill.c3{background:linear-gradient(90deg,#ffd75a,#f2b319)}
+#general .origin-bar-horizontal-fill.c4{background:linear-gradient(90deg,#a16df1,#7f48df)}
+#general .origin-bar-horizontal-fill.c5{background:linear-gradient(90deg,#ff7186,#ef405f)}
+#general .origin-bar-horizontal-fill.c6{background:linear-gradient(90deg,#b6c7d7,#7891a8)}
+body.light #general .origin-bar-horizontal-track{background:#e8f2f7}
+
+/* Critérios: ocupa o espaço conforme existam ou não ofensores. */
+#general .criteria-overview{
+  display:grid;
+  gap:12px;
+}
+#general .criteria-overview h3{
+  margin:0 0 8px;
+  color:var(--text);
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+#general .criteria-overview.has-offenders{
+  grid-template-rows:auto auto;
+}
+#general .criteria-overview.no-offenders .criteria-best-block{
+  min-height:180px;
+  display:grid;
+  align-content:center;
+}
+#general .criteria-overview .rank-list{gap:9px}
+#general .criteria-overview .rank-row{
+  grid-template-columns:minmax(118px,1fr) 1.25fr 58px;
+  gap:7px;
+  font-size:9px;
+}
+#general .criteria-offender-block{
+  padding-top:11px;
+  border-top:1px solid rgba(83,145,177,.22);
+}
+#general .criteria-offender-block .bar-fill{background:linear-gradient(90deg,#ff7186,#ef405f)!important}
+
+/* Insights mais compactos para equilibrar a linha. */
+#general .insight-list{gap:8px!important}
+#general .insight{
+  padding:9px 10px!important;
+  line-height:1.35;
+}
+
+/* As regras antigas de barras verticais não atuam mais no Painel Geral. */
+#general .origin-bars{display:none!important}
+
+@media(max-width:1000px){
+  #general .content-grid.three{
+    grid-template-columns:1fr 1fr!important;
+  }
+  #general .content-grid.three>.panel:last-child{
+    grid-column:1/-1;
+  }
+}
+@media(max-width:800px){
+  #general .content-grid.three{
+    grid-template-columns:1fr!important;
+  }
+  #general .content-grid.three>.panel:last-child{
+    grid-column:auto;
+  }
+}
