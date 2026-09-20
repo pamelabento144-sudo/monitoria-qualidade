@@ -1263,3 +1263,74 @@ body.light .kpi-card.danger{
 .rank-value.metric-danger,.kpi-value.metric-danger{color:var(--red)!important}
 .rank-value.metric-warn,.kpi-value.metric-warn{color:var(--gold)!important}
 .rank-value.metric-good,.kpi-value.metric-good{color:var(--green)!important}
+
+
+/* =========================================================
+   CRITÉRIOS — DISTRIBUIÇÃO REFINADA
+   Rankings e barras em ordem decrescente no JS.
+   ========================================================= */
+#general .criteria-overview-panel{
+  align-self:start!important;
+}
+#general .criteria-overview{
+  gap:14px!important;
+}
+#general .criteria-best-block,
+#general .criteria-offender-block{
+  padding:12px 12px 13px!important;
+  border:1px solid rgba(49,137,179,.20);
+  border-radius:12px;
+  background:rgba(8,28,47,.44);
+}
+body.light #general .criteria-best-block,
+body.light #general .criteria-offender-block{
+  background:rgba(242,249,253,.82);
+  border-color:rgba(32,148,198,.18);
+}
+#general .criteria-offender-block{
+  border-top:1px solid rgba(49,137,179,.20)!important;
+}
+#general .criteria-overview h3{
+  margin:0 0 10px!important;
+  font-size:10px!important;
+  letter-spacing:.10em!important;
+}
+#general .criteria-overview .rank-list{
+  gap:10px!important;
+}
+#general .criteria-overview .rank-row{
+  grid-template-columns:minmax(150px,1.35fr) minmax(190px,1.85fr) 66px!important;
+  gap:10px!important;
+  align-items:center!important;
+  font-size:9.5px!important;
+}
+#general .criteria-overview .rank-name{
+  line-height:1.2;
+}
+#general .criteria-overview .bar-track{
+  height:8px!important;
+}
+#general .criteria-overview .rank-value{
+  min-width:62px;
+  text-align:right;
+  font-size:10px!important;
+}
+#general .criteria-overview.no-offenders .criteria-best-block{
+  min-height:220px!important;
+  align-content:center!important;
+}
+@media(max-width:1200px){
+  #general .criteria-overview .rank-row{
+    grid-template-columns:minmax(130px,1.25fr) minmax(150px,1.5fr) 62px!important;
+  }
+}
+@media(max-width:600px){
+  #general .criteria-best-block,
+  #general .criteria-offender-block{
+    padding:10px!important;
+  }
+  #general .criteria-overview .rank-row{
+    grid-template-columns:minmax(105px,1fr) minmax(110px,1.2fr) 56px!important;
+    gap:7px!important;
+  }
+}
