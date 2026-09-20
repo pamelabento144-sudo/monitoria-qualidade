@@ -136,7 +136,7 @@
     <section class="view" id="fg">
       <div id="fg-kpis" class="kpi-grid four"></div>
       <div class="content-grid three"><article class="panel"><h2>Motivos</h2><div id="fg-reasons"></div></article><article class="panel"><h2>Origens</h2><div id="fg-origins"></div></article><article class="panel"><h2>Skills</h2><div id="fg-skills"></div></article></div>
-      <article class="panel table-panel"><header><div><h2>Operadores com Falta Grave</h2><span id="fg-operator-count"></span></div></header><div class="table-scroll"><table><thead><tr><th>Operador</th><th>RE</th><th>Supervisão</th><th>FGs</th><th>Motivo</th><th>Origem</th><th>Skill</th></tr></thead><tbody id="fg-operators"></tbody></table></div>
+      <article class="panel table-panel"><header><div><h2>Operadores com Falta Grave</h2><span id="fg-operator-count"></span></div></header><div class="table-scroll"><table id="fg-operators-table"><thead><tr><th>RE</th><th>Operador</th><th id="fg-supervisor-header">Supervisão</th><th>FGs</th><th>Motivo</th><th>Origem</th><th>Skill</th></tr></thead><tbody id="fg-operators"></tbody></table></div>
         <footer class="pager data-pager">
           <label>Por página<select id="fg-page-size"><option value="10" selected>10</option><option value="15">15</option><option value="30">30</option><option value="all">Todos</option></select></label>
           <button type="button" id="fg-prev">Anterior</button><strong id="fg-page-indicator">1 de 1</strong><button type="button" id="fg-next">Próxima</button>
@@ -162,6 +162,6 @@
 </div>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 <script src="/assets/dashboard-data.js"></script>
-<script src="/assets/app.js?v=20260920-order-criteria1"></script>
+<script src="/assets/app.js?v=20260920-fg-supervisor1"></script>
 </body>
 </html>
