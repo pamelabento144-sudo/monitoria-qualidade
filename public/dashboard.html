@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#07111f" />
   <title>Monitoria de Qualidade — Painel Geral</title>
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="/assets/styles.css?v=20260919-general-floot1" />
+  <link rel="stylesheet" href="/assets/styles.css?v=20260919-general-panels2" />
 </head>
 <body>
 <svg class="svg-sprite" aria-hidden="true" width="0" height="0">
@@ -69,7 +69,7 @@
 
     <section class="view active" id="general">
       <div class="section-identity">
-        <span class="section-number">01</span>
+        
         <div><p>VISÃO CONSOLIDADA</p><h2>Painel Geral</h2></div>
       </div>
       <div id="general-kpis" class="kpi-grid"></div>
@@ -79,7 +79,7 @@
       </div>
       <div class="content-grid three">
         <article class="panel"><header><div><span>ORIGEM</span><h2>Distribuição das Monitorias</h2></div></header><div id="general-origin"></div></article>
-        <article class="panel"><header><div><span>CRITÉRIOS</span><h2>Melhores Itens</h2></div></header><div id="best-criteria"></div></article>
+        <article class="panel criteria-overview-panel"><header><div><span>CRITÉRIOS</span><h2>Desempenho dos Itens</h2></div></header><div id="criteria-overview" class="criteria-overview"><section class="criteria-best-block"><h3>Melhores Itens</h3><div id="best-criteria"></div></section><section id="general-offenders-block" class="criteria-offender-block hidden"><h3>Itens Ofensores</h3><div id="general-criteria-offenders"></div></section></div></article>
         <article class="panel"><header><div><span>INSIGHTS</span><h2>Leitura Executiva</h2></div></header><div id="general-insights" class="insight-list"></div></article>
       </div>
       <div class="content-grid two">
@@ -162,6 +162,6 @@
 </div>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 <script src="/assets/dashboard-data.js"></script>
-<script src="/assets/app.js?v=20260919-quartil1"></script>
+<script src="/assets/app.js?v=20260919-general-panels2"></script>
 </body>
 </html>
