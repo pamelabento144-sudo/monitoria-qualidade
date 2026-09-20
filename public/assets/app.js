@@ -18,7 +18,16 @@
   };
 
   const normalize=(value)=>String(value||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
-  const escapeHtml=(value)=>String(value??"").replace(/[&<>'"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[c]));
+  const repairText=(value="")=>String(value)
+    .replace(/CONFIRMA\?\?O/gi,"CONFIRMAÇÃO")
+    .replace(/AUTOM\?TICO/gi,"AUTOMÁTICO")
+    .replace(/POPULA\?\?O/gi,"POPULAÇÃO")
+    .replace(/EDUCA\?\?O/gi,"EDUCAÇÃO")
+    .replace(/CAL\?ADAS/gi,"CALÇADAS")
+    .replace(/POLUI\?\?O/gi,"POLUIÇÃO")
+    .replace(/CORRE\?\?O/gi,"CORREÇÃO")
+    .replace(/CRIAN\?A/gi,"CRIANÇA");
+  const escapeHtml=(value)=>repairText(value??"").replace(/[&<>'"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[c]));
   const shorten=(value,max=52)=>{value=String(value||"");return value.length>max?value.slice(0,max-1)+"…":value;};
   const sum=(items,fn=(x)=>x)=>items.reduce((total,item)=>total+(+fn(item)||0),0);
   const average=(items)=>items.length?sum(items)/items.length:NaN;
