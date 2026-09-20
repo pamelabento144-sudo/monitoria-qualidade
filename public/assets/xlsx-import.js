@@ -8,7 +8,16 @@
     .replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&quot;/g,'"')
     .replace(/&apos;/g,"'").replace(/&amp;/g,"&").replace(/&#(\d+);/g,(_,n)=>String.fromCodePoint(Number(n)))
     .replace(/&#x([0-9a-f]+);/gi,(_,n)=>String.fromCodePoint(parseInt(n,16)));
-  const text = (value) => value == null ? "" : String(value).trim();
+  const repairText = (value="") => String(value)
+    .replace(/CONFIRMA\?\?O/gi,"CONFIRMAÇÃO")
+    .replace(/AUTOM\?TICO/gi,"AUTOMÁTICO")
+    .replace(/POPULA\?\?O/gi,"POPULAÇÃO")
+    .replace(/EDUCA\?\?O/gi,"EDUCAÇÃO")
+    .replace(/CAL\?ADAS/gi,"CALÇADAS")
+    .replace(/POLUI\?\?O/gi,"POLUIÇÃO")
+    .replace(/CORRE\?\?O/gi,"CORREÇÃO")
+    .replace(/CRIAN\?A/gi,"CRIANÇA");
+  const text = (value) => value == null ? "" : repairText(String(value).trim());
   const normalize = (value) => text(value).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
   const code = (value) => {
     if(value == null || value === "") return "";
