@@ -1,6 +1,6 @@
 import { json, readJson } from "../../lib/http.js";
 import { isAdmin } from "../../lib/auth.js";
-import { addHistory, getDashboardData, putDashboardData, updateHistory } from "../../lib/store.js";
+import { addHistory, getDashboardData, putDashboardData, putDashboardSnapshot, updateHistory } from "../../lib/store.js";
 
 function validData(value) {
   return value && Array.isArray(value.monitoring) && Array.isArray(value.criteria) && Array.isArray(value.satisfaction) && Array.isArray(value.tma);
@@ -65,6 +65,9 @@ export default async function handler(req, res) {
     data.meta = { ...(data.meta || {}), importedAt: data.meta?.importedAt || new Date().toISOString() };
 
     const current = await getDashboardData();
+    if (current && importId) {
+      await putDashboardSnapshot(importId, current);
+    }
     const months = incomingMonths(data);
     const merged = mergeByMonths(current, data, months);
     merged.meta = { ...(merged.meta || {}), importedAt: data.meta.importedAt, source: data.meta?.source || originalName };
@@ -76,8 +79,8 @@ export default async function handler(req, res) {
     const details = current
       ? `Meses atualizados: ${monthLabel}. Demais meses preservados no painel.`
       : `Base inicial publicada. Meses: ${monthLabel}.`;
-    if (importId) await updateHistory(importId, { records, status: "Sucesso", details });
-    return json(res, 200, { ok: true, importedAt: merged.meta.importedAt, records, months, merged: Boolean(current) });
+    if (importId) await updateHistory(importId, { records, status: "Sucesso", details, undoAvailable: Boolean(current) });
+    return json(res, 200, { ok: true, importedAt: merged.meta.importedAt, records, months, merged: Boolean(current), undoAvailable: Boolean(current) });
   } catch (error) {
     if (importId) await updateHistory(importId, { status: "Erro", details: error.message || "Falha ao publicar os dados." });
     return json(res, error.statusCode || 500, { error: error.message || "Não foi possível atualizar os painéis." });
