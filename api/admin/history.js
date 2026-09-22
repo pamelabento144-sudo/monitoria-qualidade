@@ -7,7 +7,6 @@ export default async function handler(req, res) {
   if (req.method === "GET") {
     const items = await getHistory();
     const latestUndoable = items.find(item =>
-      item.type === "Relatório principal" &&
       item.status === "Sucesso" &&
       item.undoAvailable === true
     );
