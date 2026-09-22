@@ -13,7 +13,6 @@ export default async function handler(req, res) {
 
     const items = await getHistory();
     const latestUndoable = items.find(item =>
-      item.type === "Relatório principal" &&
       item.status === "Sucesso" &&
       item.undoAvailable === true
     );
