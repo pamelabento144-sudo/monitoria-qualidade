@@ -4,7 +4,16 @@ import { addHistory, getHistory, updateHistory } from "../../lib/store.js";
 
 export default async function handler(req, res) {
   if (!isAdmin(req)) return json(res, 401, { error: "Acesso administrativo necessário." });
-  if (req.method === "GET") return json(res, 200, { items: await getHistory() });
+  if (req.method === "GET") {
+    const items = await getHistory();
+    const latestUndoable = items.find(item =>
+      item.status === "Sucesso" &&
+      item.undoAvailable === true
+    );
+    return json(res, 200, {
+      items: items.map(item => ({ ...item, canUndo: Boolean(latestUndoable && item.id === latestUndoable.id) }))
+    });
+  }
   if (req.method === "POST") {
     const body = await readJson(req, 128 * 1024);
     const patch = {
