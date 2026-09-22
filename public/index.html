@@ -6,10 +6,13 @@
   <meta name="theme-color" content="#07111f" />
   <title>Monitoria de Qualidade — Painel Geral</title>
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="/assets/styles.css?v=20260919-quartil1" />
+  <link rel="stylesheet" href="/assets/styles.css?v=20260920-nav-icons1" />
 </head>
 <body>
 <svg class="svg-sprite" aria-hidden="true" width="0" height="0">
+  <symbol id="icon-home" viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10.5V20h13v-9.5M9 20v-6h6v6"/></symbol>
+  <symbol id="icon-chart" viewBox="0 0 24 24"><path d="M4 20V10h4v10M10 20V4h4v16M16 20v-7h4v7M3 20h18"/></symbol>
+  <symbol id="icon-trend" viewBox="0 0 24 24"><path d="m4 16 5-5 4 4 7-8"/><path d="M15 7h5v5"/></symbol>
   <symbol id="icon-star" viewBox="0 0 24 24"><path d="m12 3 2.7 5.5 6 .9-4.4 4.2 1.1 6-5.4-2.8-5.4 2.8 1.1-6-4.4-4.2 6-.9Z"/></symbol>
   <symbol id="icon-headset" viewBox="0 0 24 24"><path d="M4 13v-1a8 8 0 0 1 16 0v1M4 13h3v6H5a1 1 0 0 1-1-1Zm16 0h-3v6h2a1 1 0 0 0 1-1ZM17 19c0 2-2 2-5 2"/></symbol>
   <symbol id="icon-survey" viewBox="0 0 24 24"><path d="M5 4h14v16H5zM8 9h8M8 13h6M8 17h4"/></symbol>
@@ -30,15 +33,15 @@
 
 <div class="app-shell">
   <aside class="sidebar">
-    <div class="brand-block"><div class="brand-mark">MQ</div><div><strong>MONITORIA</strong><span>DE QUALIDADE</span></div></div>
+    <div class="brand-block brand-logo-block" aria-label="MQ — Monitoria de Qualidade"><img class="brand-logo brand-logo-dark" src="/api/logo?mode=dark&v=20260919-logo2" alt="MQ — Monitoria de Qualidade — Excelência que gera resultados"><img class="brand-logo brand-logo-light" src="/api/logo?mode=light&v=20260919-logo2" alt="MQ — Monitoria de Qualidade — Excelência que gera resultados"></div>
     <nav id="main-nav" class="main-nav" aria-label="Navegação principal">
-      <button class="nav-item active" data-view="general"><span>01</span><b>Painel Geral</b></button>
-      <button class="nav-item" data-view="special"><span>02</span><b>Análises Especiais</b></button>
-      <button class="nav-item" data-view="quality"><span>03</span><b>Qualidade</b></button>
-      <button class="nav-item" data-view="survey"><span>04</span><b>Pesquisa ISC</b></button>
-      <button class="nav-item" data-view="fg"><span>05</span><b>Falta Grave</b></button>
-      <button class="nav-item" data-view="comparison"><span>06</span><b>Comparativo Mensal</b></button>
-      <button class="nav-item" data-view="operators"><span>07</span><b>Operadores</b></button>
+      <button class="nav-item active" data-view="general"><span class="nav-icon"><svg aria-hidden="true"><use href="#icon-home"></use></svg></span><b>Painel Geral</b></button>
+      <button class="nav-item" data-view="special"><span class="nav-icon"><svg aria-hidden="true"><use href="#icon-chart"></use></svg></span><b>Análises Especiais</b></button>
+      <button class="nav-item" data-view="quality"><span class="nav-icon"><svg aria-hidden="true"><use href="#icon-star"></use></svg></span><b>Qualidade</b></button>
+      <button class="nav-item" data-view="survey"><span class="nav-icon"><svg aria-hidden="true"><use href="#icon-clipboard"></use></svg></span><b>Pesquisa ISC</b></button>
+      <button class="nav-item" data-view="fg"><span class="nav-icon"><svg aria-hidden="true"><use href="#icon-alert"></use></svg></span><b>Falta Grave</b></button>
+      <button class="nav-item" data-view="comparison"><span class="nav-icon"><svg aria-hidden="true"><use href="#icon-trend"></use></svg></span><b>Comparativo Mensal</b></button>
+      <button class="nav-item" data-view="operators"><span class="nav-icon"><svg aria-hidden="true"><use href="#icon-users"></use></svg></span><b>Operadores</b></button>
     </nav>
     <button id="side-export" class="export-button">Exportar CSV</button>
     <div class="sidebar-foot"><span>Central SP156</span><small>Monitoria de Qualidade</small></div>
@@ -69,7 +72,7 @@
 
     <section class="view active" id="general">
       <div class="section-identity">
-        <span class="section-number">01</span>
+        
         <div><p>VISÃO CONSOLIDADA</p><h2>Painel Geral</h2></div>
       </div>
       <div id="general-kpis" class="kpi-grid"></div>
@@ -79,7 +82,7 @@
       </div>
       <div class="content-grid three">
         <article class="panel"><header><div><span>ORIGEM</span><h2>Distribuição das Monitorias</h2></div></header><div id="general-origin"></div></article>
-        <article class="panel"><header><div><span>CRITÉRIOS</span><h2>Melhores Itens</h2></div></header><div id="best-criteria"></div></article>
+        <article class="panel criteria-overview-panel"><header><div><span>CRITÉRIOS</span><h2>Desempenho dos Itens</h2></div></header><div id="criteria-overview" class="criteria-overview"><section class="criteria-best-block"><h3>Melhores Itens</h3><div id="best-criteria"></div></section><section id="general-offenders-block" class="criteria-offender-block hidden"><h3>Itens Ofensores</h3><div id="general-criteria-offenders"></div></section></div></article>
         <article class="panel"><header><div><span>INSIGHTS</span><h2>Leitura Executiva</h2></div></header><div id="general-insights" class="insight-list"></div></article>
       </div>
       <div class="content-grid two">
@@ -96,7 +99,7 @@
     <section class="view" id="special">
       <div id="special-kpis" class="kpi-grid four"></div>
       <div class="content-grid three"><article class="panel"><h2>Origem e Procedência</h2><div id="special-origin"></div></article><article class="panel"><h2>Por Skill</h2><div id="special-skills"></div></article><article class="panel"><h2>Por Ficha</h2><div id="special-forms"></div></article></div>
-      <article class="panel table-panel"><header><div><h2>Operadores Analisados</h2><span id="special-operator-count"></span></div></header><div class="table-scroll"><table><thead><tr><th>Operador</th><th>RE</th><th>Supervisão</th><th>Skill</th><th>Total</th><th>Procedente</th><th>Improcedente</th></tr></thead><tbody id="special-operators"></tbody></table></div><footer class="pager"><label>Por página<select id="special-page-size"><option>25</option><option selected>50</option><option>100</option><option>200</option></select></label><button id="special-prev">Anterior</button><strong id="special-page-indicator">1 de 1</strong><button id="special-next">Próxima</button><form id="special-page-form"><label>Ir para <input id="special-page-input" type="number" min="1" value="1"></label><button>Ir</button></form></footer></article>
+      <article class="panel table-panel"><header><div><h2>Operadores Analisados</h2><span id="special-operator-count"></span></div></header><div class="table-scroll"><table id="special-operators-table"><thead><tr><th>RE</th><th>Operador</th><th id="special-supervisor-header">Supervisão</th><th>Skill</th><th>Total</th><th>Procedente</th><th>Improcedente</th></tr></thead><tbody id="special-operators"></tbody></table></div><footer class="pager"><label>Por página<select id="special-page-size"><option>25</option><option selected>50</option><option>100</option><option>200</option></select></label><button id="special-prev">Anterior</button><strong id="special-page-indicator">1 de 1</strong><button id="special-next">Próxima</button><form id="special-page-form"><label>Ir para <input id="special-page-input" type="number" min="1" value="1"></label><button>Ir</button></form></footer></article>
     </section>
 
     <section class="view" id="quality">
@@ -113,7 +116,7 @@
         <article class="panel quality-summary-panel"><h2>Por Ficha</h2><div class="summary-table-wrap"><table class="compact-summary-table"><tbody id="quality-form-table"></tbody></table></div></article>
       </div>
       <div class="content-grid two"><article class="panel"><h2>Tipo de Monitoria</h2><div id="quality-type-chart"></div></article><article class="panel"><h2>Principais Ofensores</h2><div id="criteria-offenders"></div></article></div>
-      <article class="panel table-panel"><header><div><h2>Itens Aferidos</h2></div><label>Dimensão<select id="criteria-dimension-filter"><option value="all">Todas</option><option value="Qualidade">Qualidade</option><option value="Processo">Processo</option></select></label></header><div class="table-scroll"><table><thead><tr><th>Critério</th><th>Tipo</th><th>Peso</th><th>Total</th><th>Acertos</th><th>Erros</th><th>% Acerto</th><th>% Erro</th></tr></thead><tbody id="criteria-table"></tbody></table></div>
+      <article class="panel table-panel"><header><div><h2>Itens Aferidos</h2></div><label>Dimensão<select id="criteria-dimension-filter"><option value="all">Todas</option><option value="Qualidade">Qualidade</option><option value="Processo">Processo</option></select></label></header><div class="table-scroll"><table id="criteria-items-table"><thead><tr><th>Critério</th><th>Tipo</th><th>Peso</th><th>Total</th><th>Acertos</th><th>Erros</th><th>% Acerto</th><th>% Erro</th></tr></thead><tbody id="criteria-table"></tbody></table></div>
         <footer class="pager data-pager">
           <label>Por página<select id="criteria-page-size"><option value="10" selected>10</option><option value="15">15</option><option value="30">30</option><option value="all">Todos</option></select></label>
           <button type="button" id="criteria-prev">Anterior</button><strong id="criteria-page-indicator">1 de 1</strong><button type="button" id="criteria-next">Próxima</button>
@@ -124,7 +127,7 @@
 
     <section class="view" id="survey">
       <div id="survey-kpis" class="kpi-grid"></div><div id="survey-quartile-detail" class="quartile-detail"></div>
-      <article class="panel table-panel"><header><div><h2>Pesquisa por Operador</h2><span id="survey-operator-count"></span></div><label>Quartil<select id="survey-quartile-filter"><option value="all">Todos</option><option value="1">1º Quartil</option><option value="2">2º Quartil</option><option value="3">3º Quartil</option><option value="4">4º Quartil</option></select></label></header><div class="table-scroll"><table><thead><tr><th>Operador</th><th>RE</th><th>Supervisão</th><th>Respostas</th><th>P1</th><th>P2</th><th>P3</th><th>ISC</th><th>Quartil</th></tr></thead><tbody id="survey-table"></tbody></table></div>
+      <article class="panel table-panel"><header><div><h2>Pesquisa por Operador</h2><span id="survey-operator-count"></span></div><label>Quartil<select id="survey-quartile-filter"><option value="all">Todos</option><option value="1">1º Quartil</option><option value="2">2º Quartil</option><option value="3">3º Quartil</option><option value="4">4º Quartil</option></select></label></header><div class="table-scroll"><table id="survey-operators-table"><thead><tr><th>RE</th><th>Operador</th><th id="survey-supervisor-header">Supervisão</th><th>Respostas</th><th>P1</th><th>P2</th><th>P3</th><th>ISC</th><th>Quartil</th></tr></thead><tbody id="survey-table"></tbody></table></div>
         <footer class="pager data-pager">
           <label>Por página<select id="survey-page-size"><option value="25" selected>25</option><option value="50">50</option><option value="100">100</option><option value="all">Todos</option></select></label>
           <button type="button" id="survey-prev">Anterior</button><strong id="survey-page-indicator">1 de 1</strong><button type="button" id="survey-next">Próxima</button>
@@ -136,7 +139,7 @@
     <section class="view" id="fg">
       <div id="fg-kpis" class="kpi-grid four"></div>
       <div class="content-grid three"><article class="panel"><h2>Motivos</h2><div id="fg-reasons"></div></article><article class="panel"><h2>Origens</h2><div id="fg-origins"></div></article><article class="panel"><h2>Skills</h2><div id="fg-skills"></div></article></div>
-      <article class="panel table-panel"><header><div><h2>Operadores com Falta Grave</h2><span id="fg-operator-count"></span></div></header><div class="table-scroll"><table><thead><tr><th>Operador</th><th>RE</th><th>Supervisão</th><th>FGs</th><th>Motivo</th><th>Origem</th><th>Skill</th></tr></thead><tbody id="fg-operators"></tbody></table></div>
+      <article class="panel table-panel"><header><div><h2>Operadores com Falta Grave</h2><span id="fg-operator-count"></span></div></header><div class="table-scroll"><table id="fg-operators-table"><thead><tr><th>RE</th><th>Operador</th><th id="fg-supervisor-header">Supervisão</th><th>FGs</th><th>Motivo</th><th>Origem</th><th>Skill</th></tr></thead><tbody id="fg-operators"></tbody></table></div>
         <footer class="pager data-pager">
           <label>Por página<select id="fg-page-size"><option value="10" selected>10</option><option value="15">15</option><option value="30">30</option><option value="all">Todos</option></select></label>
           <button type="button" id="fg-prev">Anterior</button><strong id="fg-page-indicator">1 de 1</strong><button type="button" id="fg-next">Próxima</button>
@@ -150,7 +153,7 @@
     <section class="view" id="operators">
       <div class="operator-tools"><div><h2>Desempenho Individual</h2><span id="operator-count"></span></div><label>Status<select id="operator-status-filter"><option value="all">Todos</option><option value="excellent">Destaque</option><option value="good">Dentro da meta</option><option value="attention">Acompanhamento</option></select></label></div>
       <div id="operator-summary" class="operator-summary"></div>
-      <article class="panel table-panel"><div class="table-scroll"><table class="sortable"><thead><tr><th data-sort="re">RE</th><th data-sort="operator">Operador</th><th data-sort="evaluations">Monitorias</th><th data-sort="quality">Qualidade</th><th data-sort="quartileQuality">Quartil Qualidade</th><th data-sort="isc">ISC</th><th data-sort="calls">Atendimentos</th><th data-sort="tma">TMA</th><th data-sort="fg">FG</th><th data-sort="status">Status</th></tr></thead><tbody id="operators-table"></tbody></table></div>
+      <article class="panel table-panel"><div class="table-scroll"><table id="operators-main-table" class="sortable"><thead><tr><th data-sort="re">RE</th><th data-sort="operator">Operador</th><th data-sort="evaluations">Monitorias</th><th data-sort="quality">Qualidade</th><th data-sort="quartileQuality">Quartil Qualidade</th><th data-sort="isc">ISC</th><th data-sort="calls">Atendimentos</th><th data-sort="tma">TMA</th><th data-sort="fg">FG</th><th data-sort="status">Status</th></tr></thead><tbody id="operators-table"></tbody></table></div>
         <footer class="pager data-pager">
           <label>Por página<select id="operator-page-size"><option value="10" selected>10</option><option value="15">15</option><option value="30">30</option><option value="all">Todos</option></select></label>
           <button type="button" id="operator-prev">Anterior</button><strong id="operator-page-indicator">1 de 1</strong><button type="button" id="operator-next">Próxima</button>
@@ -162,6 +165,6 @@
 </div>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 <script src="/assets/dashboard-data.js"></script>
-<script src="/assets/app.js?v=20260919-quartil1"></script>
+<script src="/assets/app.js?v=20260920-undo-import1"></script>
 </body>
 </html>
