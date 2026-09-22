@@ -8,7 +8,16 @@
     .replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&quot;/g,'"')
     .replace(/&apos;/g,"'").replace(/&amp;/g,"&").replace(/&#(\d+);/g,(_,n)=>String.fromCodePoint(Number(n)))
     .replace(/&#x([0-9a-f]+);/gi,(_,n)=>String.fromCodePoint(parseInt(n,16)));
-  const text = (value) => value == null ? "" : String(value).trim();
+  const repairText = (value="") => String(value)
+    .replace(/CONFIRMA\?\?O/gi,"CONFIRMAÇÃO")
+    .replace(/AUTOM\?TICO/gi,"AUTOMÁTICO")
+    .replace(/POPULA\?\?O/gi,"POPULAÇÃO")
+    .replace(/EDUCA\?\?O/gi,"EDUCAÇÃO")
+    .replace(/CAL\?ADAS/gi,"CALÇADAS")
+    .replace(/POLUI\?\?O/gi,"POLUIÇÃO")
+    .replace(/CORRE\?\?O/gi,"CORREÇÃO")
+    .replace(/CRIAN\?A/gi,"CRIANÇA");
+  const text = (value) => value == null ? "" : repairText(String(value).trim());
   const normalize = (value) => text(value).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
   const code = (value) => {
     if(value == null || value === "") return "";
@@ -162,13 +171,16 @@
       if(item.re)rosterRe.set(item.re,item);if(item.ip)rosterIp.set(item.ip,item);
     });
     const roster=(reValue="",ipValue="")=>{const re=code(reValue),ip=code(ipValue);return rosterRe.get(re)||rosterIp.get(ip)||(ip?rosterRe.get(ip.slice(-5)):null)||{};};
+    const supervisors=[...new Set([...rosterRe.values()].map(x=>x.supervisor).filter(Boolean))]
+      .filter(x=>!normalize(x).startsWith("aline fernandes"))
+      .sort((a,b)=>a.localeCompare(b,"pt-BR"));
 
     progress(20,"Processando monitorias...");
     const monitoring=[];
     await readRows(zip,findSheet(sheets,"Consolidado_Monitoria"),shared,row=>{
       const person=roster(row["RE OPERADOR"]),re=code(row["RE OPERADOR"]),note=numericOrNull(row.NOTA),fgReason=text(row["FALTA GRAVE"]);
       if(!re&&!text(row.OPERADOR)&&note==null)return;
-      monitoring.push({m:month(row["Mês"])||month(row["DATA MONITORIA"]),re,operator:text(row.OPERADOR)||person.operator||"",supervisor:text(row.SUPERVISOR)||person.supervisor||"",note,fg:Boolean(fgReason),fgReason,origin:text(row.ORIGEM),form:text(row["AFERIÇÃO"]),skill:text(row.SKILL),monitoringType:text(row["TIPO MONITORIA"]),service:text(row["SERVIÇO"])||person.service||"",status:text(row["STATUS OPERACIONAL"])||person.status||""});
+      monitoring.push({m:month(row["Mês"])||month(row["DATA MONITORIA"]),re,operator:text(row.OPERADOR)||person.operator||"",supervisor:person.supervisor||"",note,fg:Boolean(fgReason),fgReason,origin:text(row.ORIGEM),form:text(row["AFERIÇÃO"]),skill:text(row.SKILL),monitoringType:text(row["TIPO MONITORIA"]),service:text(row["SERVIÇO"])||person.service||"",status:text(row["STATUS OPERACIONAL"])||person.status||""});
     });
 
     progress(38,"Consolidando critérios de qualidade...");
@@ -199,7 +211,7 @@
     const tma=[];
     await readRows(zip,findSheet(sheets,"Consolidado_TMA"),shared,row=>{
       const person=roster(row.RE),calls=numeric(row.Atendimentos);if(!calls&&!row.TMA)return;
-      tma.push({m:month(row["Mês"]),re:code(row.RE),operator:text(row.Operador)||person.operator||"",supervisor:text(row.Supervisor)||person.supervisor||"",calls,tma:seconds(row.TMA),service:text(row["Serviço"])||person.service||""});
+      tma.push({m:month(row["Mês"]),re:code(row.RE),operator:text(row.Operador)||person.operator||"",supervisor:person.supervisor||"",calls,tma:seconds(row.TMA),service:text(row["Serviço"])||person.service||""});
     });
 
     progress(76,"Lendo metas de TMA...");
@@ -210,13 +222,13 @@
     progress(80,"Consolidando TMA por skill...");
     const skillTmaMap=new Map(),skillSheet=findSheet(sheets,"Consolidado_TMA x SKILL");
     if(skillSheet)await readRows(zip,skillSheet,shared,row=>{
-      const person=roster(row.RE),calls=numeric(row.ATENDIDAS),m=month(row.DATA),skill=text(row.SKILL),supervisor=person.supervisor||text(row.SUPERVISOR)||"";if(!m||!skill||!calls)return;
+      const person=roster(row.RE,row["IP VOIP"]||row["ID VoIP"]),calls=numeric(row.ATENDIDAS),m=month(row.DATA),skill=text(row.SKILL),supervisor=person.supervisor||"";if(!m||!skill||!calls)return;
       const key=`${m}¦${skill}¦${supervisor}`,current=skillTmaMap.get(key)||{m,skill,supervisor,calls:0,weighted:0};current.calls+=calls;current.weighted+=calls*seconds(row.TMA);skillTmaMap.set(key,current);
     });
     const skillTma=[...skillTmaMap.values()].map(x=>({m:x.m,skill:x.skill,supervisor:x.supervisor,calls:Math.round(x.calls),tma:x.calls?Math.round(x.weighted/x.calls):0}));
 
     progress(96,"Finalizando indicadores...");
-    const result={meta:{title:"Relatório Indicadores de Qualidade",period:"Relatório importado",qualityTarget:90,satisfactionTarget:90,source:file.name,supervisionRule:"Quadro Operacional por RE ou IP VOIP",importedAt:new Date().toISOString()},monitoring,criteria,satisfaction,tma,tmaTargets,skillTma};
+    const result={meta:{title:"Relatório Indicadores de Qualidade",period:"Relatório importado",qualityTarget:90,satisfactionTarget:90,source:file.name,supervisionRule:"Quadro Operacional por RE ou IP VOIP — fonte de verdade",importedAt:new Date().toISOString()},supervisors,monitoring,criteria,satisfaction,tma,tmaTargets,skillTma};
     progress(100,"Relatório processado com sucesso.");
     return result;
   }
