@@ -921,3 +921,540 @@ html,body{max-width:100%;overflow-x:hidden}
   .table-panel>header label{width:100%;justify-content:flex-start}
   .table-panel>header select{min-width:150px}
 }
+
+/* Logo MQ por tema — arquivos transparentes, sem moldura */
+.brand-logo-block{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  width:100%!important;
+  min-height:0!important;
+  padding:0!important;
+  overflow:visible!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+.light .brand-logo-block{
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+.brand-logo{
+  display:block;
+  width:min(100%,310px);
+  height:auto;
+  max-height:none;
+  object-fit:contain;
+  object-position:left center;
+  filter:none!important;
+}
+.brand-logo-light{display:none}
+body.light .brand-logo-dark{display:none}
+body.light .brand-logo-light{display:block}
+@media(max-width:800px){
+  .brand-logo{width:min(100%,290px)}
+}
+@media(max-width:520px){
+  .brand-logo{width:min(100%,250px)}
+}
+
+
+/* =========================================================
+   PAINEL GERAL — DENSIDADE E ORGANIZAÇÃO DO FLOOT
+   Escopo proposital: somente Visão Geral.
+   Não altera cálculos, dados ou os demais painéis.
+   ========================================================= */
+
+/* No Floot, o Painel Geral começa diretamente pelos KPIs. */
+#general .section-identity{
+  display:none!important;
+}
+
+/* Desktop: filtros visíveis e compactos, como no preview do Floot. */
+@media(min-width:801px){
+  body:has(#general.view.active) #mobile-filter-toggle{
+    display:none!important;
+  }
+  body:has(#general.view.active) #dashboard-filters{
+    display:grid!important;
+    grid-template-columns:minmax(130px,.9fr) minmax(170px,1fr) minmax(220px,1.35fr) auto!important;
+    gap:10px!important;
+    padding:13px!important;
+    margin:0 0 18px!important;
+    border-radius:14px!important;
+    background:rgba(12,28,47,.72)!important;
+  }
+  body.light:has(#general.view.active) #dashboard-filters{
+    background:#fff!important;
+  }
+}
+
+/* Os cinco indicadores ficam na mesma linha em desktop amplo. */
+#general #general-kpis{
+  display:grid!important;
+  grid-template-columns:repeat(5,minmax(0,1fr))!important;
+  gap:12px!important;
+  margin:0 0 14px!important;
+}
+#general #general-kpis .kpi-card{
+  grid-column:auto!important;
+  min-height:138px!important;
+  padding:16px!important;
+  border-radius:14px!important;
+}
+#general #general-kpis .kpi-card:nth-child(5){
+  grid-column:auto!important;
+}
+#general #general-kpis .kpi-card::after{
+  width:82px!important;
+  height:82px!important;
+  right:-24px!important;
+  top:-28px!important;
+}
+#general #general-kpis .kpi-label{
+  font-size:9px!important;
+  letter-spacing:.07em!important;
+}
+#general #general-kpis .kpi-icon{
+  width:36px!important;
+  height:36px!important;
+  right:9px!important;
+  top:8px!important;
+}
+#general #general-kpis .kpi-icon svg{
+  width:17px!important;
+  height:17px!important;
+}
+#general #general-kpis .kpi-value{
+  margin:14px 0 5px!important;
+  font-size:26px!important;
+}
+#general #general-kpis .kpi-foot{
+  min-height:26px!important;
+  font-size:10px!important;
+}
+#general #general-kpis .meter{
+  height:4px!important;
+  margin-top:10px!important;
+  border:0!important;
+}
+
+/* Ritmo vertical do primeiro painel. */
+#general>.content-grid{
+  margin:14px 0!important;
+}
+
+/* Responsividade igual ao princípio do Floot: 5 > 3 > 2 > 1. */
+@media(max-width:1200px) and (min-width:801px){
+  #general #general-kpis{
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  }
+}
+@media(max-width:800px){
+  body:has(#general.view.active) #dashboard-filters{
+    display:none!important;
+  }
+  body:has(#general.view.active) #dashboard-filters.expanded{
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:10px!important;
+    padding:13px!important;
+    margin:0 0 14px!important;
+    border-radius:14px!important;
+  }
+  body:has(#general.view.active) #mobile-filter-toggle{
+    display:flex!important;
+  }
+  #general #general-kpis{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:10px!important;
+  }
+  #general #general-kpis .kpi-card{
+    min-height:132px!important;
+    padding:14px!important;
+  }
+}
+@media(max-width:520px){
+  body:has(#general.view.active) #dashboard-filters.expanded{
+    grid-template-columns:1fr!important;
+  }
+  #general #general-kpis{
+    grid-template-columns:1fr!important;
+  }
+  #general #general-kpis .kpi-card{
+    min-height:124px!important;
+  }
+}
+
+
+/* =========================================================
+   PAINEL GERAL — ORIGEM, CRITÉRIOS E DENSIDADE DOS QUADRANTES
+   ========================================================= */
+.section-number{display:none!important}
+
+#general .content-grid.three{
+  grid-template-columns:1fr 1.05fr 1fr!important;
+  gap:14px!important;
+  align-items:stretch;
+}
+#general .content-grid.three>.panel{
+  min-height:0!important;
+  padding:16px!important;
+}
+#general .content-grid.three>.panel header{
+  margin-bottom:10px!important;
+}
+
+/* Origem: barras horizontais, sem rolagem e com melhor comparação. */
+#general #general-origin{min-height:0}
+#general .origin-bar-list{
+  display:grid;
+  gap:12px;
+  padding:4px 0 2px;
+}
+#general .origin-bar-row{
+  display:grid;
+  gap:6px;
+}
+#general .origin-bar-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  font-size:10px;
+}
+#general .origin-bar-head strong{
+  min-width:0;
+  color:var(--text);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+#general .origin-bar-head span{
+  flex:none;
+  color:var(--muted);
+  font-weight:800;
+}
+#general .origin-bar-horizontal-track{
+  height:10px;
+  border:1px solid rgba(55,137,178,.34);
+  border-radius:999px;
+  overflow:hidden;
+  background:#05283f;
+}
+#general .origin-bar-horizontal-fill{
+  display:block;
+  height:100%;
+  min-width:4px;
+  border-radius:999px;
+}
+#general .origin-bar-horizontal-fill.c1{background:linear-gradient(90deg,#33d5fd,#16afea)}
+#general .origin-bar-horizontal-fill.c2{background:linear-gradient(90deg,#4cf0b0,#22c984)}
+#general .origin-bar-horizontal-fill.c3{background:linear-gradient(90deg,#ffd75a,#f2b319)}
+#general .origin-bar-horizontal-fill.c4{background:linear-gradient(90deg,#a16df1,#7f48df)}
+#general .origin-bar-horizontal-fill.c5{background:linear-gradient(90deg,#ff7186,#ef405f)}
+#general .origin-bar-horizontal-fill.c6{background:linear-gradient(90deg,#b6c7d7,#7891a8)}
+body.light #general .origin-bar-horizontal-track{background:#e8f2f7}
+
+/* Critérios: ocupa o espaço conforme existam ou não ofensores. */
+#general .criteria-overview{
+  display:grid;
+  gap:12px;
+}
+#general .criteria-overview h3{
+  margin:0 0 8px;
+  color:var(--text);
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+#general .criteria-overview.has-offenders{
+  grid-template-rows:auto auto;
+}
+#general .criteria-overview.no-offenders .criteria-best-block{
+  min-height:180px;
+  display:grid;
+  align-content:center;
+}
+#general .criteria-overview .rank-list{gap:9px}
+#general .criteria-overview .rank-row{
+  grid-template-columns:minmax(118px,1fr) 1.25fr 58px;
+  gap:7px;
+  font-size:9px;
+}
+#general .criteria-offender-block{
+  padding-top:11px;
+  border-top:1px solid rgba(83,145,177,.22);
+}
+#general .criteria-offender-block .bar-fill{background:linear-gradient(90deg,#ff7186,#ef405f)!important}
+
+/* Insights mais compactos para equilibrar a linha. */
+#general .insight-list{gap:8px!important}
+#general .insight{
+  padding:9px 10px!important;
+  line-height:1.35;
+}
+
+/* As regras antigas de barras verticais não atuam mais no Painel Geral. */
+#general .origin-bars{display:none!important}
+
+@media(max-width:1000px){
+  #general .content-grid.three{
+    grid-template-columns:1fr 1fr!important;
+  }
+  #general .content-grid.three>.panel:last-child{
+    grid-column:1/-1;
+  }
+}
+@media(max-width:800px){
+  #general .content-grid.three{
+    grid-template-columns:1fr!important;
+  }
+  #general .content-grid.three>.panel:last-child{
+    grid-column:auto;
+  }
+}
+
+
+/* Navegação principal sem numeração */
+.main-nav .nav-item{
+  grid-template-columns:1fr!important;
+  gap:0!important;
+}
+.main-nav .nav-item>b{
+  display:block;
+  width:100%;
+}
+
+
+/* =========================================================
+   FAIXAS DE DESEMPENHO APROVADAS
+   < 90% vermelho | 90–94,99% amarelo | >= 95% verde
+   ========================================================= */
+.bar-fill.red,
+.meter span.red{
+  background:linear-gradient(90deg,#ff6b7f,#ef405f)!important;
+}
+.bar-fill.gold,
+.meter span.gold{
+  background:linear-gradient(90deg,#ffd75a,#f2b319)!important;
+}
+.bar-fill.green,
+.meter span.green{
+  background:linear-gradient(90deg,#45e8b0,#18c98b)!important;
+}
+
+/* Falta Grave: indicador crítico com borda vermelha nos dois temas. */
+.kpi-card.danger{
+  border-color:#ef405f!important;
+  box-shadow:0 0 0 1px rgba(239,64,95,.10),0 0 18px rgba(239,64,95,.08)!important;
+}
+.kpi-card.danger .kpi-icon{
+  color:#ff526d!important;
+}
+body.light .kpi-card.danger{
+  border-color:#ef405f!important;
+  box-shadow:0 0 0 1px rgba(239,64,95,.08),0 0 14px rgba(239,64,95,.06)!important;
+}
+
+/* Valores percentuais acompanham a cor da barra. */
+.rank-value.metric-danger,.kpi-value.metric-danger{color:var(--red)!important}
+.rank-value.metric-warn,.kpi-value.metric-warn{color:var(--gold)!important}
+.rank-value.metric-good,.kpi-value.metric-good{color:var(--green)!important}
+
+
+/* =========================================================
+   CRITÉRIOS — DISTRIBUIÇÃO REFINADA
+   Rankings e barras em ordem decrescente no JS.
+   ========================================================= */
+#general .criteria-overview-panel{
+  align-self:start!important;
+}
+#general .criteria-overview{
+  gap:14px!important;
+}
+#general .criteria-best-block,
+#general .criteria-offender-block{
+  padding:12px 12px 13px!important;
+  border:1px solid rgba(49,137,179,.20);
+  border-radius:12px;
+  background:rgba(8,28,47,.44);
+}
+body.light #general .criteria-best-block,
+body.light #general .criteria-offender-block{
+  background:rgba(242,249,253,.82);
+  border-color:rgba(32,148,198,.18);
+}
+#general .criteria-offender-block{
+  border-top:1px solid rgba(49,137,179,.20)!important;
+}
+#general .criteria-overview h3{
+  margin:0 0 10px!important;
+  font-size:10px!important;
+  letter-spacing:.10em!important;
+}
+#general .criteria-overview .rank-list{
+  gap:10px!important;
+}
+#general .criteria-overview .rank-row{
+  grid-template-columns:minmax(150px,1.35fr) minmax(190px,1.85fr) 66px!important;
+  gap:10px!important;
+  align-items:center!important;
+  font-size:9.5px!important;
+}
+#general .criteria-overview .rank-name{
+  line-height:1.2;
+}
+#general .criteria-overview .bar-track{
+  height:8px!important;
+}
+#general .criteria-overview .rank-value{
+  min-width:62px;
+  text-align:right;
+  font-size:10px!important;
+}
+#general .criteria-overview.no-offenders .criteria-best-block{
+  min-height:220px!important;
+  align-content:center!important;
+}
+@media(max-width:1200px){
+  #general .criteria-overview .rank-row{
+    grid-template-columns:minmax(130px,1.25fr) minmax(150px,1.5fr) 62px!important;
+  }
+}
+@media(max-width:600px){
+  #general .criteria-best-block,
+  #general .criteria-offender-block{
+    padding:10px!important;
+  }
+  #general .criteria-overview .rank-row{
+    grid-template-columns:minmax(105px,1fr) minmax(110px,1.2fr) 56px!important;
+    gap:7px!important;
+  }
+}
+
+
+/* =========================================================
+   TABELAS — VALORES CENTRALIZADOS
+   Textos descritivos permanecem à esquerda; valores ficam
+   centralizados para leitura e alinhamento visual.
+   ========================================================= */
+
+/* Resumos de Qualidade: quantidade e percentual centralizados. */
+.compact-summary-table td:nth-child(2),
+.compact-summary-table td:nth-child(3){
+  text-align:center!important;
+}
+
+/* Análises Especiais — RE + Total/Procedente/Improcedente. */
+#special-operators-table th:first-child,
+#special-operators-table td:first-child,
+#special-operators-table th:nth-last-child(3),
+#special-operators-table td:nth-last-child(3),
+#special-operators-table th:nth-last-child(2),
+#special-operators-table td:nth-last-child(2),
+#special-operators-table th:nth-last-child(1),
+#special-operators-table td:nth-last-child(1){
+  text-align:center!important;
+}
+
+/* Pesquisa ISC — RE, Respostas, P1, P2, P3, ISC e Quartil.
+   nth-last-child mantém a regra correta mesmo quando Supervisão é ocultada. */
+#survey-operators-table th:first-child,
+#survey-operators-table td:first-child,
+#survey-operators-table th:nth-last-child(-n+6),
+#survey-operators-table td:nth-last-child(-n+6){
+  text-align:center!important;
+}
+#survey-operators-table td:nth-last-child(1) .quartile-badge,
+#survey-operators-table td:nth-last-child(1) .badge{
+  margin-inline:auto;
+}
+
+/* Falta Grave — RE e quantidade de FGs. */
+#fg-operators-table th:first-child,
+#fg-operators-table td:first-child,
+#fg-operators-table th:nth-last-child(4),
+#fg-operators-table td:nth-last-child(4){
+  text-align:center!important;
+}
+
+/* Itens Aferidos — Peso, Total, Acertos, Erros e percentuais. */
+#criteria-items-table th:nth-child(n+3),
+#criteria-items-table td:nth-child(n+3){
+  text-align:center!important;
+}
+
+/* Operadores — tudo que é indicador/valor; nome permanece à esquerda. */
+#operators-main-table th:not(:nth-child(2)),
+#operators-main-table td:not(:nth-child(2)){
+  text-align:center!important;
+}
+#operators-main-table td .badge{
+  margin-inline:auto;
+}
+
+/* Comparativo Mensal — primeira coluna descritiva; demais valores centralizados. */
+#comparison .table-panel table th:not(:first-child),
+#comparison .table-panel table td:not(:first-child){
+  text-align:center!important;
+}
+
+/* Melhor equilíbrio vertical das células no mobile e desktop. */
+.table-panel td,
+.compact-summary-table td{
+  vertical-align:middle!important;
+}
+
+
+/* =========================================================
+   ÍCONES DE IDENTIFICAÇÃO — NAVEGAÇÃO
+   Visual aprovado: outline ciano, elegante e discreto.
+   ========================================================= */
+.main-nav .nav-item{
+  grid-template-columns:24px minmax(0,1fr)!important;
+  gap:10px!important;
+  align-items:center!important;
+}
+.main-nav .nav-item .nav-icon{
+  width:24px;
+  height:24px;
+  display:grid;
+  place-items:center;
+  color:var(--cyan)!important;
+  flex:none;
+}
+.main-nav .nav-item .nav-icon svg{
+  width:20px;
+  height:20px;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.8;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+.main-nav .nav-item b{
+  min-width:0;
+}
+.main-nav .nav-item.active .nav-icon{
+  filter:drop-shadow(0 0 6px rgba(22,217,245,.34));
+}
+body.light .main-nav .nav-item .nav-icon{
+  color:#0798c5!important;
+}
+@media(max-width:800px){
+  .main-nav .nav-item{
+    grid-template-columns:20px max-content!important;
+    gap:7px!important;
+  }
+  .main-nav .nav-item .nav-icon{
+    width:20px;
+    height:20px;
+  }
+  .main-nav .nav-item .nav-icon svg{
+    width:18px;
+    height:18px;
+  }
+}
