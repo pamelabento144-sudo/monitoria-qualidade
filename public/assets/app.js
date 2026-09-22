@@ -436,7 +436,7 @@
     if($("admin-dialog"))return;
     injectAdminStyles();
     document.querySelector(".masthead-actions").insertAdjacentHTML("beforeend",`<button class="admin-open" id="admin-open" type="button" aria-haspopup="dialog"><span>${iconSvg("upload")}</span><span>Administração</span></button>`);
-    document.body.insertAdjacentHTML("beforeend",`<dialog id="admin-dialog" class="import-dialog admin-dialog"><div class="dialog-card admin-card"><button class="dialog-close" id="admin-close" type="button" aria-label="Fechar">×</button><p class="eyebrow">ACESSO ADMINISTRATIVO</p><h2>Gerenciamento do relatório</h2><p class="dialog-copy">Importe novos dados, atualize o painel e acompanhe o histórico das importações.</p><div class="admin-toolbar"><button type="button" id="admin-refresh" class="secondary-button">Atualizar painel</button><span class="admin-updated" id="admin-last-updated">Última atualização: ${formatAdminDateTime(latestUpdateValue(status))}</span></div><section class="admin-section"><div><h3>Importação de dados</h3><p>O XLSX principal é processado no navegador antes da publicação. Limite: <strong>30 MB</strong>. Anexos complementares: <strong>4 MB</strong>.</p></div><label class="drop-zone" id="drop-zone" for="admin-file"><input id="admin-file" type="file" accept=".xlsx,.xls,.csv,.pdf" /><span class="drop-icon">${iconSvg("clipboard")}</span><strong id="file-label">Escolher arquivo</strong><small>XLSX atualiza os painéis. XLS, CSV e PDF podem ser armazenados como anexos complementares de até 4 MB.</small></label><div class="import-checklist"><span>✓ XLSX, XLS e CSV</span><span>✓ PDF complementar</span><span>✓ Validação de extensão, MIME e assinatura</span></div><div id="import-progress" class="import-progress" hidden><div class="progress-track"><span id="progress-bar"></span></div><p id="progress-label">Preparando o arquivo...</p></div><div id="import-error" class="import-error" hidden></div><button type="button" id="process-file" class="primary-button" disabled>Validar e importar</button><p class="admin-latest" id="admin-latest">${status?.upload?`Último envio: ${escapeHtml(status.upload.originalName)} · ${formatAdminDateTime(status.upload.uploadedAt)}`:"Nenhum envio administrativo registrado."}</p></section><section class="admin-section"><div><h3>Histórico de Importações</h3><p>Registros mais recentes primeiro.</p></div><div class="admin-history-wrap"><table class="admin-history"><thead><tr><th>Data/Hora</th><th>Tipo</th><th>Arquivo</th><th>Registros</th><th>Status</th><th>Detalhes</th><th>Ação</th></tr></thead><tbody id="import-history-body"><tr><td colspan="7" class="admin-history-empty">Carregando histórico...</td></tr></tbody></table></div></section><section class="admin-section"><div><h3>Configurações dos indicadores</h3><p>Defina as metas usadas nos cards, alertas e gráficos comparativos.</p></div><div class="admin-settings"><label>Meta de Qualidade (%)<input id="quality-target-setting" type="number" min="0" max="100" step="0.01" value="${qualityTarget()}"></label><label>Meta de Pesquisa — ISC (%)<input id="satisfaction-target-setting" type="number" min="0" max="100" step="0.01" value="${satisfactionTarget()}"></label></div><button type="button" id="save-settings" class="secondary-button">Salvar configurações</button><div id="settings-error" class="import-error" hidden></div></section></div></dialog>`);
+    document.body.insertAdjacentHTML("beforeend",`<dialog id="admin-dialog" class="import-dialog admin-dialog"><div class="dialog-card admin-card"><button class="dialog-close" id="admin-close" type="button" aria-label="Fechar">×</button><p class="eyebrow">ACESSO ADMINISTRATIVO</p><h2>Gerenciamento do relatório</h2><p class="dialog-copy">Importe novos dados, atualize o painel e acompanhe o histórico das importações.</p><div class="admin-toolbar"><button type="button" id="admin-refresh" class="secondary-button">Atualizar painel</button><span class="admin-updated" id="admin-last-updated">Última atualização: ${formatAdminDateTime(latestUpdateValue(status))}</span></div><section class="admin-section"><div><h3>Importação de dados</h3><p>O XLSX principal é processado no navegador (até <strong>30 MB</strong>). O pacote histórico consolidado <strong>JSON.GZ</strong> é importado diretamente (até <strong>4 MB</strong>). Anexos complementares: <strong>4 MB</strong>.</p></div><label class="drop-zone" id="drop-zone" for="admin-file"><input id="admin-file" type="file" accept=".xlsx,.json.gz,.xls,.csv,.pdf" /><span class="drop-icon">${iconSvg("clipboard")}</span><strong id="file-label">Escolher arquivo</strong><small>XLSX e JSON.GZ atualizam os painéis. O pacote JSON.GZ foi preparado para cargas históricas consolidadas sem alterar os demais meses.</small></label><div class="import-checklist"><span>✓ XLSX principal</span><span>✓ JSON.GZ histórico consolidado</span><span>✓ XLS, CSV e PDF complementares</span></div><div id="import-progress" class="import-progress" hidden><div class="progress-track"><span id="progress-bar"></span></div><p id="progress-label">Preparando o arquivo...</p></div><div id="import-error" class="import-error" hidden></div><button type="button" id="process-file" class="primary-button" disabled>Validar e importar</button><p class="admin-latest" id="admin-latest">${status?.upload?`Último envio: ${escapeHtml(status.upload.originalName)} · ${formatAdminDateTime(status.upload.uploadedAt)}`:"Nenhum envio administrativo registrado."}</p></section><section class="admin-section"><div><h3>Histórico de Importações</h3><p>Registros mais recentes primeiro.</p></div><div class="admin-history-wrap"><table class="admin-history"><thead><tr><th>Data/Hora</th><th>Tipo</th><th>Arquivo</th><th>Registros</th><th>Status</th><th>Detalhes</th><th>Ação</th></tr></thead><tbody id="import-history-body"><tr><td colspan="7" class="admin-history-empty">Carregando histórico...</td></tr></tbody></table></div></section><section class="admin-section"><div><h3>Configurações dos indicadores</h3><p>Defina as metas usadas nos cards, alertas e gráficos comparativos.</p></div><div class="admin-settings"><label>Meta de Qualidade (%)<input id="quality-target-setting" type="number" min="0" max="100" step="0.01" value="${qualityTarget()}"></label><label>Meta de Pesquisa — ISC (%)<input id="satisfaction-target-setting" type="number" min="0" max="100" step="0.01" value="${satisfactionTarget()}"></label></div><button type="button" id="save-settings" class="secondary-button">Salvar configurações</button><div id="settings-error" class="import-error" hidden></div></section></div></dialog>`);
     const dialog=$("admin-dialog");
     $("admin-open").addEventListener("click",()=>{dialog.showModal();loadImportHistory();updateLastUpdatedLabel(latestUpdateValue(status));});
     $("admin-close").addEventListener("click",()=>dialog.close());
@@ -453,12 +453,12 @@
   }
 
   function setFile(file){
-    const allowed=["xlsx","xls","csv","pdf"],extension=(file?.name.split(".").pop()||"").toLowerCase(),error=$("import-error");
-    const limitMB=extension==="xlsx"?30:4,limitBytes=limitMB*1024*1024;
+    const lowerName=(file?.name||"").toLowerCase(),extension=lowerName.endsWith(".json.gz")?"json.gz":(lowerName.split(".").pop()||""),error=$("import-error");
+    const allowed=["xlsx","json.gz","xls","csv","pdf"],limitMB=extension==="xlsx"?30:4,limitBytes=limitMB*1024*1024;
     error.hidden=true;
     if(file&&(!allowed.includes(extension)||file.size>limitBytes)){
       window.selectedAdminFile=null;$("process-file").disabled=true;$("file-label").textContent="Escolher arquivo";
-      error.textContent=file.size>limitBytes?`O arquivo excede o limite de ${limitMB} MB para este tipo.`:"Formato não suportado. Utilize XLSX, XLS, CSV ou PDF.";error.hidden=false;return;
+      error.textContent=file.size>limitBytes?`O arquivo excede o limite de ${limitMB} MB para este tipo.`:"Formato não suportado. Utilize XLSX, JSON.GZ, XLS, CSV ou PDF.";error.hidden=false;return;
     }
     window.selectedAdminFile=file||null;$("process-file").disabled=!file;$("file-label").textContent=file?`${file.name} · ${(file.size/1024/1024).toLocaleString("pt-BR",{maximumFractionDigits:2})} MB`:"Escolher arquivo";
   }
@@ -474,23 +474,30 @@
 
   async function processImport(){
     const file=window.selectedAdminFile;if(!file)return;
-    const extension=(file.name.split(".").pop()||"").toLowerCase(),error=$("import-error"),progress=$("import-progress"),bar=$("progress-bar"),label=$("progress-label");
+    const lowerName=file.name.toLowerCase(),extension=lowerName.endsWith(".json.gz")?"json.gz":(lowerName.split(".").pop()||""),error=$("import-error"),progress=$("import-progress"),bar=$("progress-bar"),label=$("progress-label");
     error.hidden=true;progress.hidden=false;$("process-file").disabled=true;let importId=null;
     try{
-      if(extension==="xlsx"){
-        bar.style.width="8%";label.textContent="Validando a estrutura da planilha...";
-        await ensureImporter();
-        const result=await window.XLSXImporter.parse(file,(percent,message)=>{bar.style.width=`${8+percent*.72}%`;label.textContent=message;});
-        result.meta={...(result.meta||{}),qualityTarget:qualityTarget(),satisfactionTarget:satisfactionTarget(),importedAt:new Date().toISOString()};
-        bar.style.width="86%";label.textContent="Publicando os dados consolidados...";
-        const save=await fetch("/api/admin/data",{method:"POST",headers:{"content-type":"application/json","x-file-name":encodeURIComponent(file.name),"x-import-records":String(result.monitoring?.length||0)},body:JSON.stringify(result)});
-        if(!save.ok)throw new Error(await apiError(save,"Não foi possível atualizar os painéis."));
+      if(extension==="xlsx"||extension==="json.gz"){
+        let save;
+        if(extension==="xlsx"){
+          bar.style.width="8%";label.textContent="Validando a estrutura da planilha...";
+          await ensureImporter();
+          const result=await window.XLSXImporter.parse(file,(percent,message)=>{bar.style.width=`${8+percent*.72}%`;label.textContent=message;});
+          result.meta={...(result.meta||{}),qualityTarget:qualityTarget(),satisfactionTarget:satisfactionTarget(),importedAt:new Date().toISOString()};
+          bar.style.width="86%";label.textContent="Publicando os dados consolidados...";
+          save=await fetch("/api/admin/data",{method:"POST",headers:{"content-type":"application/json","x-file-name":encodeURIComponent(file.name),"x-import-records":String(result.monitoring?.length||0)},body:JSON.stringify(result)});
+        }else{
+          bar.style.width="18%";label.textContent="Validando o pacote histórico consolidado...";
+          save=await fetch("/api/admin/package",{method:"POST",headers:{"content-type":"application/gzip","x-file-name":encodeURIComponent(file.name)},body:file});
+          bar.style.width="86%";label.textContent="Mesclando janeiro a junho e preservando os demais meses...";
+        }
+        if(!save.ok)throw new Error(await apiError(save,extension==="json.gz"?"Não foi possível importar o pacote histórico.":"Não foi possível atualizar os painéis."));
         const saved=await save.json();
         await loadServerState();
-        state.month="all";state.skill="all";state.form="all";state.supervisor="all";state.search="";state.criteriaDimension="all";state.specialPage=1;$("criteria-dimension-filter").value="all";populateFilters(true);updateHeader();render();updateLastUpdatedLabel(saved.importedAt||data.meta?.importedAt);
+        state.month="all";state.skill="all";state.form="all";state.supervisor="all";state.search="";state.criteriaDimension="all";state.specialPage=1;$("criteria-dimension-filter").value="all";populateFilters(true);updateFilterVisibility();updateHeader();render();updateLastUpdatedLabel(saved.importedAt||data.meta?.importedAt);
         const monthInfo=Array.isArray(saved.months)&&saved.months.length?` · Meses: ${saved.months.join(", ")}`:"";
         $("admin-latest").textContent=`Último envio: ${file.name} · ${formatAdminDateTime(saved.importedAt||data.meta?.importedAt)}${monthInfo}`;
-        toast(saved.merged?"Importação concluída. Meses enviados atualizados e demais períodos preservados.":"Relatório validado e painéis atualizados com sucesso.");
+        toast(extension==="json.gz"?"Pacote histórico importado. Meses do pacote atualizados e demais períodos preservados.":saved.merged?"Importação concluída. Meses enviados atualizados e demais períodos preservados.":"Relatório validado e painéis atualizados com sucesso.");
       }else{
         bar.style.width="12%";label.textContent="Validando e armazenando o anexo...";
         const upload=await fetch("/api/admin/import",{method:"POST",headers:{"content-type":file.type||"application/octet-stream","x-file-name":encodeURIComponent(file.name)},body:file});
