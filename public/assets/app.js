@@ -416,8 +416,12 @@
   function render(){
     const f=filtered(),operators=buildOperators(f);
     renderGeneral(f,operators);renderSpecial(f);renderQuality(f,operators);renderSurvey(f);renderFg(f);renderComparison();renderOperators(operators);
-    $("reference-label").textContent=state.view==="comparison"?"EVOLUÇÃO MENSAL":state.month==="all"?"TODOS OS MESES":monthLabel(state.month);
-    $("last-update").textContent=data.meta?.importedAt?`Atualizado neste dispositivo em ${new Date(data.meta.importedAt).toLocaleString("pt-BR")}`:"Dados carregados do relatório-base";
+    const referenceText=state.view==="comparison"?"EVOLUÇÃO MENSAL":state.month==="all"?"TODOS OS MESES":monthLabel(state.month);
+    const updatedText=data.meta?.importedAt?new Date(data.meta.importedAt).toLocaleString("pt-BR"):"Dados carregados";
+    $("reference-label").textContent=referenceText;
+    $("last-update").textContent=data.meta?.importedAt?`Atualizado neste dispositivo em ${updatedText}`:"Dados carregados do relatório-base";
+    if($("general-reference-label"))$("general-reference-label").textContent=referenceText;
+    if($("general-last-update"))$("general-last-update").textContent=updatedText;
   }
 
   function options(values,allLabel){return`<option value="all">${allLabel}</option>${values.map(x=>`<option value="${escapeHtml(x)}">${escapeHtml(x)}</option>`).join("")}`;}
@@ -442,7 +446,7 @@
     button.querySelector(".theme-icon").innerHTML=iconSvg(light?"moon":"sun");button.querySelector(".theme-label").textContent=light?"Modo noite":"Modo dia";button.setAttribute("aria-label",light?"Ativar modo noite":"Ativar modo dia");button.setAttribute("aria-pressed",String(light));
     try{localStorage.setItem("mq-theme",light?"light":"dark");}catch{/* preferência opcional */}
   }
-  function switchView(view){state.view=view;document.querySelectorAll(".view").forEach(x=>x.classList.toggle("active",x.id===view));document.querySelectorAll(".nav-item").forEach(x=>x.classList.toggle("active",x.dataset.view===view));updateFilterVisibility();updateHeader();render();window.scrollTo({top:0,behavior:"smooth"});}
+  function switchView(view){state.view=view;document.querySelectorAll(".view").forEach(x=>x.classList.toggle("active",x.id===view));document.querySelectorAll(".nav-item[data-view]").forEach(x=>x.classList.toggle("active",x.dataset.view===view));if(view!=="general")$("dashboard-filters").classList.remove("expanded");updateFilterVisibility();updateHeader();render();window.scrollTo({top:0,behavior:"smooth"});}
 
   function exportCsv(){
     const rows=buildOperators(filtered()),quote=v=>`"${String(v??"").replaceAll('"','""')}"`,header=["Operador","RE","Supervisão","Monitorias","Qualidade (%)","ISC (%)","Atendimentos","TMA (s)","FG","Status"];
@@ -526,9 +530,14 @@
     if($("admin-dialog"))return;
     injectAdminStyles();
     document.querySelector(".masthead-actions").insertAdjacentHTML("beforeend",`<button class="admin-open" id="admin-open" type="button" aria-haspopup="dialog"><span>${iconSvg("upload")}</span><span>Administração</span></button>`);
+    if(!$("admin-nav")){
+      $("main-nav").insertAdjacentHTML("beforeend",`<button class="nav-item admin-nav-item" id="admin-nav" type="button"><span class="nav-icon">${iconSvg("upload")}</span><b>Administração</b></button>`);
+    }
     document.body.insertAdjacentHTML("beforeend",`<dialog id="admin-dialog" class="import-dialog admin-dialog"><div class="dialog-card admin-card"><button class="dialog-close" id="admin-close" type="button" aria-label="Fechar">×</button><p class="eyebrow">ACESSO ADMINISTRATIVO</p><h2>Gerenciamento do relatório</h2><p class="dialog-copy">Importe novos dados, atualize o painel e acompanhe o histórico das importações.</p><div class="admin-toolbar"><button type="button" id="admin-refresh" class="secondary-button">Atualizar painel</button><span class="admin-updated" id="admin-last-updated">Última atualização: ${formatAdminDateTime(latestUpdateValue(status))}</span></div><section class="admin-section"><div><h3>Importação de dados</h3><p>O XLSX principal é processado no navegador (até <strong>30 MB</strong>). O pacote histórico consolidado <strong>JSON.GZ</strong> é importado diretamente (até <strong>4 MB</strong>). Anexos complementares: <strong>4 MB</strong>.</p></div><label class="drop-zone" id="drop-zone" for="admin-file"><input id="admin-file" type="file" accept=".xlsx,.json.gz,.xls,.csv,.pdf" /><span class="drop-icon">${iconSvg("clipboard")}</span><strong id="file-label">Escolher arquivo</strong><small>XLSX e JSON.GZ atualizam os painéis. O pacote JSON.GZ foi preparado para cargas históricas consolidadas sem alterar os demais meses.</small></label><div class="import-checklist"><span>✓ XLSX principal</span><span>✓ JSON.GZ histórico consolidado</span><span>✓ XLS, CSV e PDF complementares</span></div><div id="import-progress" class="import-progress" hidden><div class="progress-track"><span id="progress-bar"></span></div><p id="progress-label">Preparando o arquivo...</p></div><div id="import-error" class="import-error" hidden></div><button type="button" id="process-file" class="primary-button" disabled>Validar e importar</button><p class="admin-latest" id="admin-latest">${status?.upload?`Último envio: ${escapeHtml(status.upload.originalName)} · ${formatAdminDateTime(status.upload.uploadedAt)}`:"Nenhum envio administrativo registrado."}</p></section><section class="admin-section"><div><h3>Histórico de Importações</h3><p>Registros mais recentes primeiro.</p></div><div class="admin-history-wrap"><table class="admin-history"><thead><tr><th>Data/Hora</th><th>Tipo</th><th>Arquivo</th><th>Registros</th><th>Status</th><th>Detalhes</th><th>Ação</th></tr></thead><tbody id="import-history-body"><tr><td colspan="7" class="admin-history-empty">Carregando histórico...</td></tr></tbody></table></div></section><section class="admin-section"><div><h3>Configurações dos indicadores</h3><p>Defina as metas usadas nos cards, alertas e gráficos comparativos.</p></div><div class="admin-settings"><label>Meta de Qualidade (%)<input id="quality-target-setting" type="number" min="0" max="100" step="0.01" value="${qualityTarget()}"></label><label>Meta de Pesquisa — ISC (%)<input id="satisfaction-target-setting" type="number" min="0" max="100" step="0.01" value="${satisfactionTarget()}"></label></div><button type="button" id="save-settings" class="secondary-button">Salvar configurações</button><div id="settings-error" class="import-error" hidden></div></section></div></dialog>`);
     const dialog=$("admin-dialog");
-    $("admin-open").addEventListener("click",()=>{dialog.showModal();loadImportHistory();updateLastUpdatedLabel(latestUpdateValue(status));});
+    const openAdmin=()=>{dialog.showModal();loadImportHistory();updateLastUpdatedLabel(latestUpdateValue(status));};
+    $("admin-open").addEventListener("click",openAdmin);
+    if($("admin-nav"))$("admin-nav").addEventListener("click",openAdmin);
     $("admin-close").addEventListener("click",()=>dialog.close());
     $("admin-refresh").addEventListener("click",refreshDashboardData);
     $("admin-file").addEventListener("change",e=>setFile(e.target.files[0]));
@@ -664,6 +673,9 @@
     bindPager("operator","operatorPage","operatorPageSize",10);
     document.querySelector(".sortable thead").addEventListener("click",e=>{const th=e.target.closest("[data-sort]");if(!th)return;const key=th.dataset.sort;state.sort.direction=state.sort.key===key&&state.sort.direction==="asc"?"desc":"asc";state.sort.key=key;state.operatorPage=1;renderOperators(buildOperators(filtered()));});
     $("side-export").addEventListener("click",exportCsv);
+    if($("general-export"))$("general-export").addEventListener("click",exportCsv);
+    if($("general-report"))$("general-report").addEventListener("click",()=>window.print());
+    if($("general-filter-toggle"))$("general-filter-toggle").addEventListener("click",e=>{const open=$("dashboard-filters").classList.toggle("expanded");e.currentTarget.classList.toggle("active",open);e.currentTarget.setAttribute("aria-expanded",String(open));});
     $("theme-toggle").addEventListener("click",()=>applyTheme(document.body.classList.contains("light")?"dark":"light"));
     $("mobile-filter-toggle").addEventListener("click",e=>{const open=$("dashboard-filters").classList.toggle("expanded");e.currentTarget.setAttribute("aria-expanded",String(open));});
   }
