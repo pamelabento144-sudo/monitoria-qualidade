@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#07111f" />
   <title>Monitoria de Qualidade — Painel Geral</title>
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="/assets/styles.css?v=20260922-redesign-general3" />
+  <link rel="stylesheet" href="/assets/styles.css?v=20260922-redesign-general4" />
 </head>
 <body>
 <svg class="svg-sprite" aria-hidden="true" width="0" height="0">
@@ -54,6 +54,19 @@
         <p class="eyebrow" id="masthead-eyebrow">VISÃO CONSOLIDADA</p>
         <h1 id="masthead-title">PAINEL <span>GERAL</span></h1>
         <p id="masthead-subtitle">Indicadores de qualidade, performance e experiência do cidadão</p>
+      </div>
+      <div class="general-header-actions" aria-label="Ações do Painel Geral">
+        <div class="general-header-meta">
+          <span class="general-header-meta-icon"><svg aria-hidden="true"><use href="#icon-grid"></use></svg></span>
+          <div><small>Período</small><strong id="general-reference-label">AGOSTO/2026</strong></div>
+        </div>
+        <div class="general-header-meta">
+          <span class="general-header-meta-icon"><svg aria-hidden="true"><use href="#icon-clock"></use></svg></span>
+          <div><small>Última atualização</small><strong id="general-last-update">—</strong></div>
+        </div>
+        <button id="general-filter-toggle" class="general-header-button secondary" type="button"><span>☷</span>Filtros</button>
+        <button id="general-export" class="general-header-button secondary" type="button"><span>⇩</span>Exportar</button>
+        <button id="general-report" class="general-header-button primary" type="button"><span>▤</span>Gerar relatório</button>
       </div>
       <div class="masthead-actions">
         <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Ativar modo dia"><span class="theme-icon"><svg><use href="#icon-sun"></use></svg></span><span class="theme-label">Modo dia</span></button>
@@ -208,6 +221,6 @@
 </div>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 <script src="/assets/dashboard-data.js"></script>
-<script src="/assets/app.js?v=20260922-redesign-general2"></script>
+<script src="/assets/app.js?v=20260922-redesign-general3"></script>
 </body>
 </html>
