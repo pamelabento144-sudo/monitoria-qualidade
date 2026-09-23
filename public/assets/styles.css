@@ -2237,3 +2237,215 @@ body.view-general.light .general-header-meta small{color:#6c8499!important}
   body{background:#fff!important;color:#111!important}
   #general .panel,#general .general-kpi{break-inside:avoid;box-shadow:none!important}
 }
+
+
+/* =========================================================
+   PAINEL GERAL — CORREÇÃO DE FIDELIDADE À REFERÊNCIA APROVADA
+   Resolve colisões de especificidade com estilos legados.
+   ========================================================= */
+
+/* Desktop/notebook: a referência exige sidebar lateral, nunca menu superior. */
+@media(min-width:561px){
+  body.view-general .app-shell{
+    display:grid!important;
+    grid-template-columns:190px minmax(0,1fr)!important;
+    min-height:100vh!important;
+  }
+  body.view-general .sidebar{
+    position:sticky!important;
+    top:0!important;
+    left:0!important;
+    width:auto!important;
+    height:100vh!important;
+    padding:22px 12px 18px!important;
+    display:flex!important;
+    flex-direction:column!important;
+    grid-template-columns:none!important;
+    gap:18px!important;
+    overflow:hidden!important;
+  }
+  body.view-general .main-nav{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    grid-column:auto!important;
+    gap:5px!important;
+    overflow:visible!important;
+    padding:0!important;
+  }
+  body.view-general .main-nav .nav-item{
+    width:100%!important;
+    flex:none!important;
+    grid-template-columns:22px minmax(0,1fr)!important;
+    min-height:40px!important;
+    padding:8px 10px!important;
+    text-align:left!important;
+  }
+  body.view-general .sidebar-motto{
+    display:grid!important;
+  }
+  body.view-general .sidebar-foot{
+    display:grid!important;
+  }
+
+  /* 8 KPIs: exatamente 4 na primeira linha + 4 na segunda. */
+  body.view-general #general #general-kpis{
+    display:grid!important;
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    gap:10px!important;
+    margin:0 0 10px!important;
+  }
+
+  /* Centro: gráfico largo + quartis à direita. */
+  body.view-general #general .general-primary-grid{
+    display:grid!important;
+    grid-template-columns:minmax(0,2.15fr) minmax(250px,.95fr)!important;
+    gap:10px!important;
+  }
+
+  /* Rodapé do painel: 3 blocos na mesma faixa. */
+  body.view-general #general .general-bottom-grid{
+    display:grid!important;
+    grid-template-columns:1.02fr 1.08fr 1fr!important;
+    gap:10px!important;
+  }
+}
+
+/* A referência aprovada não usa Análises Especiais na navegação principal. 
+   O módulo continua existente no sistema; apenas não compõe a Visão Geral. */
+body.view-general .main-nav [data-view="special"]{
+  display:none!important;
+}
+
+/* Cabeçalho igual à referência: sem cartão/contorno envolvendo o título. */
+body.view-general .masthead{
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  backdrop-filter:none!important;
+  padding:0!important;
+}
+body.view-general .masthead:before,
+body.view-general .masthead:after{
+  display:none!important;
+}
+body.view-general .masthead-copy{
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+body.view-general .masthead h1{
+  font-size:28px!important;
+  line-height:1.05!important;
+  color:#f4f8ff!important;
+}
+body.view-general .masthead-copy>p:last-child{
+  display:block!important;
+  font-size:11px!important;
+  line-height:1.35!important;
+  color:#9fb4c9!important;
+}
+
+/* Filtros permanecem recolhidos como na referência; abrem só pelo botão Filtros. */
+body.view-general:has(#general.view.active) #dashboard-filters{
+  display:none!important;
+}
+body.view-general:has(#general.view.active) #dashboard-filters.expanded{
+  display:grid!important;
+}
+
+/* Garante que o grid legado de 5 colunas nunca vença o redesign. */
+body.view-general #general #general-kpis.general-kpi-grid{
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+}
+body.view-general #general #general-kpis .general-kpi{
+  min-width:0!important;
+  min-height:116px!important;
+  padding:13px 14px 11px!important;
+  border-radius:10px!important;
+}
+body.view-general #general #general-kpis .general-kpi:nth-child(n+5){
+  min-height:105px!important;
+}
+
+/* Cards com escala visual da referência. */
+body.view-general #general .general-kpi-top{
+  font-size:10px!important;
+}
+body.view-general #general .general-kpi-main strong{
+  font-size:27px!important;
+}
+body.view-general #general .general-kpi-delta{
+  font-size:9px!important;
+}
+body.view-general #general .general-kpi-foot{
+  font-size:8.5px!important;
+}
+
+/* Painéis principais: tipografia e respiro mais próximos do aprovado. */
+body.view-general #general .panel{
+  padding:15px!important;
+  border-radius:10px!important;
+}
+body.view-general #general .general-panel-header h2{
+  font-size:13px!important;
+  line-height:1.2!important;
+}
+body.view-general #general .general-panel-header p{
+  font-size:8.5px!important;
+}
+body.view-general #general .general-evolution-panel{
+  min-height:330px!important;
+}
+body.view-general #general .general-compact-panel{
+  min-height:220px!important;
+}
+
+/* Quartis compactos na coluna lateral. */
+body.view-general #general .general-quartile-overview{
+  grid-template-columns:1fr!important;
+  gap:8px!important;
+}
+body.view-general #general .general-quartile-row{
+  grid-template-columns:34px minmax(86px,1fr) minmax(56px,.72fr) 36px 66px!important;
+  gap:7px!important;
+  padding:8px 9px!important;
+}
+
+/* Mobile real: mantém identidade, mas adapta em vez de tentar reproduzir desktop. */
+@media(max-width:560px){
+  body.view-general .app-shell{
+    display:block!important;
+  }
+  body.view-general .sidebar{
+    position:relative!important;
+    width:100%!important;
+    height:auto!important;
+    padding:12px!important;
+  }
+  body.view-general .main-nav{
+    display:flex!important;
+    overflow-x:auto!important;
+    gap:6px!important;
+  }
+  body.view-general .main-nav .nav-item{
+    width:auto!important;
+    flex:0 0 auto!important;
+  }
+  body.view-general .sidebar-motto,
+  body.view-general .sidebar-foot{
+    display:none!important;
+  }
+  body.view-general #general #general-kpis.general-kpi-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+  body.view-general #general .general-primary-grid,
+  body.view-general #general .general-bottom-grid{
+    grid-template-columns:1fr!important;
+  }
+}
+
+/* Impressão não altera a tela normal. */
+@media print{
+  body.view-general .sidebar{display:none!important}
+}
