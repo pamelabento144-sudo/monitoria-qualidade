@@ -3359,3 +3359,74 @@ body.redesign-suite.light .suite-ring:after{background:#fff!important}
 /* Administração é exibida no menu somente quando a sessão administrativa foi validada. */
 body.redesign-suite [data-open-admin]{display:none!important}
 body.redesign-suite.admin-enabled [data-open-admin]{display:inline-flex!important}
+
+
+/* Ajuste final de arquitetura: Qualidade e Comparativo seguem a composição lateral aprovada. */
+body.redesign-suite .quality-dashboard-grid{
+  grid-template-columns:minmax(0,2.15fr) minmax(330px,1fr)!important;
+  align-items:stretch!important;
+  margin-bottom:10px!important;
+}
+body.redesign-suite .quality-left-column{
+  display:grid!important;
+  grid-template-rows:minmax(330px,auto) auto!important;
+  gap:10px!important;
+  min-width:0!important;
+}
+body.redesign-suite .quality-side-stack{
+  display:grid!important;
+  grid-template-columns:1fr!important;
+  grid-template-rows:auto auto 1fr!important;
+  gap:10px!important;
+  min-width:0!important;
+}
+body.redesign-suite .quality-lower-layout{
+  grid-template-columns:1.1fr .9fr .9fr!important;
+  margin:0!important;
+}
+body.redesign-suite .quality-supervision-panel{
+  width:100%!important;
+  min-width:0!important;
+  margin:0!important;
+  min-height:205px!important;
+}
+
+body.redesign-suite .comparison-dashboard-grid{
+  grid-template-columns:minmax(0,2.25fr) minmax(320px,.95fr)!important;
+  align-items:stretch!important;
+  margin-bottom:10px!important;
+}
+body.redesign-suite .comparison-left-column{
+  display:grid!important;
+  grid-template-rows:minmax(300px,auto) auto!important;
+  gap:10px!important;
+  min-width:0!important;
+}
+body.redesign-suite .comparison-summary-panel{
+  min-height:100%!important;
+}
+body.redesign-suite .comparison-lower-layout{
+  grid-template-columns:1fr 1fr!important;
+  margin:0!important;
+}
+
+@media(max-width:1050px){
+  body.redesign-suite .quality-dashboard-grid,
+  body.redesign-suite .comparison-dashboard-grid{
+    grid-template-columns:1fr!important;
+  }
+  body.redesign-suite .quality-side-stack{
+    grid-template-columns:1fr 1fr!important;
+    grid-template-rows:auto!important;
+  }
+  body.redesign-suite .quality-side-stack .quality-supervision-panel{
+    grid-column:1/-1!important;
+  }
+}
+@media(max-width:560px){
+  body.redesign-suite .quality-side-stack,
+  body.redesign-suite .quality-lower-layout,
+  body.redesign-suite .comparison-lower-layout{
+    grid-template-columns:1fr!important;
+  }
+}
