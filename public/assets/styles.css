@@ -1797,3 +1797,443 @@ body.view-general.light #general .general-month-label{fill:#6e8497}
   body.view-general #general .general-quartile-track,
   body.view-general #general .general-quartile-count{display:none}
 }
+
+
+/* =========================================================
+   PAINEL GERAL — FIDELIDADE À REFERÊNCIA APROVADA
+   Mantém regras de negócio; altera somente composição visual.
+   ========================================================= */
+.general-header-actions{display:none}
+
+body.view-general .masthead{
+  grid-template-columns:minmax(310px,1fr) auto!important;
+  grid-template-areas:"copy executive"!important;
+  align-items:center!important;
+  min-height:78px;
+  margin:0 0 14px!important;
+  padding:0!important;
+}
+body.view-general .masthead-copy{
+  grid-area:copy!important;
+  position:relative;
+  padding-left:52px;
+  min-width:0;
+}
+body.view-general .masthead-copy:before{
+  content:"";
+  position:absolute;
+  left:0;top:50%;transform:translateY(-50%);
+  width:38px;height:38px;
+  border:1px solid rgba(42,169,255,.34);
+  border-radius:10px;
+  background:
+    linear-gradient(90deg,transparent 0 18%,#2aa9ff 18% 28%,transparent 28% 39%,#2aa9ff 39% 49%,transparent 49% 60%,#2aa9ff 60% 70%,transparent 70%),
+    linear-gradient(180deg,rgba(31,121,205,.20),rgba(11,42,75,.72));
+  box-shadow:0 0 24px rgba(42,169,255,.10);
+}
+body.view-general .masthead-copy .eyebrow{display:none!important}
+body.view-general .masthead h1{
+  margin:0 0 4px!important;
+  font-size:27px!important;
+  font-weight:780!important;
+  letter-spacing:-.035em!important;
+  color:#f5f9ff!important;
+}
+body.view-general .masthead h1 span{color:#f5f9ff!important}
+body.view-general .masthead-copy>p:last-child{
+  margin:0!important;
+  max-width:620px;
+  font-size:11px!important;
+  color:#a7bdd1!important;
+}
+body.view-general .reference-card,
+body.view-general .masthead>.masthead-actions{display:none!important}
+
+body.view-general .general-header-actions{
+  grid-area:executive;
+  display:grid;
+  grid-template-columns:128px 190px auto auto auto;
+  gap:9px;
+  align-items:stretch;
+}
+body.view-general .general-header-meta{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  min-height:46px;
+  padding:7px 10px;
+  border:1px solid rgba(68,139,198,.29);
+  border-radius:9px;
+  background:linear-gradient(180deg,rgba(11,38,68,.94),rgba(7,27,49,.96));
+  box-shadow:inset 0 0 18px rgba(37,123,204,.04);
+}
+body.view-general .general-header-meta-icon{
+  width:24px;height:24px;
+  display:grid;place-items:center;
+  color:#83c8ff;
+  flex:none;
+}
+body.view-general .general-header-meta-icon svg{
+  width:17px;height:17px;
+  fill:none;stroke:currentColor;stroke-width:1.8;
+}
+body.view-general .general-header-meta div{display:grid;gap:1px;min-width:0}
+body.view-general .general-header-meta small{
+  font-size:8px;
+  color:#86a4bf;
+  line-height:1.1;
+}
+body.view-general .general-header-meta strong{
+  font-size:10px;
+  color:#eef7ff;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+body.view-general .general-header-button{
+  min-height:46px;
+  padding:0 13px;
+  border-radius:9px;
+  border:1px solid rgba(71,144,202,.38);
+  font:inherit;
+  font-size:9.5px;
+  font-weight:750;
+  color:#e8f4ff;
+  cursor:pointer;
+  white-space:nowrap;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+}
+body.view-general .general-header-button.secondary{
+  background:linear-gradient(180deg,rgba(12,40,69,.94),rgba(7,28,50,.96));
+}
+body.view-general .general-header-button.primary{
+  border-color:#1f9eff;
+  background:linear-gradient(180deg,#219fff,#1289e6);
+  box-shadow:0 8px 22px rgba(25,145,238,.18);
+}
+body.view-general .general-header-button:hover,
+body.view-general .general-header-button.active{
+  border-color:#48bcff;
+  filter:brightness(1.06);
+}
+
+body.view-general #mobile-filter-toggle{display:none!important}
+body.view-general #dashboard-filters{
+  display:none!important;
+  grid-template-columns:repeat(3,minmax(130px,1fr)) minmax(190px,1.25fr) auto!important;
+  margin:0 0 12px!important;
+  padding:10px!important;
+  border-radius:10px!important;
+  background:linear-gradient(180deg,rgba(8,30,53,.97),rgba(6,24,44,.98))!important;
+}
+body.view-general #dashboard-filters.expanded{display:grid!important}
+
+/* Sidebar próxima da referência, sem remover módulos existentes. */
+body.view-general .app-shell{grid-template-columns:196px minmax(0,1fr)!important}
+body.view-general .sidebar{
+  padding:20px 12px 18px!important;
+  gap:17px!important;
+}
+body.view-general .brand-logo-block{min-height:54px!important}
+body.view-general .brand-logo{max-height:52px!important;width:auto!important}
+body.view-general .main-nav{gap:5px!important}
+body.view-general .main-nav .nav-item{
+  min-height:39px!important;
+  padding:8px 10px!important;
+  border-radius:8px!important;
+  font-size:10px!important;
+}
+body.view-general .main-nav .nav-item b{font-size:10px!important;font-weight:650!important}
+body.view-general .main-nav .nav-item .nav-icon{width:20px!important;height:20px!important}
+body.view-general .main-nav .nav-item .nav-icon svg{width:17px!important;height:17px!important}
+body.view-general .sidebar-motto{
+  margin-top:auto!important;
+  padding:10px 9px 13px!important;
+  font-size:11px!important;
+  line-height:1.38!important;
+}
+body.view-general .sidebar .export-button{display:none!important}
+body.view-general .sidebar-foot{
+  display:grid!important;
+  padding:0 9px!important;
+  font-size:9px!important;
+}
+
+/* Densidade e hierarquia dos 8 KPIs conforme referência. */
+body.view-general #general .general-kpi-grid{
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:10px!important;
+  margin-bottom:10px!important;
+}
+body.view-general #general .general-kpi{
+  min-height:112px!important;
+  padding:12px 13px 11px!important;
+  border-radius:9px!important;
+}
+body.view-general #general .general-kpi:nth-child(n+5){
+  min-height:93px!important;
+}
+body.view-general #general .general-kpi:nth-child(n+5) .general-kpi-main strong{
+  font-size:22px!important;
+}
+body.view-general #general .general-kpi-top{
+  gap:7px!important;
+  font-size:9.5px!important;
+}
+body.view-general #general .general-kpi-icon{
+  width:25px!important;height:25px!important;border-radius:7px!important;
+}
+body.view-general #general .general-kpi-icon svg{width:14px!important;height:14px!important}
+body.view-general #general .general-kpi-main{
+  margin-top:7px!important;
+  gap:8px!important;
+}
+body.view-general #general .general-kpi-main strong{
+  font-size:25px!important;
+}
+body.view-general #general .general-kpi-delta{
+  font-size:8.5px!important;
+}
+body.view-general #general .general-kpi-foot{
+  margin-top:5px!important;
+  min-height:13px!important;
+  font-size:8px!important;
+}
+body.view-general #general .general-kpi-meter{
+  height:5px!important;
+  margin-top:7px!important;
+}
+
+/* Miolo e faixa inferior da referência. */
+body.view-general #general .general-primary-grid{
+  grid-template-columns:minmax(0,2.25fr) minmax(315px,1fr)!important;
+  gap:10px!important;
+  margin-bottom:10px!important;
+}
+body.view-general #general .panel{
+  border-radius:9px!important;
+  padding:13px!important;
+}
+body.view-general #general .general-evolution-panel{
+  min-height:315px!important;
+}
+body.view-general #general .general-panel-header{
+  margin-bottom:8px!important;
+}
+body.view-general #general .general-panel-header h2{
+  font-size:12px!important;
+}
+body.view-general #general .general-panel-header p{
+  font-size:8px!important;
+}
+body.view-general #general .general-chart-legend{
+  gap:10px!important;
+  font-size:8px!important;
+}
+body.view-general #general .general-quartile-overview{gap:7px!important}
+body.view-general #general .general-quartile-row{
+  grid-template-columns:34px minmax(105px,1fr) minmax(62px,.7fr) 38px 72px!important;
+  gap:7px!important;
+  padding:8px!important;
+  border-radius:8px!important;
+}
+body.view-general #general .general-quartile-pill{
+  width:31px!important;height:24px!important;font-size:9px!important;
+}
+body.view-general #general .general-quartile-copy strong{font-size:8.5px!important}
+body.view-general #general .general-quartile-copy small,
+body.view-general #general .general-quartile-count{font-size:7.5px!important}
+body.view-general #general .general-quartile-pct{font-size:11px!important}
+
+body.view-general #general .general-bottom-grid{
+  grid-template-columns:1fr 1.05fr 1fr!important;
+  gap:10px!important;
+}
+body.view-general #general .general-compact-panel{
+  min-height:210px!important;
+}
+body.view-general #general .general-top-row{
+  grid-template-columns:18px 24px minmax(0,1fr) 53px 7px!important;
+  padding:5px 2px!important;
+  font-size:8.3px!important;
+}
+body.view-general #general .general-avatar{
+  width:22px!important;height:22px!important;font-size:7px!important;
+}
+body.view-general #general .general-attention{gap:4px!important}
+body.view-general #general .general-attention-row{padding:5px 2px!important}
+body.view-general #general .general-attention-row strong{font-size:8.6px!important}
+body.view-general #general .general-attention-row small{font-size:7.7px!important}
+body.view-general #general .general-update-status{padding:9px!important}
+body.view-general #general .general-update-check{width:30px!important;height:30px!important}
+body.view-general #general .general-update-meta{padding:6px 1px!important;font-size:7.8px!important}
+
+/* Administração na sidebar quando o acesso administrativo estiver ativo. */
+body.view-general .main-nav .admin-nav-item{
+  color:#c4d2e1!important;
+}
+body.view-general .main-nav .admin-nav-item:hover{
+  color:#fff!important;
+  background:linear-gradient(90deg,rgba(15,126,226,.34),rgba(18,79,141,.15))!important;
+  border-color:rgba(42,169,255,.35)!important;
+}
+
+/* Tema claro do novo cabeçalho. */
+body.view-general.light .general-header-meta,
+body.view-general.light .general-header-button.secondary{
+  background:#fff!important;
+  border-color:#d4e3ee!important;
+}
+body.view-general.light .general-header-meta strong,
+body.view-general.light .general-header-button.secondary{color:#17324b!important}
+body.view-general.light .general-header-meta small{color:#6c8499!important}
+
+/* Notebook menor: mantém 4 KPIs e comprime cabeçalho. */
+@media(max-width:1380px){
+  body.view-general .general-header-actions{
+    grid-template-columns:118px 168px auto auto auto;
+    gap:7px;
+  }
+  body.view-general .general-header-button{padding:0 10px}
+  body.view-general .masthead-copy>p:last-child{max-width:470px}
+}
+@media(max-width:1160px){
+  body.view-general .masthead{
+    grid-template-columns:1fr!important;
+    grid-template-areas:"copy" "executive"!important;
+    gap:10px!important;
+  }
+  body.view-general .general-header-actions{
+    grid-template-columns:130px 190px auto auto auto;
+    justify-content:start;
+  }
+  body.view-general #general .general-primary-grid{
+    grid-template-columns:minmax(0,1.8fr) minmax(285px,.9fr)!important;
+  }
+}
+
+/* Mobile: mesma arquitetura, compactada; não transforma KPI em cards gigantes. */
+@media(max-width:800px){
+  body.view-general .app-shell{display:block!important}
+  body.view-general .sidebar{
+    position:relative!important;
+    height:auto!important;
+    padding:12px 12px 10px!important;
+    gap:10px!important;
+  }
+  body.view-general .brand-logo-block{min-height:44px!important}
+  body.view-general .brand-logo{max-height:44px!important}
+  body.view-general .main-nav{
+    display:flex!important;
+    gap:6px!important;
+    overflow-x:auto!important;
+    padding-bottom:3px!important;
+    scrollbar-width:none;
+  }
+  body.view-general .main-nav::-webkit-scrollbar{display:none}
+  body.view-general .main-nav .nav-item{
+    grid-template-columns:18px max-content!important;
+    flex:0 0 auto!important;
+    min-height:36px!important;
+    padding:7px 9px!important;
+  }
+  body.view-general .sidebar-motto,
+  body.view-general .sidebar-foot{display:none!important}
+
+  body.view-general .main-content{padding:12px!important}
+  body.view-general .masthead{
+    min-height:0!important;
+    grid-template-columns:1fr!important;
+    grid-template-areas:"copy" "executive"!important;
+    gap:10px!important;
+    margin-bottom:10px!important;
+  }
+  body.view-general .masthead-copy{
+    padding-left:42px!important;
+  }
+  body.view-general .masthead-copy:before{
+    width:32px!important;height:32px!important;border-radius:8px!important;
+  }
+  body.view-general .masthead h1{font-size:24px!important}
+  body.view-general .masthead-copy>p:last-child{font-size:10px!important}
+
+  body.view-general .general-header-actions{
+    width:100%;
+    grid-template-columns:1fr 1.25fr!important;
+    gap:7px!important;
+  }
+  body.view-general .general-header-meta{min-height:42px!important;padding:6px 8px!important}
+  body.view-general .general-header-button{min-height:39px!important;font-size:8.5px!important}
+  body.view-general #general-filter-toggle{grid-column:1/2}
+  body.view-general #general-export{grid-column:2/3}
+  body.view-general #general-report{grid-column:1/-1}
+
+  body.view-general #dashboard-filters.expanded{
+    grid-template-columns:1fr 1fr!important;
+    gap:7px!important;
+  }
+  body.view-general #dashboard-filters.expanded .search-label{grid-column:1/-1}
+  body.view-general #dashboard-filters.expanded .clear-button{grid-column:1/-1}
+
+  body.view-general #general .general-kpi-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:7px!important;
+  }
+  body.view-general #general .general-kpi,
+  body.view-general #general .general-kpi:nth-child(n+5){
+    min-height:103px!important;
+    padding:10px!important;
+  }
+  body.view-general #general .general-kpi-main strong,
+  body.view-general #general .general-kpi:nth-child(n+5) .general-kpi-main strong{
+    font-size:21px!important;
+  }
+  body.view-general #general .general-kpi-delta{
+    font-size:7.3px!important;
+  }
+  body.view-general #general .general-kpi-foot{
+    font-size:7.3px!important;
+  }
+
+  body.view-general #general .general-primary-grid,
+  body.view-general #general .general-bottom-grid{
+    grid-template-columns:1fr!important;
+    gap:8px!important;
+  }
+  body.view-general #general .general-evolution-panel{
+    min-height:0!important;
+    overflow:hidden!important;
+  }
+  body.view-general #general .general-evolution{
+    overflow-x:auto!important;
+    padding-bottom:3px;
+  }
+  body.view-general #general .general-trend-svg{
+    min-width:650px!important;
+  }
+  body.view-general #general .general-quartile-row{
+    grid-template-columns:31px minmax(90px,1fr) minmax(55px,.65fr) 36px 65px!important;
+  }
+}
+@media(max-width:380px){
+  body.view-general #general .general-kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  body.view-general #general .general-kpi-main{display:grid!important;grid-template-columns:1fr!important;gap:3px!important}
+  body.view-general #general .general-kpi-delta{margin-left:0!important}
+  body.view-general #general .general-quartile-row{
+    grid-template-columns:30px 1fr 38px!important;
+  }
+  body.view-general #general .general-quartile-track,
+  body.view-general #general .general-quartile-count{display:none!important}
+}
+
+/* Impressão usada pelo botão Gerar relatório. */
+@media print{
+  .sidebar,.dashboard-filters,.mobile-filter-toggle,.general-header-button,.masthead-actions{display:none!important}
+  .app-shell{display:block!important}
+  .main-content{padding:0!important}
+  body{background:#fff!important;color:#111!important}
+  #general .panel,#general .general-kpi{break-inside:avoid;box-shadow:none!important}
+}
