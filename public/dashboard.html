@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#07111f" />
   <title>Monitoria de Qualidade — Painel Geral</title>
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="/assets/styles.css?v=20260923-redesign-suite2" />
+  <link rel="stylesheet" href="/assets/styles.css?v=20260923-redesign-suite3" />
 </head>
 <body>
 <svg class="svg-sprite" aria-hidden="true" width="0" height="0">
@@ -131,29 +131,24 @@
 
     <section class="view suite-view" id="quality">
       <div id="quality-kpis" class="suite-kpi-grid suite-kpi-grid-6"></div>
-      <div class="suite-grid quality-main-layout">
-        <article class="panel suite-panel suite-chart-panel quality-evolution-panel">
-          <header class="suite-panel-header"><div><span class="suite-panel-icon">▥</span><div><h2>Evolução Mensal da Qualidade</h2><p>Acompanhe a evolução da qualidade, monitorias e itens aferidos no período.</p></div></div><span class="suite-period-chip">Últimos meses</span></header>
-          <div id="quality-evolution" class="suite-chart-host"></div>
-        </article>
+      <div class="suite-grid quality-dashboard-grid">
+        <div class="quality-left-column">
+          <article class="panel suite-panel suite-chart-panel quality-evolution-panel">
+            <header class="suite-panel-header"><div><span class="suite-panel-icon">▥</span><div><h2>Evolução Mensal da Qualidade</h2><p>Acompanhe a evolução da qualidade, monitorias e itens aferidos no período.</p></div></div><span class="suite-period-chip">Últimos meses</span></header>
+            <div id="quality-evolution" class="suite-chart-host"></div>
+          </article>
+          <div class="suite-grid quality-lower-layout">
+            <article class="panel suite-panel"><header class="suite-panel-header"><div><span class="suite-panel-icon">◇</span><div><h2>Qualidade por Skill</h2><p>Média de qualidade por skill monitorada.</p></div></div></header><div id="quality-skill-ranking" class="suite-rank-list"></div></article>
+            <article class="panel suite-panel"><header class="suite-panel-header"><div><span class="suite-panel-icon">▤</span><div><h2>Itens mais aferidos</h2><p>Itens do check-list com maior volume de avaliação.</p></div></div></header><div id="quality-top-criteria" class="suite-rank-list"></div></article>
+            <article class="panel suite-panel"><header class="suite-panel-header"><div><span class="suite-panel-icon danger">!</span><div><h2>Principais desvios</h2><p>Itens com maior incidência de erro.</p></div></div></header><div id="quality-deviations" class="suite-rank-list"></div></article>
+          </div>
+        </div>
         <div class="quality-side-stack">
-          <article class="panel suite-panel">
-            <header class="suite-panel-header"><div><span class="suite-panel-icon">◕</span><div><h2>Distribuição das Notas</h2><p>Percentual de monitorias por faixa de qualidade.</p></div></div></header>
-            <div id="quality-distribution" class="suite-distribution-list"></div>
-          </article>
-          <article class="panel suite-panel">
-            <header class="suite-panel-header"><div><span class="suite-panel-icon">▥</span><div><h2>Quartis de Qualidade</h2><p>Desempenho da operação distribuído por quartis.</p></div></div></header>
-            <div id="quality-quartiles-new" class="suite-quartile-cards"></div>
-          </article>
+          <article class="panel suite-panel"><header class="suite-panel-header"><div><span class="suite-panel-icon">◕</span><div><h2>Distribuição das Notas</h2><p>Percentual de monitorias por faixa de qualidade.</p></div></div></header><div id="quality-distribution" class="suite-distribution-list"></div></article>
+          <article class="panel suite-panel"><header class="suite-panel-header"><div><span class="suite-panel-icon">▥</span><div><h2>Quartis de Qualidade</h2><p>Desempenho da operação distribuído por quartis.</p></div></div></header><div id="quality-quartiles-new" class="suite-quartile-cards"></div></article>
+          <article class="panel suite-panel quality-supervision-panel"><header class="suite-panel-header"><div><span class="suite-panel-icon">●●</span><div><h2>Desempenho por Supervisão</h2><p>Visão da qualidade por supervisão da operação.</p></div></div></header><div id="quality-supervision" class="suite-table-like"></div></article>
         </div>
       </div>
-      <div class="suite-grid quality-lower-layout">
-        <article class="panel suite-panel"><header class="suite-panel-header"><div><span class="suite-panel-icon">◇</span><div><h2>Qualidade por Skill</h2><p>Média de qualidade por skill monitorada.</p></div></div></header><div id="quality-skill-ranking" class="suite-rank-list"></div></article>
-        <article class="panel suite-panel"><header class="suite-panel-header"><div><span class="suite-panel-icon">▤</span><div><h2>Itens mais aferidos</h2><p>Itens do check-list com maior volume de avaliação.</p></div></div></header><div id="quality-top-criteria" class="suite-rank-list"></div></article>
-        <article class="panel suite-panel"><header class="suite-panel-header"><div><span class="suite-panel-icon danger">!</span><div><h2>Principais desvios</h2><p>Itens com maior incidência de erro.</p></div></div></header><div id="quality-deviations" class="suite-rank-list"></div></article>
-      </div>
-      <article class="panel suite-panel quality-supervision-panel"><header class="suite-panel-header"><div><span class="suite-panel-icon">●●</span><div><h2>Desempenho por Supervisão</h2><p>Visão da qualidade por supervisão da operação.</p></div></div></header><div id="quality-supervision" class="suite-table-like"></div></article>
-
       <div class="legacy-compat" aria-hidden="true">
         <table><tbody id="quality-origin-table"></tbody></table><table><tbody id="quality-skill-table"></tbody></table><table><tbody id="quality-form-table"></tbody></table>
         <div id="quality-type-chart"></div><div id="criteria-offenders"></div>
@@ -206,13 +201,15 @@
 
     <section class="view suite-view" id="comparison">
       <div id="comparison-kpis" class="suite-kpi-grid suite-kpi-grid-6"></div>
-      <div class="suite-grid comparison-main-layout">
-        <article class="panel suite-panel suite-chart-panel"><header class="suite-panel-header"><div><span class="suite-panel-icon">▥</span><div><h2>Evolução dos Indicadores</h2><p>Qualidade e ISC ao longo dos meses, com linhas de meta.</p></div></div></header><div id="comparison-main-chart" class="suite-chart-host"></div></article>
-        <article class="panel suite-panel"><header class="suite-panel-header"><div><span class="suite-panel-icon">▣</span><div><h2>Resumo do Período</h2><p>Comparação entre o primeiro e o último mês disponível.</p></div></div></header><div id="comparison-summary" class="comparison-summary-list"></div></article>
-      </div>
-      <div class="suite-grid comparison-lower-layout">
-        <article class="panel suite-panel suite-chart-panel compact"><header class="suite-panel-header"><div><span class="suite-panel-icon">◷</span><div><h2>TMA x Meta</h2><p>Tempo Médio de Atendimento por mês.</p></div></div></header><div id="comparison-tma-chart" class="suite-chart-host"></div></article>
-        <article class="panel suite-panel suite-chart-panel compact"><header class="suite-panel-header"><div><span class="suite-panel-icon danger">!</span><div><h2>Falta Grave por Mês</h2><p>Total de faltas graves no período.</p></div></div></header><div id="comparison-fg-chart" class="suite-chart-host"></div></article>
+      <div class="suite-grid comparison-dashboard-grid">
+        <div class="comparison-left-column">
+          <article class="panel suite-panel suite-chart-panel"><header class="suite-panel-header"><div><span class="suite-panel-icon">▥</span><div><h2>Evolução dos Indicadores</h2><p>Qualidade e ISC ao longo dos meses, com linhas de meta.</p></div></div></header><div id="comparison-main-chart" class="suite-chart-host"></div></article>
+          <div class="suite-grid comparison-lower-layout">
+            <article class="panel suite-panel suite-chart-panel compact"><header class="suite-panel-header"><div><span class="suite-panel-icon">◷</span><div><h2>TMA x Meta</h2><p>Tempo Médio de Atendimento por mês.</p></div></div></header><div id="comparison-tma-chart" class="suite-chart-host"></div></article>
+            <article class="panel suite-panel suite-chart-panel compact"><header class="suite-panel-header"><div><span class="suite-panel-icon danger">!</span><div><h2>Falta Grave por Mês</h2><p>Total de faltas graves no período.</p></div></div></header><div id="comparison-fg-chart" class="suite-chart-host"></div></article>
+          </div>
+        </div>
+        <article class="panel suite-panel comparison-summary-panel"><header class="suite-panel-header"><div><span class="suite-panel-icon">▣</span><div><h2>Resumo do Período</h2><p>Comparação entre o primeiro e o último mês disponível.</p></div></div></header><div id="comparison-summary" class="comparison-summary-list"></div></article>
       </div>
       <article class="panel suite-panel table-panel suite-data-table-panel"><header class="suite-panel-header"><div><span class="suite-panel-icon">▥</span><div><h2>Tabela Comparativa Mensal</h2><p>Valores dos principais indicadores no período.</p></div></div></header><div class="table-scroll"><table><thead id="comparison-head"></thead><tbody id="comparison-table"></tbody></table></div></article>
       <div id="comparison-charts" class="legacy-compat" aria-hidden="true"></div>
@@ -246,6 +243,6 @@
 </div>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 <script src="/assets/dashboard-data.js"></script>
-<script src="/assets/app.js?v=20260923-redesign-suite2"></script>
+<script src="/assets/app.js?v=20260923-redesign-suite3"></script>
 </body>
 </html>
