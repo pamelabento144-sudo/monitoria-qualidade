@@ -3354,3 +3354,8 @@ body.redesign-suite.light .suite-ring:after{background:#fff!important}
   body.redesign-suite .suite-panel,
   body.redesign-suite .suite-kpi-card{break-inside:avoid;box-shadow:none!important}
 }
+
+
+/* Administração é exibida no menu somente quando a sessão administrativa foi validada. */
+body.redesign-suite [data-open-admin]{display:none!important}
+body.redesign-suite.admin-enabled [data-open-admin]{display:inline-flex!important}
