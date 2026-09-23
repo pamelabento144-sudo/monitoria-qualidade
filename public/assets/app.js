@@ -8,13 +8,14 @@
   const monthNames={Jan:"JANEIRO",Fev:"FEVEREIRO",Mar:"MARÇO",Abr:"ABRIL",Mai:"MAIO",Jun:"JUNHO",Jul:"JULHO",Ago:"AGOSTO",Set:"SETEMBRO",Out:"OUTUBRO",Nov:"NOVEMBRO",Dez:"DEZEMBRO"};
   const monthOrder={Jan:1,Fev:2,Mar:3,Abr:4,Mai:5,Jun:6,Jul:7,Ago:8,Set:9,Out:10,Nov:11,Dez:12};
   const viewHeaders={
-    general:{eyebrow:"VISÃO CONSOLIDADA",title:'Painel <span>Geral</span>',subtitle:"Uma visão completa da qualidade para decisões mais assertivas."},
-    special:{eyebrow:"ANÁLISES DE ATENDIMENTO",title:'ANÁLISES <span>ESPECIAIS</span>',subtitle:"Reclamações, elogios, ofícios e auditorias cliente e interna"},
-    quality:{eyebrow:"MONITORIAS AVALIADAS",title:'PAINEL DE <span>QUALIDADE</span>',subtitle:"Distribuição das avaliações, médias e itens de aferição"},
-    survey:{eyebrow:"EXPERIÊNCIA DO CIDADÃO",title:'PESQUISA <span>ISC</span>',subtitle:"Índice de satisfação calculado pelas perguntas P1, P2 e P3"},
-    fg:{eyebrow:"NÃO CONFORMIDADES CRÍTICAS",title:'FALTA <span>GRAVE</span>',subtitle:"Motivos, origens, skills e operadores com ocorrências"},
-    comparison:{eyebrow:"EVOLUÇÃO DOS INDICADORES",title:'COMPARATIVO <span>MENSAL</span>',subtitle:"Gráficos mensais preparados para acompanhar janeiro a dezembro"},
-    operators:{eyebrow:"DESEMPENHO INDIVIDUAL",title:'PAINEL DE <span>OPERADORES</span>',subtitle:"Qualidade, satisfação, TMA e ocorrências por operador"}
+    general:{eyebrow:"",title:"Painel Geral",subtitle:"Uma visão completa da qualidade para decisões mais assertivas.",icon:"chart"},
+    quality:{eyebrow:"",title:"Painel de Qualidade",subtitle:"Monitorias, itens aferidos e desempenho da operação por qualidade.",icon:"chart"},
+    survey:{eyebrow:"",title:"Pesquisa ISC",subtitle:"Satisfação do cidadão e resultados da pesquisa por operador, supervisão e quartil.",icon:"survey"},
+    fg:{eyebrow:"",title:"Falta Grave",subtitle:"Ocorrências críticas, motivos, origens e operadores com maior incidência.",icon:"alert"},
+    comparison:{eyebrow:"",title:"Comparativo Mensal",subtitle:"Evolução dos principais indicadores ao longo dos meses.",icon:"trend"},
+    operators:{eyebrow:"",title:"Painel de Operadores",subtitle:"Desempenho individual, quartis, metas e acompanhamento operacional.",icon:"users"},
+    admin:{eyebrow:"",title:"Administração",subtitle:"Gestão de importações, atualização do painel e configurações do ambiente.",icon:"upload"},
+    special:{eyebrow:"",title:"Análises Especiais",subtitle:"",icon:"chart"}
   };
 
   const normalize=(value)=>String(value||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
@@ -116,12 +117,18 @@
   function countBy(items,key){const map=new Map();items.forEach(x=>{const label=x[key]||"Não informado";map.set(label,(map.get(label)||0)+1);});return[...map].map(([label,value])=>({label,value})).sort((a,b)=>b.value-a.value);}
   function aggregateCriteria(items){const map=new Map();items.forEach(x=>{const key=x.criterion||"Não informado",r=map.get(key)||{criterion:key,kind:x.kind,weight:x.weight,hits:0,errors:0,total:0};r.hits+=+x.hits||0;r.errors+=+x.errors||0;r.total+=+x.total||0;r.weight=Math.max(r.weight,+x.weight||0);map.set(key,r);});return[...map.values()].map(x=>({...x,accuracy:x.total?x.hits/x.total*100:NaN,errorRate:x.total?x.errors/x.total*100:NaN})).filter(x=>x.total>0);}
 
-  function renderRank(target,items,{limit=7,format=fmtInt,color="",maxValue=null,performance=false}={}){
-    const ordered=[...items].sort((a,b)=>(Number(b.value)||0)-(Number(a.value)||0));
-    const list=ordered.slice(0,limit),max=maxValue||Math.max(1,...list.map(x=>+x.value||0));
-    $(target).innerHTML=list.length?list.map(x=>{const tone=x.color||color||(performance?performanceColor(x.value):"");const valueClass=performance?metricClass(x.value):"";return`<div class="rank-row"><span class="rank-name" title="${escapeHtml(x.label)}">${escapeHtml(shorten(x.label,45))}</span><div class="bar-track"><div class="bar-fill ${tone}" style="width:${Math.max(2,(+x.value||0)/max*100)}%"></div></div><strong class="rank-value ${valueClass}">${format(x.value)}</strong></div>`;}).join(""):empty();
+  function render(){
+    const f=filtered(),operators=buildOperators(f);
+    renderGeneral(f,operators);renderSpecial(f);renderQuality(f,operators);renderSurvey(f);renderFg(f);renderComparison();renderOperators(operators);
+    const months=availableMonths();
+    const referenceText=state.view==="comparison"?(months.length?`${monthLabel(months[0])} – ${monthLabel(months.at(-1))}`:"SEM DADOS"):state.month==="all"?"TODOS OS MESES":monthLabel(state.month);
+    const updatedText=data.meta?.importedAt?new Date(data.meta.importedAt).toLocaleString("pt-BR"):"Dados carregados";
+    $("reference-label").textContent=referenceText;
+    $("last-update").textContent=data.meta?.importedAt?`Atualizado neste dispositivo em ${updatedText}`:"Dados carregados do relatório-base";
+    if($("general-reference-label"))$("general-reference-label").textContent=referenceText;
+    if($("general-last-update"))$("general-last-update").textContent=updatedText;
+    if($("admin-page-content")?.dataset.ready==="1")renderAdminSummary();
   }
-
   function renderColumns(target,stats){
     const max=Math.max(1,...stats.map(x=>x.count));
     $(target).innerHTML=stats.map(x=>`<div class="column-item"><span class="column-value">${fmtInt(x.count)}<br><small>${fmtPct(sum(stats,y=>y.count)?x.count/sum(stats,y=>y.count)*100:NaN)}</small></span><div class="column-bar q${x.q}" style="height:${Math.max(3,x.count/max*118)}px"></div><span class="column-label">${x.q}º Quartil<br>${x.range}<br>Média ${fmtPct(x.average)}</span></div>`).join("");
@@ -291,51 +298,198 @@
     $("special-page-size").value=String(pageSize);$("special-page-indicator").textContent=`${state.specialPage} de ${totalPages}`;$("special-prev").disabled=state.specialPage<=1;$("special-next").disabled=state.specialPage>=totalPages;$("special-page-input").max=String(totalPages);$("special-page-input").value=String(state.specialPage);
   }
 
-  function renderQuality(f,operators){
-    const notes=f.monitoring.map(x=>x.note).filter(Number.isFinite),quality=average(notes),maxOps=operators.filter(x=>x.evaluations>0&&Math.abs(x.quality-100)<.0001).length,below=operators.filter(x=>x.evaluations>0&&x.quality<qualityTarget()).length;
-    $("quality-kpis").innerHTML=[kpi("Total de Monitorias",fmtInt(notes.length),"Atendimentos avaliados","headset",{meter:100}),kpi("Média Geral",fmtPct(quality),`Meta ≥ ${fmtPct(qualityTarget())}`,"star",{meter:quality,performance:true}),kpi("Alta Performance",fmtInt(maxOps),"Operadores com média de 100%","arrow-up",{meter:operators.length?maxOps/operators.length*100:0}),kpi("Abaixo da Meta",fmtInt(below),`Operadores abaixo de ${fmtPct(qualityTarget())}`,"arrow-down",{danger:below>0,meter:operators.length?below/operators.length*100:0})].join("");
-    const table=(target,rows)=>{$(target).innerHTML=rows.map(x=>`<tr><td><strong>${escapeHtml(x.label)}</strong></td><td>${fmtInt(x.count)}</td><td class="${metricClass(x.average)}">${fmtPct(x.average)}</td></tr>`).join("")||`<tr><td colspan="3" class="empty">Sem dados.</td></tr>`;};
-    const originRows=aggregate(f.monitoring,"origin").sort((a,b)=>b.count-a.count),skillRows=aggregate(f.monitoring,"skill").sort((a,b)=>b.count-a.count),formRows=aggregate(f.monitoring,"form").sort((a,b)=>b.count-a.count);
-    table("quality-origin-table",originRows);
-    const skillPaged=paginateRows(skillRows,state.qualitySkillPage,state.qualitySkillPageSize);state.qualitySkillPage=skillPaged.page;table("quality-skill-table",skillPaged.rows);syncPager("quality-skill",skillPaged,state.qualitySkillPageSize);
-    table("quality-form-table",formRows);
-    renderRank("quality-type-chart",aggregate(f.monitoring,"monitoringType").sort((a,b)=>b.count-a.count).map(x=>({label:x.label,value:x.average,sub:x.count})),{limit:8,format:fmtPct,maxValue:100,performance:true});
-    const criteria=aggregateCriteria(f.criteria).sort((a,b)=>b.errorRate-a.errorRate),offenders=criteria.filter(x=>x.errors>0).slice(0,3);
-    $("criteria-offenders").innerHTML=offenders.length?offenders.map((x,index)=>`<div class="offender-card"><span class="offender-position">${index+1}</span><div class="offender-copy"><strong title="${escapeHtml(x.criterion)}">${escapeHtml(shorten(x.criterion,72))}</strong><span>${escapeHtml(x.kind||"Dimensão não informada")} · ${fmtInt(x.errors)} erro(s) em ${fmtInt(x.total)} aplicações</span></div><div class="offender-rate"><strong>${fmtPct(x.errorRate)}</strong><span>erro</span></div></div>`).join(""):empty("Nenhum critério ofensor no recorte selecionado.");
-    const visibleCriteria=criteria.filter(x=>state.criteriaDimension==="all"||normalize(x.kind)===normalize(state.criteriaDimension));
-    const criteriaPaged=paginateRows(visibleCriteria,state.criteriaPage,state.criteriaPageSize);state.criteriaPage=criteriaPaged.page;
-    $("criteria-table").innerHTML=criteriaPaged.rows.map(x=>`<tr><td><strong>${escapeHtml(shorten(x.criterion,110))}</strong></td><td>${escapeHtml(x.kind)}</td><td>${x.weight}</td><td>${fmtInt(x.total)}</td><td class="metric-good">${fmtInt(x.hits)}</td><td class="${x.errors?"metric-danger":""}">${fmtInt(x.errors)}</td><td class="${metricClass(x.accuracy)}">${fmtPct(x.accuracy)}</td><td class="${x.errorRate>=10?"metric-danger":x.errorRate>0?"metric-warn":""}">${fmtPct(x.errorRate)}</td></tr>`).join("")||`<tr><td colspan="8" class="empty">Sem itens para a dimensão selecionada.</td></tr>`;
-    syncPager("criteria",criteriaPaged,state.criteriaPageSize);
+  function suiteKpi(label,value,icon,{delta=null,foot="",meter=null,tone=""}={}){
+    const width=Number.isFinite(meter)?Math.max(0,Math.min(100,meter)):null;
+    return `<article class="suite-kpi-card ${tone}">
+      <div class="suite-kpi-heading"><span class="suite-kpi-icon">${iconSvg(icon)}</span><strong>${label}</strong></div>
+      <div class="suite-kpi-value-row"><span class="suite-kpi-value">${value}</span>${delta?`<span class="suite-kpi-delta ${delta.tone}">${delta.arrow} ${delta.text}</span>`:""}</div>
+      <div class="suite-kpi-foot">${foot}</div>
+      ${width==null?"":`<div class="suite-kpi-meter"><span style="width:${width}%"></span></div>`}
+    </article>`;
   }
 
+  function suitePeriodContext(){
+    const months=availableMonths();
+    const currentMonth=state.month!=="all"?state.month:months.at(-1);
+    const index=months.indexOf(currentMonth);
+    const previousMonth=index>0?months[index-1]:null;
+    return{months,currentMonth,previousMonth,index};
+  }
+
+  function suiteDelta(current,previous,opts={}){return generalDelta(current,previous,opts);}
+
+  function suiteSimpleRows(items,{value=x=>x.value,format=fmtInt,limit=7,tone=""}={}){
+    const rows=items.slice(0,limit),max=Math.max(1,...rows.map(x=>Number(value(x))||0));
+    return rows.length?rows.map((x,i)=>{
+      const raw=Number(value(x))||0,pct=Math.max(2,raw/max*100);
+      return `<div class="suite-rank-row ${tone}"><span class="suite-rank-pos">${i+1}</span><span class="suite-rank-name" title="${escapeHtml(x.label||"")}">${escapeHtml(shorten(x.label||"Não informado",34))}</span><strong>${format(raw)}</strong><span class="suite-rank-track"><i style="width:${pct}%"></i></span></div>`;
+    }).join(""):empty("Sem dados no período.");
+  }
+
+  function suiteQualityQuartiles(operators,targetId){
+    const stats=quartileStats(operators.filter(x=>Number.isFinite(x.quality)).map(x=>({value:x.quality})));
+    const labels=["Alto desempenho","Bom desempenho","Em desenvolvimento","Atenção"];
+    const total=sum(stats,x=>x.count);
+    $(targetId).innerHTML=stats.map((x,i)=>`<div class="suite-quartile-card q${x.q}"><span class="quartile-badge">Q${x.q}</span><div><small>${labels[i]}</small><strong>${fmtPct(x.average)}</strong><span>${fmtInt(x.count)} operadores · ${total?Math.round(x.count/total*100):0}%</span></div></div>`).join("")||empty();
+  }
+
+  function suiteQualityEvolution(){
+    const months=availableMonths(),series=months.map(month=>({month,value:comparisonMetric(month).quality}));
+    return trendChart({key:"quality",label:"Qualidade",format:fmtPct,axis:v=>`${Math.round(v)}%`,percent:true,targetValue:qualityTarget(),kind:"line"},series);
+  }
+
+  function suiteSurveyEvolution(){
+    const months=availableMonths(),series=months.map(month=>({month,value:comparisonMetric(month).isc}));
+    return trendChart({key:"isc",label:"ISC",format:fmtPct,axis:v=>`${Math.round(v)}%`,percent:true,targetValue:satisfactionTarget(),kind:"line"},series);
+  }
+
+  function suiteFgEvolution(){
+    const months=availableMonths(),series=months.map(month=>({month,value:comparisonMetric(month).fg}));
+    return trendChart({key:"fg",label:"Falta Grave",format:fmtInt,axis:v=>fmtInt(v),kind:"bar"},series);
+  }
+
+  function suiteSupervisionRows(operators){
+    const map=new Map();
+    operators.forEach(x=>{
+      const key=x.supervisor||"Não atribuída";
+      const r=map.get(key)||{label:key,operators:0,evaluations:0,qualityWeighted:0,surveyCount:0,iscSum:0,calls:0,tmaWeighted:0,fg:0};
+      r.operators++;r.evaluations+=x.evaluations||0;r.qualityWeighted+=(x.evaluations||0)*(Number.isFinite(x.quality)?x.quality:0);
+      if(Number.isFinite(x.isc)){r.surveyCount++;r.iscSum+=x.isc}
+      r.calls+=x.calls||0;r.tmaWeighted+=(x.calls||0)*(Number.isFinite(x.tma)?x.tma:0);r.fg+=x.fg||0;
+      map.set(key,r);
+    });
+    return[...map.values()].map(x=>({...x,quality:x.evaluations?x.qualityWeighted/x.evaluations:NaN,isc:x.surveyCount?x.iscSum/x.surveyCount:NaN,tma:x.calls?x.tmaWeighted/x.calls:NaN})).sort((a,b)=>(b.quality||0)-(a.quality||0));
+  }
+
+  function suiteTableRows(rows,columns,limit=7){
+    const data=rows.slice(0,limit);
+    return data.length?`<div class="suite-mini-table">${data.map((row,i)=>`<div class="suite-mini-row"><span class="suite-mini-rank">${i+1}</span>${columns.map(col=>`<span class="${col.className||""}" title="${escapeHtml(String(col.value(row)??""))}">${col.html?col.value(row):escapeHtml(String(col.value(row)??"—"))}</span>`).join("")}</div>`).join("")}</div>`:empty("Sem dados no período.");
+  }
+
+  function suiteQuestionRing(label,value,sub){
+    const pct=Number.isFinite(value)?Math.max(0,Math.min(100,value)):0;
+    return `<div class="suite-question-ring"><div class="suite-ring" style="--ring:${pct}%"><strong>${fmtPct(value)}</strong></div><span>${label}</span><small>${sub}</small></div>`;
+  }
+
+  function renderQuality(f,operators){
+    const notes=f.monitoring.map(x=>x.note).filter(Number.isFinite),quality=average(notes);
+    const criteria=aggregateCriteria(f.criteria),itemsAferidos=sum(criteria,x=>x.total);
+    const skills=[...new Set(f.monitoring.map(x=>x.skill).filter(Boolean))];
+    const special=f.monitoring.filter(isSpecial),audits=special.filter(x=>specialCategory(x.origin)==="Auditoria Interna").length;
+    const ctx=suitePeriodContext(),prev=ctx.previousMonth?filtered(ctx.previousMonth):null,prevOps=prev?buildOperators(prev):[];
+    const prevNotes=prev?prev.monitoring.map(x=>x.note).filter(Number.isFinite):[],prevCriteria=prev?aggregateCriteria(prev.criteria):[];
+    const prevSpecial=prev?prev.monitoring.filter(isSpecial):[];
+    const d=(cur,old,opts)=>suiteDelta(cur,old,opts);
+    $("quality-kpis").innerHTML=[
+      suiteKpi("Qualidade Geral",fmtPct(quality),"star",{delta:d(quality,average(prevNotes),{kind:"pp"}),foot:`Meta: ${fmtPct(qualityTarget())}`,meter:quality,tone:"quality"}),
+      suiteKpi("Monitorias Avaliadas",fmtInt(notes.length),"clipboard",{delta:d(notes.length,prevNotes.length,{kind:"percent"}),foot:prev?`Mês anterior: ${fmtInt(prevNotes.length)}`:"Avaliações realizadas",meter:100,tone:"monitoring"}),
+      suiteKpi("Itens Aferidos",fmtInt(itemsAferidos),"clipboard",{delta:d(itemsAferidos,sum(prevCriteria,x=>x.total),{kind:"percent"}),foot:"Aplicações dos critérios",meter:100,tone:"items"}),
+      suiteKpi("Skills Monitoradas",fmtInt(skills.length),"layers",{delta:d(skills.length,prev?[...new Set(prev.monitoring.map(x=>x.skill).filter(Boolean))].length:NaN,{kind:"percent"}),foot:`Total de skills: ${fmtInt(skills.length)}`,meter:100,tone:"skills"}),
+      suiteKpi("Auditorias Internas",fmtInt(audits),"headset",{delta:d(audits,prevSpecial.filter(x=>specialCategory(x.origin)==="Auditoria Interna").length,{kind:"percent"}),foot:"Registros de auditoria",meter:audits?100:0,tone:"audits"}),
+      suiteKpi("Meta de Qualidade",fmtPct(qualityTarget()),"star",{foot:"Meta corporativa",meter:qualityTarget(),tone:"target"})
+    ].join("");
+
+    $("quality-evolution").innerHTML=suiteQualityEvolution();
+
+    const bins=[
+      {label:"Excelente (≥ 98%)",test:v=>v>=98},
+      {label:"Muito bom (95%–97,99%)",test:v=>v>=95&&v<98},
+      {label:"Bom (90%–94,99%)",test:v=>v>=90&&v<95},
+      {label:"Atenção (80%–89,99%)",test:v=>v>=80&&v<90},
+      {label:"Crítico (< 80%)",test:v=>v<80}
+    ].map((b,i)=>({...b,count:notes.filter(b.test).length,index:i}));
+    const total=notes.length||1;
+    $("quality-distribution").innerHTML=`<div class="suite-distribution-bars">${bins.map(b=>`<div class="suite-distribution-row q${Math.min(4,b.index+1)}"><span>${b.label}</span><strong>${Math.round(b.count/total*100)}%</strong><i><b style="width:${b.count/total*100}%"></b></i><small>${fmtInt(b.count)}</small></div>`).join("")}</div><div class="suite-donut" style="--donut-value:${Math.max(0,Math.min(100,quality||0))}%"><strong>${fmtInt(notes.length)}</strong><span>monitorias</span></div>`;
+
+    suiteQualityQuartiles(operators,"quality-quartiles-new");
+
+    const skillRows=aggregate(f.monitoring,"skill").sort((a,b)=>b.average-a.average);
+    $("quality-skill-ranking").innerHTML=suiteSimpleRows(skillRows,{value:x=>x.average,format:fmtPct,limit:7});
+
+    const topCriteria=[...criteria].sort((a,b)=>b.total-a.total).map(x=>({label:x.criterion,value:x.total}));
+    $("quality-top-criteria").innerHTML=suiteSimpleRows(topCriteria,{format:fmtInt,limit:7});
+
+    const deviations=[...criteria].filter(x=>x.errors>0).sort((a,b)=>b.errorRate-a.errorRate).map(x=>({label:x.criterion,value:x.errorRate}));
+    $("quality-deviations").innerHTML=suiteSimpleRows(deviations,{format:fmtPct,limit:7,tone:"danger"});
+
+    const supervision=suiteSupervisionRows(operators);
+    $("quality-supervision").innerHTML=suiteTableRows(supervision,[
+      {value:x=>x.label,className:"suite-col-main"},
+      {value:x=>fmtInt(x.evaluations)},
+      {value:x=>fmtPct(x.quality),className:"metric-good"},
+      {value:x=>fmtInt(x.fg),className:x=>x.fg?"metric-danger":""}
+    ],6);
+  }
   function operatorSurveyRows(items){return items.map(x=>{const p1=iscFromCounts(x.p1||[]),p2=iscFromCounts(x.p2||[]),p3=iscFromCounts(x.p3||[]),all=[0,0,0,0,0];["p1","p2","p3"].forEach(q=>(x[q]||[]).forEach((v,i)=>all[i]+=+v||0));return{...x,p1Score:p1,p2Score:p2,p3Score:p3,isc:iscFromCounts(all),responses:sum(all),quartile:quartile(iscFromCounts(all))};}).filter(x=>x.responses>0);}
   function renderSurvey(f){
-    const overall=isc(f.satisfaction),p1=isc(f.satisfaction,"p1"),p2=isc(f.satisfaction,"p2"),p3=isc(f.satisfaction,"p3"),responses=sum(questionCounts(f.satisfaction));
-    $("survey-kpis").innerHTML=[kpi("ISC Geral",fmtPct(overall),"P1 + P2 + P3","survey",{meter:overall,performance:true}),kpi("P1 Atendimento",fmtPct(p1),"Notas 4 e 5","check",{meter:p1,performance:true}),kpi("P2 Cordialidade",fmtPct(p2),"Notas 4 e 5","check",{meter:p2,performance:true}),kpi("P3 Clareza",fmtPct(p3),"Notas 4 e 5","check",{meter:p3,performance:true}),kpi("Respondidas",fmtInt(responses),"Somatório de P1, P2 e P3","clipboard",{meter:100})].join("");
-    const allRows=operatorSurveyRows(f.satisfaction).sort((a,b)=>b.isc-a.isc),stats=quartileStats(allRows.map(x=>({value:x.isc})));
-    $("survey-quartile-detail").innerHTML=stats.map(x=>`<div class="quartile-card"><span class="quartile-badge">Q${x.q}</span><div><strong>${fmtInt(x.count)}</strong><small>${x.range}</small></div><div><strong>${fmtPct(x.average)}</strong><small>Média do quartil</small></div></div>`).join("");
+    const overall=isc(f.satisfaction),p1=isc(f.satisfaction,"p1"),p2=isc(f.satisfaction,"p2"),p3=isc(f.satisfaction,"p3");
+    const surveyVolume=sum(questionCounts(f.satisfaction,"p1"));
+    const operators=buildOperators(f),scored=operators.filter(x=>Number.isFinite(x.isc)),above=scored.filter(x=>x.isc>=satisfactionTarget()),below=scored.filter(x=>x.isc<satisfactionTarget()),noScore=operators.filter(x=>!Number.isFinite(x.isc));
+    const ctx=suitePeriodContext(),prev=ctx.previousMonth?filtered(ctx.previousMonth):null,prevOps=prev?buildOperators(prev):[],prevOverall=prev?isc(prev.satisfaction):NaN;
+    const prevVolume=prev?sum(questionCounts(prev.satisfaction,"p1")):NaN;
+    $("survey-kpis").innerHTML=[
+      suiteKpi("ISC Geral",fmtPct(overall),"survey",{delta:suiteDelta(overall,prevOverall,{kind:"pp"}),foot:`Meta: ${fmtPct(satisfactionTarget())}`,meter:overall,tone:"isc"}),
+      suiteKpi("Meta ISC",fmtPct(satisfactionTarget()),"star",{foot:"Meta institucional",meter:satisfactionTarget(),tone:"target"}),
+      suiteKpi("Operadores Acima da Meta",fmtInt(above.length),"arrow-up",{delta:{tone:"positive",arrow:"↑",text:`${scored.length?Math.round(above.length/scored.length*100):0}% do total`},foot:`Total com nota: ${fmtInt(scored.length)}`,meter:scored.length?above.length/scored.length*100:0,tone:"good"}),
+      suiteKpi("Operadores Abaixo da Meta",fmtInt(below.length),"arrow-down",{delta:{tone:below.length?"negative":"neutral",arrow:below.length?"↑":"",text:`${scored.length?Math.round(below.length/scored.length*100):0}% do total`},foot:`Total com nota: ${fmtInt(scored.length)}`,meter:scored.length?below.length/scored.length*100:0,tone:"danger"}),
+      suiteKpi("Sem Nota",fmtInt(noScore.length),"users",{foot:`Total de operadores: ${fmtInt(operators.length)}`,meter:operators.length?noScore.length/operators.length*100:0,tone:"neutral"}),
+      suiteKpi("Volume de Pesquisas",fmtInt(surveyVolume),"clipboard",{delta:suiteDelta(surveyVolume,prevVolume,{kind:"percent"}),foot:"Respostas consideradas",meter:100,tone:"monitoring"})
+    ].join("");
+
+    $("survey-evolution").innerHTML=suiteSurveyEvolution();
+
+    const allRows=operatorSurveyRows(f.satisfaction).sort((a,b)=>b.isc-a.isc),stats=quartileStats(allRows.map(x=>({value:x.isc}))),total=sum(stats,x=>x.count);
+    const qLabels=["1º Quartil · Alta Satisfação","2º Quartil","3º Quartil","4º Quartil"];
+    $("survey-quartile-detail").innerHTML=stats.map((x,i)=>`<div class="suite-quartile-row q${x.q}"><span class="quartile-badge">Q${x.q}</span><strong>${qLabels[i]}</strong><i><b style="width:${total?x.count/total*100:0}%"></b></i><span>${fmtInt(x.count)}</span><span>${total?Math.round(x.count/total*100):0}%</span><small>${x.range}</small></div>`).join("");
+
+    const supervisionMap=new Map();
+    f.satisfaction.forEach(row=>{
+      const key=row.supervisor||"Não atribuída",r=supervisionMap.get(key)||{label:key,items:[]};r.items.push(row);supervisionMap.set(key,r);
+    });
+    const supervision=[...supervisionMap.values()].map(x=>({label:x.label,isc:isc(x.items)})).sort((a,b)=>(b.isc||0)-(a.isc||0));
+    $("survey-supervision").innerHTML=suiteTableRows(supervision,[{value:x=>x.label,className:"suite-col-main"},{value:x=>fmtPct(x.isc),className:"metric-good"}],5);
+    $("survey-top-operators").innerHTML=suiteTableRows(allRows,[{value:x=>x.operator,className:"suite-col-main"},{value:x=>fmtPct(x.isc),className:"metric-good"},{value:x=>fmtInt(x.responses)}],5);
+    $("survey-question-circles").innerHTML=[
+      suiteQuestionRing("P1",p1,"Atendimento"),
+      suiteQuestionRing("P2",p2,"Cordialidade"),
+      suiteQuestionRing("P3",p3,"Clareza")
+    ].join("");
+
     const rows=state.surveyQuartile==="all"?allRows:allRows.filter(x=>String(x.quartile)===String(state.surveyQuartile));
     const paged=paginateRows(rows,state.surveyPage,state.surveyPageSize);state.surveyPage=paged.page;
     $("survey-operator-count").textContent=rows.length?`${fmtInt(rows.length)} operadores · ${fmtInt(paged.start+1)}–${fmtInt(paged.end)}`:"0 operadores";
-    const hideSupervisor=state.supervisor!=="all";
-    $("survey-supervisor-header")?.classList.toggle("hidden",hideSupervisor);
+    const hideSupervisor=state.supervisor!=="all";$("survey-supervisor-header")?.classList.toggle("hidden",hideSupervisor);
     $("survey-table").innerHTML=paged.rows.map(x=>`<tr><td>${escapeHtml(x.re)}</td><td><strong>${escapeHtml(x.operator)}</strong></td>${hideSupervisor?"":`<td>${escapeHtml(x.supervisor||"Não atribuída")}</td>`}<td>${fmtInt(x.responses)}</td><td class="${metricClass(x.p1Score)}">${fmtPct(x.p1Score)}</td><td class="${metricClass(x.p2Score)}">${fmtPct(x.p2Score)}</td><td class="${metricClass(x.p3Score)}">${fmtPct(x.p3Score)}</td><td class="${metricClass(x.isc)}">${fmtPct(x.isc)}</td><td>${quartileBadge(x.quartile)}</td></tr>`).join("")||`<tr><td colspan="${hideSupervisor?8:9}" class="empty">Sem respostas de pesquisa para o quartil selecionado.</td></tr>`;
     syncPager("survey",paged,state.surveyPageSize);
   }
-
   function renderFg(f){
     const rows=f.monitoring.filter(x=>x.fg),operators=new Set(rows.map(x=>x.re||x.operator)).size,origins=new Set(rows.map(x=>x.origin).filter(Boolean)).size,skills=new Set(rows.map(x=>x.skill).filter(Boolean)).size;
-    $("fg-kpis").innerHTML=[kpi("Total de FGs",fmtInt(rows.length),"Não conformidades críticas","alert",{danger:rows.length>0,meter:100}),kpi("Operadores com FG",fmtInt(operators),fmtPct(f.monitoring.length?operators/new Set(f.monitoring.map(x=>x.re)).size*100:NaN),"users",{danger:operators>0,meter:f.monitoring.length?operators/new Set(f.monitoring.map(x=>x.re)).size*100:0}),kpi("Origens",fmtInt(origins),"Fontes de identificação","layers",{meter:100}),kpi("Skills",fmtInt(skills),"Áreas com ocorrência","grid",{meter:100})].join("");
-    renderRank("fg-reasons",countBy(rows,"fgReason").map(x=>({...x,color:"red"})),{limit:10,color:"red"});renderRank("fg-origins",countBy(rows,"origin"),{limit:10});renderRank("fg-skills",countBy(rows,"skill"),{limit:10,color:"gold"});
+    const reasons=countBy(rows,"fgReason"),mainReason=reasons[0]?.label||"Sem ocorrência",mainReasonCount=reasons[0]?.value||0;
+    const ctx=suitePeriodContext(),prev=ctx.previousMonth?filtered(ctx.previousMonth):null,prevRows=prev?prev.monitoring.filter(x=>x.fg):[];
+    const reduction=suiteDelta(rows.length,prevRows.length,{kind:"percent",lowerBetter:true});
+    $("fg-kpis").innerHTML=[
+      suiteKpi("Total de Faltas Graves",fmtInt(rows.length),"alert",{delta:reduction,foot:"Ocorrências críticas",meter:100,tone:"danger"}),
+      suiteKpi("Operadores com FG",fmtInt(operators),"users",{delta:suiteDelta(operators,prev?new Set(prevRows.map(x=>x.re||x.operator)).size:NaN,{kind:"percent",lowerBetter:true}),foot:`Total monitorado: ${fmtInt(new Set(f.monitoring.map(x=>x.re||x.operator)).size)}`,meter:f.monitoring.length?operators/Math.max(1,new Set(f.monitoring.map(x=>x.re||x.operator)).size)*100:0,tone:"danger"}),
+      suiteKpi("Skills com FG",fmtInt(skills),"headset",{foot:`Skills monitoradas: ${fmtInt(new Set(f.monitoring.map(x=>x.skill).filter(Boolean)).size)}`,meter:100,tone:"skills"}),
+      suiteKpi("Motivo mais recorrente",escapeHtml(shorten(mainReason,26)),"clipboard",{foot:`${fmtInt(mainReasonCount)} ocorrência(s)`,tone:"text"}),
+      suiteKpi("Origens com FG",fmtInt(origins),"layers",{foot:"Fontes de identificação",meter:100,tone:"target"}),
+      suiteKpi("Variação vs. mês anterior",reduction.text||"—","arrow-down",{delta:reduction,foot:prev?`${fmtInt(prevRows.length)} → ${fmtInt(rows.length)} ocorrências`:"Sem período anterior",tone:"good"})
+    ].join("");
+
+    $("fg-monthly").innerHTML=suiteFgEvolution();
+    renderRank("fg-reasons",reasons.map(x=>({...x,color:"red"})),{limit:7,color:"red"});
+    renderRank("fg-origins",countBy(rows,"origin"),{limit:7});
+    renderRank("fg-skills",countBy(rows,"skill"),{limit:7,color:"gold"});
+    const incidence=f.monitoring.length?rows.length/f.monitoring.length*100:0;
+    $("fg-performance").innerHTML=`<div class="fg-performance-main"><div><small>Total de Faltas Graves</small><strong>${fmtInt(rows.length)}</strong></div><div><small>Incidência</small><strong>${fmtPct(incidence)}</strong></div></div><div class="fg-performance-status ${rows.length<=prevRows.length?"good":"danger"}"><span>●</span><strong>${prev?reduction.text:"Período atual"}</strong><small>${prev?"vs. mês anterior":"Sem comparação anterior"}</small></div><div class="suite-kpi-meter"><span style="width:${Math.min(100,incidence)}%"></span></div>`;
+
     const map=new Map();rows.forEach(x=>{const key=x.re||x.operator,r=map.get(key)||{operator:x.operator,re:x.re,supervisor:x.supervisor,rows:[]};r.rows.push(x);map.set(key,r);});const opRows=[...map.values()].map(x=>({...x,count:x.rows.length,reason:mode(x.rows,"fgReason"),origin:mode(x.rows,"origin"),skill:mode(x.rows,"skill")})).sort((a,b)=>b.count-a.count);
     const paged=paginateRows(opRows,state.fgPage,state.fgPageSize);state.fgPage=paged.page;
     $("fg-operator-count").textContent=opRows.length?`${fmtInt(opRows.length)} operadores · ${fmtInt(paged.start+1)}–${fmtInt(paged.end)}`:"0 operadores";
-    const hideSupervisor=state.supervisor!=="all";
-    $("fg-supervisor-header")?.classList.toggle("hidden",hideSupervisor);
+    const hideSupervisor=state.supervisor!=="all";$("fg-supervisor-header")?.classList.toggle("hidden",hideSupervisor);
     $("fg-operators").innerHTML=paged.rows.map(x=>`<tr><td>${escapeHtml(x.re)}</td><td><strong>${escapeHtml(x.operator)}</strong></td>${hideSupervisor?"":`<td>${escapeHtml(x.supervisor||"Não atribuída")}</td>`}<td class="metric-danger">${fmtInt(x.count)}</td><td>${escapeHtml(x.reason)}</td><td>${escapeHtml(x.origin)}</td><td>${escapeHtml(x.skill)}</td></tr>`).join("")||`<tr><td colspan="${hideSupervisor?6:7}" class="empty">Sem faltas graves.</td></tr>`;
     syncPager("fg",paged,state.fgPageSize);
   }
-
   function comparisonMetric(monthValue){
     const f=filtered(monthValue),notes=f.monitoring.map(x=>x.note).filter(Number.isFinite),special=f.monitoring.filter(isSpecial);
     const tmaValue=weighted(f.tma),tmaTarget=tmaTargetFor(monthValue);
@@ -383,36 +537,81 @@
   }
   function renderComparison(){
     const months=availableMonths(),metrics=months.map(month=>({month,...comparisonMetric(month)}));
-    const defs=[
-      {key:"quality",label:"Média Geral Qualidade",format:fmtPct,axis:v=>`${Math.round(v)}%`,percent:true,targetValue:qualityTarget(),kind:"line",higher:true},
-      {key:"isc",label:"Média Pesquisa (ISC)",format:fmtPct,axis:v=>`${Math.round(v)}%`,percent:true,targetValue:satisfactionTarget(),kind:"line",higher:true},
-      {key:"tma",label:"TMA",format:fmtTime,axis:v=>v===0?"00:00":fmtTime(v),kind:"line",time:true,higher:false,targetKey:"tmaTarget",targetFormat:fmtTimeFull},
-      {key:"fg",label:"Falta Grave",format:fmtInt,axis:v=>fmtInt(v),kind:"bar",higher:false},
-      {key:"complaints",label:"Reclamações",format:fmtInt,axis:v=>fmtInt(v),kind:"bar",higher:false},
-      {key:"compliments",label:"Elogios",format:fmtInt,axis:v=>fmtInt(v),kind:"bar",higher:true},
-      {key:"clientAudit",label:"Auditorias Cliente",format:fmtInt,axis:v=>fmtInt(v),kind:"bar",higher:false},
-      {key:"internalAudit",label:"Auditoria Interna",format:fmtInt,axis:v=>fmtInt(v),kind:"bar",higher:false}
-    ];
-    $("comparison-charts").innerHTML=months.length?defs.map(def=>{
-      const series=metrics.map(item=>({month:item.month,value:item[def.key]})),targetSeries=def.targetKey?metrics.map(item=>({month:item.month,value:item[def.targetKey]})):[],finite=series.map(x=>x.value).filter(Number.isFinite),first=finite[0],last=finite.at(-1),delta=Number.isFinite(first)&&Number.isFinite(last)?last-first:NaN,good=Number.isFinite(delta)&&(def.higher?delta>=0:delta<=0);
-      const deltaText=!Number.isFinite(delta)?"Sem variação":delta===0?"Estável":`${delta>0?"+":""}${def.percent?delta.toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2})+" p.p.":def.key==="tma"?`${Math.round(delta)} s`:fmtInt(delta)}`;
-      return`<article class="trend-panel"><header><div><span class="panel-kicker">${def.kind==="bar"?"VOLUME":"EVOLUÇÃO"}</span><h3>${def.label}</h3></div><span class="trend-delta ${Number.isFinite(delta)?good?"metric-good":"metric-danger":""}">${deltaText}</span></header>${trendChart(def,series,targetSeries)}</article>`;
-    }).join(""):empty("Importe um relatório com dados mensais para gerar os gráficos.");
-    $("comparison-head").innerHTML=`<tr><th>Indicador</th>${months.map(month=>`<th>${escapeHtml(monthLabel(month))}</th>`).join("")}</tr>`;
-    const tableDefs=defs.flatMap(def=>def.key==="tma"?[def,{key:"tmaTarget",label:"Meta TMA",format:fmtTimeFull}]:[def]);
-    $("comparison-table").innerHTML=tableDefs.map(def=>`<tr><td><strong>${def.label}</strong></td>${metrics.map(item=>`<td class="${def.percent?metricClass(item[def.key]):""}">${def.format(item[def.key])}</td>`).join("")}</tr>`).join("")||`<tr><td class="empty">Sem dados mensais.</td></tr>`;
-  }
+    const current=metrics.at(-1)||{},previous=metrics.length>1?metrics.at(-2):null,first=metrics[0]||{};
+    const kd=(key,opts)=>suiteDelta(current[key],previous?.[key],opts);
+    $("comparison-kpis").innerHTML=[
+      suiteKpi("Qualidade Média",fmtPct(current.quality),"star",{delta:kd("quality",{kind:"pp"}),foot:`Meta: ${fmtPct(qualityTarget())}`,meter:current.quality,tone:"quality"}),
+      suiteKpi("ISC Médio",fmtPct(current.isc),"survey",{delta:kd("isc",{kind:"pp"}),foot:`Meta: ${fmtPct(satisfactionTarget())}`,meter:current.isc,tone:"isc"}),
+      suiteKpi("TMA",fmtTime(current.tma),"clock",{delta:kd("tma",{kind:"seconds",lowerBetter:true}),foot:Number.isFinite(current.tmaTarget)?`Meta: ${fmtTimeFull(current.tmaTarget)}`:"Sem meta",meter:Number.isFinite(current.tmaTarget)&&current.tma?current.tmaTarget/current.tma*100:0,tone:"tma"}),
+      suiteKpi("Faltas Graves",fmtInt(current.fg),"alert",{delta:kd("fg",{kind:"percent",lowerBetter:true}),foot:"Ocorrências",tone:"danger"}),
+      suiteKpi("Reclamações",fmtInt(current.complaints),"x",{delta:kd("complaints",{kind:"percent",lowerBetter:true}),foot:"Registros no período",tone:"complaints"}),
+      suiteKpi("Elogios",fmtInt(current.compliments),"check",{delta:kd("compliments",{kind:"percent"}),foot:"Reconhecimentos",tone:"compliments"})
+    ].join("");
 
+    $("comparison-main-chart").innerHTML=generalEvolutionSvg();
+
+    const summaries=[
+      {label:"Qualidade",from:first.quality,to:current.quality,kind:"pp",lower:false,format:fmtPct},
+      {label:"ISC",from:first.isc,to:current.isc,kind:"pp",lower:false,format:fmtPct},
+      {label:"Faltas Graves",from:first.fg,to:current.fg,kind:"percent",lower:true,format:fmtInt},
+      {label:"Elogios",from:first.compliments,to:current.compliments,kind:"percent",lower:false,format:fmtInt}
+    ];
+    $("comparison-summary").innerHTML=summaries.map(x=>{const d=suiteDelta(x.to,x.from,{kind:x.kind,lowerBetter:x.lower});return`<div class="comparison-summary-row ${d.tone}"><span class="comparison-summary-icon">${d.arrow||"="}</span><div><small>${x.label}</small><strong>${d.text}</strong><span>de ${x.format(x.from)} para ${x.format(x.to)}</span></div></div>`;}).join("");
+
+    const tmaSeries=metrics.map(x=>({month:x.month,value:x.tma})),tmaTargets=metrics.map(x=>({month:x.month,value:x.tmaTarget}));
+    $("comparison-tma-chart").innerHTML=trendChart({key:"tma",label:"TMA",format:fmtTime,axis:v=>v===0?"00:00":fmtTime(v),kind:"line",time:true,targetKey:"tmaTarget",targetFormat:fmtTimeFull},tmaSeries,tmaTargets);
+    $("comparison-fg-chart").innerHTML=trendChart({key:"fg",label:"Falta Grave",format:fmtInt,axis:v=>fmtInt(v),kind:"bar"},metrics.map(x=>({month:x.month,value:x.fg})));
+
+    const defs=[
+      {key:"quality",label:"Qualidade",format:fmtPct},
+      {key:"isc",label:"ISC",format:fmtPct},
+      {key:"tma",label:"TMA",format:fmtTime},
+      {key:"fg",label:"Faltas Graves",format:fmtInt},
+      {key:"complaints",label:"Reclamações",format:fmtInt},
+      {key:"compliments",label:"Elogios",format:fmtInt},
+      {key:"internalAudit",label:"Auditorias",format:fmtInt}
+    ];
+    $("comparison-head").innerHTML=`<tr><th>Indicador</th>${months.map(month=>`<th>${escapeHtml(monthLabel(month))}</th>`).join("")}</tr>`;
+    $("comparison-table").innerHTML=defs.map(def=>`<tr><td><strong>${def.label}</strong></td>${metrics.map(item=>`<td>${def.format(item[def.key])}</td>`).join("")}</tr>`).join("")||`<tr><td class="empty">Sem dados mensais.</td></tr>`;
+    $("comparison-charts").innerHTML="";
+  }
   function renderOperators(operators){
     const visible=operators.filter(x=>state.operatorStatus==="all"||x.status===state.operatorStatus).sort((a,b)=>{const av=a[state.sort.key],bv=b[state.sort.key],dir=state.sort.direction==="asc"?1:-1;if(typeof av==="string")return av.localeCompare(bv,"pt-BR")*dir;return((Number.isFinite(av)?av:-Infinity)-(Number.isFinite(bv)?bv:-Infinity))*dir;});
-    const counts={excellent:operators.filter(x=>x.status==="excellent").length,good:operators.filter(x=>x.status==="good").length,attention:operators.filter(x=>x.status==="attention").length};
+    const qCounts=[1,2,3,4].map(q=>operators.filter(x=>x.quartileQuality===q).length),quality=average(operators.map(x=>x.quality).filter(Number.isFinite)),iscAvg=average(operators.map(x=>x.isc).filter(Number.isFinite));
+    const ctx=suitePeriodContext(),prev=ctx.previousMonth?buildOperators(filtered(ctx.previousMonth)):[],prevQuality=average(prev.map(x=>x.quality).filter(Number.isFinite)),prevIsc=average(prev.map(x=>x.isc).filter(Number.isFinite));
+    $("operators-kpis").innerHTML=[
+      suiteKpi("Total de Operadores",fmtInt(operators.length),"users",{delta:suiteDelta(operators.length,prev.length,{kind:"percent"}),foot:"Operadores no recorte",meter:100,tone:"monitoring"}),
+      suiteKpi("Destaques (Q1)",operators.length?fmtPct(qCounts[0]/operators.length*100):"—","star",{foot:`${fmtInt(qCounts[0])} operadores`,meter:operators.length?qCounts[0]/operators.length*100:0,tone:"good"}),
+      suiteKpi("Dentro da Meta (Q2)",operators.length?fmtPct(qCounts[1]/operators.length*100):"—","check",{foot:`${fmtInt(qCounts[1])} operadores`,meter:operators.length?qCounts[1]/operators.length*100:0,tone:"quality"}),
+      suiteKpi("Em Atenção (Q3/Q4)",operators.length?fmtPct((qCounts[2]+qCounts[3])/operators.length*100):"—","alert",{foot:`${fmtInt(qCounts[2]+qCounts[3])} operadores`,meter:operators.length?(qCounts[2]+qCounts[3])/operators.length*100:0,tone:"danger"}),
+      suiteKpi("Média de Qualidade",fmtPct(quality),"star",{delta:suiteDelta(quality,prevQuality,{kind:"pp"}),foot:`Meta: ${fmtPct(qualityTarget())}`,meter:quality,tone:"quality"}),
+      suiteKpi("Média de ISC",fmtPct(iscAvg),"survey",{delta:suiteDelta(iscAvg,prevIsc,{kind:"pp"}),foot:`Meta: ${fmtPct(satisfactionTarget())}`,meter:iscAvg,tone:"isc"})
+    ].join("");
+
+    const qStats=quartileStats(operators.filter(x=>Number.isFinite(x.quality)).map(x=>({value:x.quality}))),total=sum(qStats,x=>x.count),qLabels=["Primeiro quartil (Destaques)","Segundo quartil","Terceiro quartil","Quarto quartil"];
+    $("operators-quartiles").innerHTML=qStats.map((x,i)=>`<div class="suite-quartile-row q${x.q}"><span class="quartile-badge">Q${x.q}</span><strong>${qLabels[i]}</strong><i><b style="width:${total?x.count/total*100:0}%"></b></i><span>${total?Math.round(x.count/total*100):0}%</span><small>${fmtInt(x.count)} operadores</small></div>`).join("");
+
+    const withSurvey=operators.filter(x=>Number.isFinite(x.isc)).length,withFg=operators.filter(x=>x.fg>0).length,withMonitoring=operators.filter(x=>x.evaluations>0).length;
+    $("operators-general-indicators").innerHTML=[
+      ["Operadores com monitoria",withMonitoring],
+      ["Com pesquisa ISC",withSurvey],
+      ["Com falta grave",withFg],
+      ["Sem nota ISC",operators.length-withSurvey]
+    ].map(([label,value])=>`<div><span>${label}</span><strong>${fmtInt(value)}</strong></div>`).join("");
+
+    const top=[...operators].filter(x=>Number.isFinite(x.quality)).sort((a,b)=>b.quality-a.quality).slice(0,5);
+    $("operators-top").innerHTML=suiteTableRows(top,[{value:x=>x.re},{value:x=>x.operator,className:"suite-col-main"},{value:x=>fmtPct(x.quality),className:"metric-good"}],5);
+    const attention=[...operators].filter(x=>x.status==="attention").sort((a,b)=>(b.fg-a.fg)||((a.quality||0)-(b.quality||0))).slice(0,5);
+    $("operators-attention").innerHTML=suiteTableRows(attention,[{value:x=>x.re},{value:x=>x.operator,className:"suite-col-main"},{value:x=>fmtPct(x.quality)},{value:x=>fmtInt(x.fg),className:"metric-danger"}],5);
+    const sup=suiteSupervisionRows(operators);
+    $("operators-supervision").innerHTML=suiteTableRows(sup,[{value:x=>x.label,className:"suite-col-main"},{value:x=>fmtInt(x.operators)},{value:x=>fmtPct(x.quality)},{value:x=>fmtPct(x.isc)},{value:x=>fmtTime(x.tma)}],5);
+
     const paged=paginateRows(visible,state.operatorPage,state.operatorPageSize);state.operatorPage=paged.page;
     $("operator-count").textContent=visible.length?`${fmtInt(visible.length)} operadores · ${fmtInt(paged.start+1)}–${fmtInt(paged.end)}`:"0 operadores";
-    $("operator-summary").innerHTML=`<div class="summary-tile"><strong>${fmtInt(counts.excellent)}</strong><span>Destaques com média de 100%</span></div><div class="summary-tile warn"><strong>${fmtInt(counts.good)}</strong><span>Dentro da meta</span></div><div class="summary-tile danger"><strong>${fmtInt(counts.attention)}</strong><span>Para acompanhamento</span></div>`;
+    $("operator-summary").innerHTML="";
     $("operators-table").innerHTML=paged.rows.map(x=>`<tr><td>${escapeHtml(x.re)}</td><td><strong>${escapeHtml(x.operator)}</strong></td><td>${fmtInt(x.evaluations)}</td><td class="${metricClass(x.quality)}">${fmtPct(x.quality)}</td><td>${quartileBadge(x.quartileQuality)}</td><td class="${metricClass(x.isc)}">${fmtPct(x.isc)}</td><td>${fmtInt(x.calls)}</td><td>${fmtTime(x.tma)}</td><td class="${x.fg?"metric-danger":""}">${fmtInt(x.fg)}</td><td>${badge(x.status)}</td></tr>`).join("")||`<tr><td colspan="10" class="empty">Nenhum operador encontrado.</td></tr>`;
     syncPager("operator",paged,state.operatorPageSize);
   }
-
   function render(){
     const f=filtered(),operators=buildOperators(f);
     renderGeneral(f,operators);renderSpecial(f);renderQuality(f,operators);renderSurvey(f);renderFg(f);renderComparison();renderOperators(operators);
@@ -436,18 +635,34 @@
   }
 
   function updateFilterVisibility(){
-    const noSkill=["general","survey","comparison"].includes(state.view);$("skill-filter-group").classList.toggle("hidden",noSkill);if(noSkill){state.skill="all";$("skill-filter").value="all";}
+    const noSkill=["general","survey","comparison","admin"].includes(state.view);$("skill-filter-group").classList.toggle("hidden",noSkill);if(noSkill){state.skill="all";$("skill-filter").value="all";}
     const quality=state.view==="quality";$("form-filter-group").classList.toggle("hidden",!quality);if(!quality){state.form="all";$("form-filter").value="all";}
-    const comparison=state.view==="comparison";$("month-filter-group").classList.toggle("hidden",comparison);
+    const comparison=["comparison","admin"].includes(state.view);$("month-filter-group").classList.toggle("hidden",comparison);
   }
-  function updateHeader(){const config=viewHeaders[state.view]||viewHeaders.general;document.body.classList.toggle("view-general",state.view==="general");$("masthead-eyebrow").textContent=config.eyebrow;$("masthead-title").innerHTML=config.title;$("masthead-subtitle").textContent=config.subtitle;$("reference-caption").textContent=state.view==="comparison"?"PERÍODO COMPARADO":"MÊS DE REFERÊNCIA";}
+  function updateHeader(){
+    const config=viewHeaders[state.view]||viewHeaders.general;
+    document.body.classList.toggle("view-general",state.view==="general");
+    document.body.dataset.view=state.view;
+    $("masthead-eyebrow").textContent=config.eyebrow||"";
+    $("masthead-title").textContent=config.title;
+    $("masthead-subtitle").textContent=config.subtitle;
+    if($("masthead-module-icon"))$("masthead-module-icon").innerHTML=iconSvg(config.icon||"chart");
+    $("reference-caption").textContent=state.view==="comparison"?"PERÍODO COMPARADO":"MÊS DE REFERÊNCIA";
+    document.querySelector(".admin-header-refresh")?.classList.toggle("visible",state.view==="admin");
+    $("general-report")?.classList.toggle("suite-hidden-control",state.view==="admin");
+  }
   function applyTheme(theme){
     const light=theme==="light";document.body.classList.toggle("light",light);const button=$("theme-toggle");
     button.querySelector(".theme-icon").innerHTML=iconSvg(light?"moon":"sun");button.querySelector(".theme-label").textContent=light?"Modo noite":"Modo dia";button.setAttribute("aria-label",light?"Ativar modo noite":"Ativar modo dia");button.setAttribute("aria-pressed",String(light));
     try{localStorage.setItem("mq-theme",light?"light":"dark");}catch{/* preferência opcional */}
   }
-  function switchView(view){state.view=view;document.querySelectorAll(".view").forEach(x=>x.classList.toggle("active",x.id===view));document.querySelectorAll(".nav-item[data-view]").forEach(x=>x.classList.toggle("active",x.dataset.view===view));if(view!=="general")$("dashboard-filters").classList.remove("expanded");updateFilterVisibility();updateHeader();render();window.scrollTo({top:0,behavior:"smooth"});}
-
+  function switchView(view){
+    state.view=view;
+    document.querySelectorAll(".view").forEach(x=>x.classList.toggle("active",x.id===view));
+    document.querySelectorAll(".nav-item[data-view]").forEach(x=>x.classList.toggle("active",x.dataset.view===view));
+    $("dashboard-filters").classList.remove("expanded");
+    updateFilterVisibility();updateHeader();render();window.scrollTo({top:0,behavior:"smooth"});
+  }
   function exportCsv(){
     const rows=buildOperators(filtered()),quote=v=>`"${String(v??"").replaceAll('"','""')}"`,header=["Operador","RE","Supervisão","Monitorias","Qualidade (%)","ISC (%)","Atendimentos","TMA (s)","FG","Status"];
     const lines=rows.map(x=>[x.operator,x.re,x.supervisor,x.evaluations,Number.isFinite(x.quality)?x.quality.toFixed(2):"",Number.isFinite(x.isc)?x.isc.toFixed(2):"",x.calls,Number.isFinite(x.tma)?Math.round(x.tma):"",x.fg,x.status].map(quote).join(";"));
@@ -526,20 +741,65 @@
     `;document.head.appendChild(style);
   }
 
+  function renderAdminSummary(){
+    const root=$("admin-page-content");if(!root||root.dataset.ready!=="1")return;
+    const latest=availableMonths().at(-1),m=latest?comparisonMetric(latest):{quality:NaN,isc:NaN};
+    if($("admin-quality-current"))$("admin-quality-current").textContent=fmtPct(m.quality);
+    if($("admin-isc-current"))$("admin-isc-current").textContent=fmtPct(m.isc);
+    if($("admin-last-updated-card"))$("admin-last-updated-card").textContent=formatAdminDateTime(latestUpdateValue());
+  }
+
   function injectAdminInterface(status){
-    if($("admin-dialog"))return;
+    const root=$("admin-page-content");if(!root||root.dataset.ready==="1")return;
     injectAdminStyles();
-    document.querySelector(".masthead-actions").insertAdjacentHTML("beforeend",`<button class="admin-open" id="admin-open" type="button" aria-haspopup="dialog"><span>${iconSvg("upload")}</span><span>Administração</span></button>`);
     if(!$("admin-nav")){
-      $("main-nav").insertAdjacentHTML("beforeend",`<button class="nav-item admin-nav-item" id="admin-nav" type="button"><span class="nav-icon">${iconSvg("upload")}</span><b>Administração</b></button>`);
+      $("main-nav").insertAdjacentHTML("beforeend",`<button class="nav-item admin-nav-item" id="admin-nav" type="button" data-view="admin"><span class="nav-icon">${iconSvg("upload")}</span><b>Administração</b></button>`);
     }
-    document.body.insertAdjacentHTML("beforeend",`<dialog id="admin-dialog" class="import-dialog admin-dialog"><div class="dialog-card admin-card"><button class="dialog-close" id="admin-close" type="button" aria-label="Fechar">×</button><p class="eyebrow">ACESSO ADMINISTRATIVO</p><h2>Gerenciamento do relatório</h2><p class="dialog-copy">Importe novos dados, atualize o painel e acompanhe o histórico das importações.</p><div class="admin-toolbar"><button type="button" id="admin-refresh" class="secondary-button">Atualizar painel</button><span class="admin-updated" id="admin-last-updated">Última atualização: ${formatAdminDateTime(latestUpdateValue(status))}</span></div><section class="admin-section"><div><h3>Importação de dados</h3><p>O XLSX principal é processado no navegador (até <strong>30 MB</strong>). O pacote histórico consolidado <strong>JSON.GZ</strong> é importado diretamente (até <strong>4 MB</strong>). Anexos complementares: <strong>4 MB</strong>.</p></div><label class="drop-zone" id="drop-zone" for="admin-file"><input id="admin-file" type="file" accept=".xlsx,.json.gz,.xls,.csv,.pdf" /><span class="drop-icon">${iconSvg("clipboard")}</span><strong id="file-label">Escolher arquivo</strong><small>XLSX e JSON.GZ atualizam os painéis. O pacote JSON.GZ foi preparado para cargas históricas consolidadas sem alterar os demais meses.</small></label><div class="import-checklist"><span>✓ XLSX principal</span><span>✓ JSON.GZ histórico consolidado</span><span>✓ XLS, CSV e PDF complementares</span></div><div id="import-progress" class="import-progress" hidden><div class="progress-track"><span id="progress-bar"></span></div><p id="progress-label">Preparando o arquivo...</p></div><div id="import-error" class="import-error" hidden></div><button type="button" id="process-file" class="primary-button" disabled>Validar e importar</button><p class="admin-latest" id="admin-latest">${status?.upload?`Último envio: ${escapeHtml(status.upload.originalName)} · ${formatAdminDateTime(status.upload.uploadedAt)}`:"Nenhum envio administrativo registrado."}</p></section><section class="admin-section"><div><h3>Histórico de Importações</h3><p>Registros mais recentes primeiro.</p></div><div class="admin-history-wrap"><table class="admin-history"><thead><tr><th>Data/Hora</th><th>Tipo</th><th>Arquivo</th><th>Registros</th><th>Status</th><th>Detalhes</th><th>Ação</th></tr></thead><tbody id="import-history-body"><tr><td colspan="7" class="admin-history-empty">Carregando histórico...</td></tr></tbody></table></div></section><section class="admin-section"><div><h3>Configurações dos indicadores</h3><p>Defina as metas usadas nos cards, alertas e gráficos comparativos.</p></div><div class="admin-settings"><label>Meta de Qualidade (%)<input id="quality-target-setting" type="number" min="0" max="100" step="0.01" value="${qualityTarget()}"></label><label>Meta de Pesquisa — ISC (%)<input id="satisfaction-target-setting" type="number" min="0" max="100" step="0.01" value="${satisfactionTarget()}"></label></div><button type="button" id="save-settings" class="secondary-button">Salvar configurações</button><div id="settings-error" class="import-error" hidden></div></section></div></dialog>`);
-    const dialog=$("admin-dialog");
-    const openAdmin=()=>{dialog.showModal();loadImportHistory();updateLastUpdatedLabel(latestUpdateValue(status));};
-    $("admin-open").addEventListener("click",openAdmin);
-    if($("admin-nav"))$("admin-nav").addEventListener("click",openAdmin);
-    $("admin-close").addEventListener("click",()=>dialog.close());
+    const environment=location.hostname.includes("homologacao")?"Homologação":"Produção";
+    root.dataset.ready="1";
+    root.innerHTML=`
+      <div class="suite-kpi-grid admin-kpi-grid">
+        <article class="suite-kpi-card admin-static"><div class="suite-kpi-heading"><span class="suite-kpi-icon">${iconSvg("clock")}</span><strong>Última atualização</strong></div><div class="suite-kpi-value-row"><span class="suite-kpi-value admin-date-value" id="admin-last-updated-card">${formatAdminDateTime(latestUpdateValue(status))}</span></div><div class="suite-kpi-foot metric-good">● Dados importados com sucesso.</div></article>
+        <article class="suite-kpi-card admin-static"><div class="suite-kpi-heading"><span class="suite-kpi-icon">${iconSvg("layers")}</span><strong>Ambiente</strong></div><div class="suite-kpi-value-row"><span class="suite-kpi-value">${environment}</span></div><div class="suite-kpi-foot metric-good">● Sistema operacional</div></article>
+        <article class="suite-kpi-card"><div class="suite-kpi-heading"><span class="suite-kpi-icon">${iconSvg("star")}</span><strong>Meta Qualidade</strong></div><div class="suite-kpi-value-row"><span class="suite-kpi-value">${fmtPct(qualityTarget())}</span><span class="suite-kpi-delta positive">Atual <b id="admin-quality-current">—</b></span></div><div class="suite-kpi-meter"><span style="width:${qualityTarget()}%"></span></div><div class="suite-kpi-foot">Meta do ambiente</div></article>
+        <article class="suite-kpi-card"><div class="suite-kpi-heading"><span class="suite-kpi-icon">${iconSvg("survey")}</span><strong>Meta ISC</strong></div><div class="suite-kpi-value-row"><span class="suite-kpi-value">${fmtPct(satisfactionTarget())}</span><span class="suite-kpi-delta positive">Atual <b id="admin-isc-current">—</b></span></div><div class="suite-kpi-meter"><span style="width:${satisfactionTarget()}%"></span></div></article>
+        <article class="suite-kpi-card admin-static"><div class="suite-kpi-heading"><span class="suite-kpi-icon">${iconSvg("check")}</span><strong>Status do processamento</strong></div><div class="admin-status-ok"><span>✓</span><div><strong>Concluído</strong><small>Última importação processada com sucesso.</small></div></div></article>
+      </div>
+
+      <div class="suite-grid admin-main-layout">
+        <div class="admin-left-column">
+          <article class="panel suite-panel admin-import-panel">
+            <header class="suite-panel-header"><div><span class="suite-panel-icon">☁</span><div><h2>Importar novos dados</h2><p>Selecione um arquivo compatível para importar no sistema.</p></div></div></header>
+            <label class="drop-zone admin-drop-suite" id="drop-zone" for="admin-file"><input id="admin-file" type="file" accept=".xlsx,.json.gz,.xls,.csv,.pdf"><span class="drop-icon">${iconSvg("upload")}</span><strong id="file-label">Arraste e solte o arquivo aqui</strong><small>XLSX principal até 30 MB · JSON.GZ, XLS, CSV e PDF complementares até 4 MB.</small></label>
+            <div id="import-progress" class="import-progress" hidden><div class="progress-track"><span id="progress-bar"></span></div><p id="progress-label">Preparando o arquivo...</p></div>
+            <div id="import-error" class="import-error" hidden></div>
+            <div class="admin-import-actions"><button type="button" class="secondary-button" onclick="document.getElementById('admin-file').click()">Escolher arquivo</button><button type="button" id="process-file" class="primary-button" disabled>Validar e importar</button><button type="button" id="admin-refresh" class="secondary-button">↻ Atualizar painel</button></div>
+            <p class="admin-latest" id="admin-latest">${status?.upload?`Último envio: ${escapeHtml(status.upload.originalName)} · ${formatAdminDateTime(status.upload.uploadedAt)}`:"Nenhum envio administrativo registrado."}</p>
+          </article>
+
+          <article class="panel suite-panel admin-history-panel">
+            <header class="suite-panel-header"><div><span class="suite-panel-icon">▤</span><div><h2>Histórico de Importações</h2><p>Acompanhe todas as importações realizadas no sistema.</p></div></div></header>
+            <div class="admin-history-wrap"><table class="admin-history"><thead><tr><th>Data/Hora</th><th>Tipo</th><th>Arquivo</th><th>Registros</th><th>Status</th><th>Detalhes</th><th>Ação</th></tr></thead><tbody id="import-history-body"><tr><td colspan="7" class="admin-history-empty">Carregando histórico...</td></tr></tbody></table></div>
+          </article>
+        </div>
+        <div class="admin-right-column">
+          <article class="panel suite-panel admin-settings-panel">
+            <header class="suite-panel-header"><div><span class="suite-panel-icon">⚙</span><div><h2>Configurações dos indicadores</h2><p>Defina as metas e parâmetros utilizados no painel.</p></div></div></header>
+            <div class="admin-settings"><label>Meta de Qualidade (%)<input id="quality-target-setting" type="number" min="0" max="100" step="0.01" value="${qualityTarget()}"></label><label>Meta ISC (%)<input id="satisfaction-target-setting" type="number" min="0" max="100" step="0.01" value="${satisfactionTarget()}"></label></div>
+            <button type="button" id="save-settings" class="primary-button">Salvar configurações</button><div id="settings-error" class="import-error" hidden></div>
+          </article>
+          <article class="panel suite-panel"><header class="suite-panel-header"><div><span class="suite-panel-icon">●</span><div><h2>Status de processamento</h2><p>Entenda os status exibidos no histórico de importações.</p></div></div></header><div class="admin-status-guide"><div class="ok">✓ <strong>Importação concluída</strong><span>Arquivo processado com sucesso.</span></div><div class="pending">◷ <strong>Em processamento</strong><span>Arquivo em validação e processamento.</span></div><div class="error">! <strong>Erro na importação</strong><span>Falha na validação. Verifique os detalhes.</span></div></div></article>
+          <article class="panel suite-panel"><header class="suite-panel-header"><div><span class="suite-panel-icon">▣</span><div><h2>Dicas e boas práticas</h2></div></div></header><div class="admin-tips"><span>● Utilize os formatos previstos para cada importação.</span><span>● Mantenha o layout padrão de colunas.</span><span>● Verifique a qualidade dos dados antes de importar.</span><span>● Em caso de erro, revise o arquivo e tente novamente.</span><span>● Após a importação, atualize o painel.</span></div></article>
+        </div>
+      </div>
+      <span class="admin-updated" id="admin-last-updated">Última atualização: ${formatAdminDateTime(latestUpdateValue(status))}</span>
+    `;
+    renderAdminSummary();
+
+    const openAdmin=()=>switchView("admin");
+    document.querySelectorAll("[data-open-admin]").forEach(button=>button.addEventListener("click",openAdmin));
     $("admin-refresh").addEventListener("click",refreshDashboardData);
+    $("admin-refresh-header")?.addEventListener("click",refreshDashboardData);
     $("admin-file").addEventListener("change",e=>setFile(e.target.files[0]));
     $("process-file").addEventListener("click",processImport);
     $("save-settings").addEventListener("click",saveSettings);
@@ -550,7 +810,6 @@
     drop.addEventListener("drop",e=>setFile(e.dataTransfer.files[0]));
     loadImportHistory();
   }
-
   function setFile(file){
     const lowerName=(file?.name||"").toLowerCase(),extension=lowerName.endsWith(".json.gz")?"json.gz":(lowerName.split(".").pop()||""),error=$("import-error");
     const allowed=["xlsx","json.gz","xls","csv","pdf"],limitMB=extension==="xlsx"?30:4,limitBytes=limitMB*1024*1024;
@@ -681,6 +940,7 @@
   }
 
   async function bootstrap(){
+    document.body.classList.add("redesign-suite");
     let initialTheme="dark";try{initialTheme=localStorage.getItem("mq-theme")||"dark";}catch{/* modo escuro padrão */}
     await loadServerState();populateFilters();updateFilterVisibility();updateHeader();bind();applyTheme(initialTheme);render();await establishAdmin();
   }
