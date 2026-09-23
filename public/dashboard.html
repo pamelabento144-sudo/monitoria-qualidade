@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#07111f" />
   <title>Monitoria de Qualidade — Painel Geral</title>
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="/assets/styles.css?v=20260923-redesign-general5" />
+  <link rel="stylesheet" href="/assets/styles.css?v=20260923-redesign-suite1" />
 </head>
 <body>
 <svg class="svg-sprite" aria-hidden="true" width="0" height="0">
@@ -33,49 +33,55 @@
 
 <div class="app-shell">
   <aside class="sidebar">
-    <div class="brand-block brand-logo-block" aria-label="MQ — Monitoria de Qualidade"><img class="brand-logo brand-logo-dark" src="/api/logo?mode=dark&v=20260919-logo2" alt="MQ — Monitoria de Qualidade — Excelência que gera resultados"><img class="brand-logo brand-logo-light" src="/api/logo?mode=light&v=20260919-logo2" alt="MQ — Monitoria de Qualidade — Excelência que gera resultados"></div>
+    <div class="brand-block brand-logo-block" aria-label="MQ — Monitoria de Qualidade">
+      <img class="brand-logo brand-logo-dark" src="/api/logo?mode=dark&v=20260919-logo2" alt="MQ — Monitoria de Qualidade — Excelência que gera resultados">
+      <img class="brand-logo brand-logo-light" src="/api/logo?mode=light&v=20260919-logo2" alt="MQ — Monitoria de Qualidade — Excelência que gera resultados">
+    </div>
     <nav id="main-nav" class="main-nav" aria-label="Navegação principal">
       <button class="nav-item active" data-view="general"><span class="nav-icon"><svg aria-hidden="true"><use href="#icon-home"></use></svg></span><b>Visão Geral</b></button>
-      <button class="nav-item" data-view="special"><span class="nav-icon"><svg aria-hidden="true"><use href="#icon-chart"></use></svg></span><b>Análises Especiais</b></button>
-      <button class="nav-item" data-view="quality"><span class="nav-icon"><svg aria-hidden="true"><use href="#icon-star"></use></svg></span><b>Qualidade</b></button>
-      <button class="nav-item" data-view="survey"><span class="nav-icon"><svg aria-hidden="true"><use href="#icon-clipboard"></use></svg></span><b>Pesquisa ISC</b></button>
+      <button class="nav-item" data-view="quality"><span class="nav-icon"><svg aria-hidden="true"><use href="#icon-chart"></use></svg></span><b>Qualidade</b></button>
+      <button class="nav-item" data-view="survey"><span class="nav-icon"><svg aria-hidden="true"><use href="#icon-survey"></use></svg></span><b>Pesquisa ISC</b></button>
       <button class="nav-item" data-view="fg"><span class="nav-icon"><svg aria-hidden="true"><use href="#icon-alert"></use></svg></span><b>Falta Grave</b></button>
       <button class="nav-item" data-view="comparison"><span class="nav-icon"><svg aria-hidden="true"><use href="#icon-trend"></use></svg></span><b>Comparativo Mensal</b></button>
       <button class="nav-item" data-view="operators"><span class="nav-icon"><svg aria-hidden="true"><use href="#icon-users"></use></svg></span><b>Operadores</b></button>
     </nav>
     <div class="sidebar-motto"><span>Pessoas</span><span>Processos</span><span>Resultados</span><strong>com mais qualidade.</strong></div>
-    <button id="side-export" class="export-button">Exportar CSV</button>
-    <div class="sidebar-foot"><span>Central SP156</span><small>Monitoria de Qualidade</small></div>
+    <button id="side-export" class="export-button suite-hidden-control" type="button">Exportar CSV</button>
+    <div class="sidebar-foot"><strong>MQ</strong><span>Qualidade hoje.</span><small>Melhores resultados amanhã.</small></div>
   </aside>
 
   <main class="main-content">
-    <header class="masthead">
+    <header class="masthead suite-masthead">
       <div class="masthead-copy">
-        <p class="eyebrow" id="masthead-eyebrow">VISÃO CONSOLIDADA</p>
-        <h1 id="masthead-title">PAINEL <span>GERAL</span></h1>
-        <p id="masthead-subtitle">Indicadores de qualidade, performance e experiência do cidadão</p>
+        <span id="masthead-module-icon" class="masthead-module-icon" aria-hidden="true"><svg><use href="#icon-chart"></use></svg></span>
+        <div class="masthead-copy-text">
+          <p class="eyebrow" id="masthead-eyebrow">VISÃO CONSOLIDADA</p>
+          <h1 id="masthead-title">Painel Geral</h1>
+          <p id="masthead-subtitle">Uma visão completa da qualidade para decisões mais assertivas.</p>
+        </div>
       </div>
-      <div class="general-header-actions" aria-label="Ações do Painel Geral">
-        <div class="general-header-meta">
+      <div class="general-header-actions">
+        <button id="general-filter-toggle" class="general-header-meta general-period-control" type="button" aria-expanded="false">
           <span class="general-header-meta-icon"><svg aria-hidden="true"><use href="#icon-grid"></use></svg></span>
           <div><small>Período</small><strong id="general-reference-label">AGOSTO/2026</strong></div>
-        </div>
+          <span class="period-chevron">⌄</span>
+        </button>
         <div class="general-header-meta">
           <span class="general-header-meta-icon"><svg aria-hidden="true"><use href="#icon-clock"></use></svg></span>
           <div><small>Última atualização</small><strong id="general-last-update">—</strong></div>
         </div>
-        <button id="general-filter-toggle" class="general-header-button secondary" type="button"><span>☷</span>Filtros</button>
         <button id="general-export" class="general-header-button secondary" type="button"><span>⇩</span>Exportar</button>
         <button id="general-report" class="general-header-button primary" type="button"><span>▤</span>Gerar relatório</button>
+        <button id="admin-refresh-header" class="general-header-button primary admin-header-refresh" type="button"><span>↻</span>Atualizar painel</button>
       </div>
-      <div class="masthead-actions">
+      <div class="masthead-actions suite-hidden-control">
         <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Ativar modo dia"><span class="theme-icon"><svg><use href="#icon-sun"></use></svg></span><span class="theme-label">Modo dia</span></button>
       </div>
-      <div class="reference-card"><small id="reference-caption">MÊS DE REFERÊNCIA</small><strong id="reference-label">AGOSTO/2026</strong><span id="last-update">Dados carregados do relatório-base</span></div>
+      <div class="reference-card suite-hidden-control"><small id="reference-caption">MÊS DE REFERÊNCIA</small><strong id="reference-label">AGOSTO/2026</strong><span id="last-update">Dados carregados do relatório-base</span></div>
     </header>
 
-    <button id="mobile-filter-toggle" class="mobile-filter-toggle" aria-expanded="false"><span>▱</span> Filtros de consulta <b>›</b></button>
-    <section id="dashboard-filters" class="dashboard-filters">
+    <button id="mobile-filter-toggle" class="mobile-filter-toggle suite-hidden-control" aria-expanded="false"><span>▱</span> Filtros de consulta <b>›</b></button>
+    <section id="dashboard-filters" class="dashboard-filters suite-filter-drawer">
       <label id="month-filter-group">Mês<select id="month-filter"></select></label>
       <label id="skill-filter-group">Skill<select id="skill-filter"></select></label>
       <label id="form-filter-group">Aferição<select id="form-filter"></select></label>
@@ -84,143 +90,162 @@
       <button id="clear-filters" class="clear-button">Limpar filtros</button>
     </section>
 
-    <section class="view active general-redesign" id="general">
-      <div id="general-kpis" class="general-kpi-grid"></div>
+    <section class="view active general-redesign suite-view" id="general">
+      <div id="general-kpis" class="general-kpi-grid suite-kpi-grid suite-kpi-grid-4"></div>
 
-      <div class="general-primary-grid">
-        <article class="panel general-evolution-panel">
-          <header class="general-panel-header">
-            <div>
-              <span>EVOLUÇÃO</span>
-              <h2>Evolução Mensal dos Indicadores</h2>
-              <p>Acompanhe Qualidade e ISC ao longo dos meses e a aderência às metas.</p>
-            </div>
-            <div class="general-chart-legend">
-              <span><i class="dot quality"></i>Qualidade</span>
-              <span><i class="dot isc"></i>ISC</span>
-              <span><i class="dash"></i>Metas</span>
-            </div>
+      <div class="suite-grid suite-grid-main general-primary-grid">
+        <article class="panel suite-panel suite-chart-panel general-evolution-panel">
+          <header class="suite-panel-header general-panel-header">
+            <div><span class="suite-panel-icon">▥</span><div><h2>Evolução Mensal dos Indicadores</h2><p>Acompanhe o desempenho e a tendência dos principais indicadores.</p></div></div>
+            <div class="general-chart-legend"><span><i class="dot quality"></i>Qualidade</span><span><i class="dot isc"></i>ISC</span><span><i class="dash"></i>Meta Qualidade</span></div>
           </header>
           <div id="general-evolution" class="general-evolution"></div>
         </article>
-
-        <article class="panel general-quartiles-panel">
-          <header class="general-panel-header">
-            <div>
-              <span>PERFORMANCE</span>
-              <h2>Distribuição por Quartis</h2>
-              <p>Classificação dos operadores pela nota de Qualidade.</p>
-            </div>
-          </header>
+        <article class="panel suite-panel general-quartiles-panel">
+          <header class="suite-panel-header general-panel-header"><div><span class="suite-panel-icon">▥</span><div><h2>Distribuição por Quartis</h2><p>Performance dos operadores no período.</p></div></div></header>
           <div id="general-quartile-overview" class="general-quartile-overview"></div>
         </article>
       </div>
 
-      <div class="general-bottom-grid">
-        <article class="panel general-compact-panel">
-          <header class="general-panel-header">
-            <div>
-              <span>DESTAQUES</span>
-              <h2>Operadores em destaque</h2>
-              <p>Maiores resultados de Qualidade no período.</p>
-            </div>
-          </header>
+      <div class="suite-grid suite-grid-bottom general-bottom-grid">
+        <article class="panel suite-panel general-compact-panel">
+          <header class="suite-panel-header general-panel-header"><div><span class="suite-panel-icon trophy">★</span><div><h2>Operadores em destaque</h2><p>Melhores desempenhos no período.</p></div></div></header>
           <div id="general-top-operators" class="general-top-operators"></div>
         </article>
-
-        <article class="panel general-compact-panel">
-          <header class="general-panel-header">
-            <div>
-              <span>ACOMPANHAMENTO</span>
-              <h2>Pontos de atenção</h2>
-              <p>Sinais que merecem acompanhamento da gestão.</p>
-            </div>
-          </header>
+        <article class="panel suite-panel general-compact-panel">
+          <header class="suite-panel-header general-panel-header"><div><span class="suite-panel-icon danger">!</span><div><h2>Pontos de atenção</h2><p>Situações que exigem acompanhamento.</p></div></div></header>
           <div id="general-attention" class="general-attention"></div>
         </article>
-
-        <article class="panel general-compact-panel">
-          <header class="general-panel-header">
-            <div>
-              <span>ATUALIZAÇÃO</span>
-              <h2>Administração</h2>
-              <p>Resumo da área de importação e processamento.</p>
-            </div>
-          </header>
+        <article class="panel suite-panel general-compact-panel">
+          <header class="suite-panel-header general-panel-header"><div><span class="suite-panel-icon">⚙</span><div><h2>Administração</h2><p>Resumo da área de importação e processamento.</p></div></div><button class="suite-link-button" type="button" data-open-admin>Acessar área →</button></header>
           <div id="general-update-summary" class="general-update-summary"></div>
         </article>
       </div>
     </section>
 
-    <section class="view" id="special">
+    <section class="view suite-view legacy-special-view" id="special" aria-hidden="true">
       <div id="special-kpis" class="kpi-grid four"></div>
       <div class="content-grid three"><article class="panel"><h2>Origem e Procedência</h2><div id="special-origin"></div></article><article class="panel"><h2>Por Skill</h2><div id="special-skills"></div></article><article class="panel"><h2>Por Ficha</h2><div id="special-forms"></div></article></div>
       <article class="panel table-panel"><header><div><h2>Operadores Analisados</h2><span id="special-operator-count"></span></div></header><div class="table-scroll"><table id="special-operators-table"><thead><tr><th>RE</th><th>Operador</th><th id="special-supervisor-header">Supervisão</th><th>Skill</th><th>Total</th><th>Procedente</th><th>Improcedente</th></tr></thead><tbody id="special-operators"></tbody></table></div><footer class="pager"><label>Por página<select id="special-page-size"><option>25</option><option selected>50</option><option>100</option><option>200</option></select></label><button id="special-prev">Anterior</button><strong id="special-page-indicator">1 de 1</strong><button id="special-next">Próxima</button><form id="special-page-form"><label>Ir para <input id="special-page-input" type="number" min="1" value="1"></label><button>Ir</button></form></footer></article>
     </section>
 
-    <section class="view" id="quality">
-      <div id="quality-kpis" class="kpi-grid four"></div>
-      <div class="content-grid three">
-        <article class="panel quality-summary-panel"><h2>Por Origem</h2><div class="summary-table-wrap"><table class="compact-summary-table"><tbody id="quality-origin-table"></tbody></table></div></article>
-        <article class="panel quality-summary-panel"><h2>Por Skill</h2><div class="summary-table-wrap"><table class="compact-summary-table"><tbody id="quality-skill-table"></tbody></table></div>
-          <footer class="pager data-pager">
-            <label>Por página<select id="quality-skill-page-size"><option value="10" selected>10</option><option value="15">15</option><option value="30">30</option><option value="all">Todos</option></select></label>
-            <button type="button" id="quality-skill-prev">Anterior</button><strong id="quality-skill-page-indicator">1 de 1</strong><button type="button" id="quality-skill-next">Próxima</button>
-            <form id="quality-skill-page-form"><label>Ir para <input id="quality-skill-page-input" type="number" min="1" value="1"></label><button type="submit">Ir</button></form>
-          </footer>
+    <section class="view suite-view" id="quality">
+      <div id="quality-kpis" class="suite-kpi-grid suite-kpi-grid-6"></div>
+      <div class="suite-grid quality-main-layout">
+        <article class="panel suite-panel suite-chart-panel quality-evolution-panel">
+          <header class="suite-panel-header"><div><span class="suite-panel-icon">▥</span><div><h2>Evolução Mensal da Qualidade</h2><p>Acompanhe a evolução da qualidade, monitorias e itens aferidos no período.</p></div></div><span class="suite-period-chip">Últimos meses</span></header>
+          <div id="quality-evolution" class="suite-chart-host"></div>
         </article>
-        <article class="panel quality-summary-panel"><h2>Por Ficha</h2><div class="summary-table-wrap"><table class="compact-summary-table"><tbody id="quality-form-table"></tbody></table></div></article>
+        <div class="quality-side-stack">
+          <article class="panel suite-panel">
+            <header class="suite-panel-header"><div><span class="suite-panel-icon">◕</span><div><h2>Distribuição das Notas</h2><p>Percentual de monitorias por faixa de qualidade.</p></div></div></header>
+            <div id="quality-distribution" class="suite-distribution-list"></div>
+          </article>
+          <article class="panel suite-panel">
+            <header class="suite-panel-header"><div><span class="suite-panel-icon">▥</span><div><h2>Quartis de Qualidade</h2><p>Desempenho da operação distribuído por quartis.</p></div></div></header>
+            <div id="quality-quartiles-new" class="suite-quartile-cards"></div>
+          </article>
+        </div>
       </div>
-      <div class="content-grid two"><article class="panel"><h2>Tipo de Monitoria</h2><div id="quality-type-chart"></div></article><article class="panel"><h2>Principais Ofensores</h2><div id="criteria-offenders"></div></article></div>
-      <article class="panel table-panel"><header><div><h2>Itens Aferidos</h2></div><label>Dimensão<select id="criteria-dimension-filter"><option value="all">Todas</option><option value="Qualidade">Qualidade</option><option value="Processo">Processo</option></select></label></header><div class="table-scroll"><table id="criteria-items-table"><thead><tr><th>Critério</th><th>Tipo</th><th>Peso</th><th>Total</th><th>Acertos</th><th>Erros</th><th>% Acerto</th><th>% Erro</th></tr></thead><tbody id="criteria-table"></tbody></table></div>
-        <footer class="pager data-pager">
-          <label>Por página<select id="criteria-page-size"><option value="10" selected>10</option><option value="15">15</option><option value="30">30</option><option value="all">Todos</option></select></label>
-          <button type="button" id="criteria-prev">Anterior</button><strong id="criteria-page-indicator">1 de 1</strong><button type="button" id="criteria-next">Próxima</button>
-          <form id="criteria-page-form"><label>Ir para <input id="criteria-page-input" type="number" min="1" value="1"></label><button type="submit">Ir</button></form>
-        </footer>
+      <div class="suite-grid quality-lower-layout">
+        <article class="panel suite-panel"><header class="suite-panel-header"><div><span class="suite-panel-icon">◇</span><div><h2>Qualidade por Skill</h2><p>Média de qualidade por skill monitorada.</p></div></div></header><div id="quality-skill-ranking" class="suite-rank-list"></div></article>
+        <article class="panel suite-panel"><header class="suite-panel-header"><div><span class="suite-panel-icon">▤</span><div><h2>Itens mais aferidos</h2><p>Itens do check-list com maior volume de avaliação.</p></div></div></header><div id="quality-top-criteria" class="suite-rank-list"></div></article>
+        <article class="panel suite-panel"><header class="suite-panel-header"><div><span class="suite-panel-icon danger">!</span><div><h2>Principais desvios</h2><p>Itens com maior incidência de erro.</p></div></div></header><div id="quality-deviations" class="suite-rank-list"></div></article>
+      </div>
+      <article class="panel suite-panel quality-supervision-panel"><header class="suite-panel-header"><div><span class="suite-panel-icon">●●</span><div><h2>Desempenho por Supervisão</h2><p>Visão da qualidade por supervisão da operação.</p></div></div></header><div id="quality-supervision" class="suite-table-like"></div></article>
+
+      <div class="legacy-compat" aria-hidden="true">
+        <table><tbody id="quality-origin-table"></tbody></table><table><tbody id="quality-skill-table"></tbody></table><table><tbody id="quality-form-table"></tbody></table>
+        <div id="quality-type-chart"></div><div id="criteria-offenders"></div>
+        <select id="criteria-dimension-filter"><option value="all">Todas</option><option value="Qualidade">Qualidade</option><option value="Processo">Processo</option></select>
+        <table><tbody id="criteria-table"></tbody></table>
+        <select id="quality-skill-page-size"><option value="10" selected>10</option><option value="15">15</option><option value="30">30</option><option value="all">Todos</option></select>
+        <button id="quality-skill-prev"></button><strong id="quality-skill-page-indicator"></strong><button id="quality-skill-next"></button><form id="quality-skill-page-form"><input id="quality-skill-page-input" type="number" min="1" value="1"><button></button></form>
+        <select id="criteria-page-size"><option value="10" selected>10</option><option value="15">15</option><option value="30">30</option><option value="all">Todos</option></select>
+        <button id="criteria-prev"></button><strong id="criteria-page-indicator"></strong><button id="criteria-next"></button><form id="criteria-page-form"><input id="criteria-page-input" type="number" min="1" value="1"><button></button></form>
+      </div>
+    </section>
+
+    <section class="view suite-view" id="survey">
+      <div id="survey-kpis" class="suite-kpi-grid suite-kpi-grid-6"></div>
+      <div class="suite-grid survey-main-layout">
+        <article class="panel suite-panel suite-chart-panel">
+          <header class="suite-panel-header"><div><span class="suite-panel-icon">▥</span><div><h2>Evolução Mensal do ISC</h2><p>Acompanhe a satisfação do cidadão e a aderência à meta ao longo do período.</p></div></div></header>
+          <div id="survey-evolution" class="suite-chart-host"></div>
+        </article>
+        <article class="panel suite-panel">
+          <header class="suite-panel-header"><div><span class="suite-panel-icon">▥</span><div><h2>Distribuição por Quartis do ISC</h2><p>Classificação dos operadores com base no resultado da pesquisa.</p></div></div></header>
+          <div id="survey-quartile-detail" class="survey-quartile-suite"></div>
+        </article>
+      </div>
+      <div class="suite-grid survey-lower-layout">
+        <article class="panel suite-panel"><header class="suite-panel-header"><div><span class="suite-panel-icon">●●</span><div><h2>ISC por Supervisão</h2><p>Desempenho médio do ISC por supervisão.</p></div></div></header><div id="survey-supervision" class="suite-table-like"></div></article>
+        <article class="panel suite-panel"><header class="suite-panel-header"><div><span class="suite-panel-icon trophy">★</span><div><h2>Top Operadores em Pesquisa</h2><p>Melhores resultados de ISC no período.</p></div></div></header><div id="survey-top-operators" class="suite-table-like"></div></article>
+        <article class="panel suite-panel"><header class="suite-panel-header"><div><span class="suite-panel-icon">●●●</span><div><h2>Perguntas P1, P2 e P3</h2><p>Resultados das principais perguntas da pesquisa.</p></div></div></header><div id="survey-question-circles" class="suite-question-circles"></div></article>
+      </div>
+      <article class="panel suite-panel table-panel suite-data-table-panel">
+        <header class="suite-panel-header"><div><span class="suite-panel-icon">☷</span><div><h2>Pesquisa por Operador</h2><p id="survey-operator-count"></p></div></div><div class="suite-table-actions"><label>Quartil<select id="survey-quartile-filter"><option value="all">Todos</option><option value="1">1º Quartil</option><option value="2">2º Quartil</option><option value="3">3º Quartil</option><option value="4">4º Quartil</option></select></label></div></header>
+        <div class="table-scroll"><table id="survey-operators-table"><thead><tr><th>RE</th><th>Operador</th><th id="survey-supervisor-header">Supervisão</th><th>Respostas</th><th>P1</th><th>P2</th><th>P3</th><th>ISC</th><th>Quartil</th></tr></thead><tbody id="survey-table"></tbody></table></div>
+        <footer class="pager data-pager"><label>Por página<select id="survey-page-size"><option value="25" selected>25</option><option value="50">50</option><option value="100">100</option><option value="all">Todos</option></select></label><button type="button" id="survey-prev">Anterior</button><strong id="survey-page-indicator">1 de 1</strong><button type="button" id="survey-next">Próxima</button><form id="survey-page-form"><label>Ir para <input id="survey-page-input" type="number" min="1" value="1"></label><button type="submit">Ir</button></form></footer>
       </article>
     </section>
 
-    <section class="view" id="survey">
-      <div id="survey-kpis" class="kpi-grid"></div><div id="survey-quartile-detail" class="quartile-detail"></div>
-      <article class="panel table-panel"><header><div><h2>Pesquisa por Operador</h2><span id="survey-operator-count"></span></div><label>Quartil<select id="survey-quartile-filter"><option value="all">Todos</option><option value="1">1º Quartil</option><option value="2">2º Quartil</option><option value="3">3º Quartil</option><option value="4">4º Quartil</option></select></label></header><div class="table-scroll"><table id="survey-operators-table"><thead><tr><th>RE</th><th>Operador</th><th id="survey-supervisor-header">Supervisão</th><th>Respostas</th><th>P1</th><th>P2</th><th>P3</th><th>ISC</th><th>Quartil</th></tr></thead><tbody id="survey-table"></tbody></table></div>
-        <footer class="pager data-pager">
-          <label>Por página<select id="survey-page-size"><option value="25" selected>25</option><option value="50">50</option><option value="100">100</option><option value="all">Todos</option></select></label>
-          <button type="button" id="survey-prev">Anterior</button><strong id="survey-page-indicator">1 de 1</strong><button type="button" id="survey-next">Próxima</button>
-          <form id="survey-page-form"><label>Ir para <input id="survey-page-input" type="number" min="1" value="1"></label><button type="submit">Ir</button></form>
-        </footer>
-      </article>
+    <section class="view suite-view" id="fg">
+      <div id="fg-kpis" class="suite-kpi-grid suite-kpi-grid-6"></div>
+      <div class="suite-grid fg-main-layout">
+        <article class="panel suite-panel suite-chart-panel"><header class="suite-panel-header"><div><span class="suite-panel-icon">▥</span><div><h2>Falta Grave por Mês</h2><p>Evolução das ocorrências críticas no período.</p></div></div></header><div id="fg-monthly" class="suite-chart-host"></div></article>
+        <article class="panel suite-panel"><header class="suite-panel-header"><div><span class="suite-panel-icon">⚙</span><div><h2>Distribuição por Motivo</h2><p>Motivos com maior incidência.</p></div></div></header><div id="fg-reasons" class="suite-rank-list"></div></article>
+      </div>
+      <div class="suite-grid fg-lower-layout">
+        <article class="panel suite-panel"><header class="suite-panel-header"><div><span class="suite-panel-icon">◇</span><div><h2>Origem das Faltas Graves</h2><p>Distribuição das ocorrências por origem.</p></div></div></header><div id="fg-origins" class="suite-rank-list"></div></article>
+        <article class="panel suite-panel"><header class="suite-panel-header"><div><span class="suite-panel-icon">◉</span><div><h2>Skills com Maior Incidência</h2><p>Skills com mais ocorrências no período.</p></div></div></header><div id="fg-skills" class="suite-rank-list"></div></article>
+        <article class="panel suite-panel"><header class="suite-panel-header"><div><span class="suite-panel-icon">◎</span><div><h2>Meta e Desempenho</h2><p>Acompanhamento do volume de faltas graves.</p></div></div></header><div id="fg-performance" class="fg-performance-card"></div></article>
+      </div>
+      <article class="panel suite-panel table-panel suite-data-table-panel"><header class="suite-panel-header"><div><span class="suite-panel-icon trophy">★</span><div><h2>Operadores com Falta Grave</h2><p id="fg-operator-count"></p></div></div></header><div class="table-scroll"><table id="fg-operators-table"><thead><tr><th>RE</th><th>Operador</th><th id="fg-supervisor-header">Supervisão</th><th>FGs</th><th>Motivo</th><th>Origem</th><th>Skill</th></tr></thead><tbody id="fg-operators"></tbody></table></div><footer class="pager data-pager"><label>Por página<select id="fg-page-size"><option value="10" selected>10</option><option value="15">15</option><option value="30">30</option><option value="all">Todos</option></select></label><button type="button" id="fg-prev">Anterior</button><strong id="fg-page-indicator">1 de 1</strong><button type="button" id="fg-next">Próxima</button><form id="fg-page-form"><label>Ir para <input id="fg-page-input" type="number" min="1" value="1"></label><button type="submit">Ir</button></form></footer></article>
     </section>
 
-    <section class="view" id="fg">
-      <div id="fg-kpis" class="kpi-grid four"></div>
-      <div class="content-grid three"><article class="panel"><h2>Motivos</h2><div id="fg-reasons"></div></article><article class="panel"><h2>Origens</h2><div id="fg-origins"></div></article><article class="panel"><h2>Skills</h2><div id="fg-skills"></div></article></div>
-      <article class="panel table-panel"><header><div><h2>Operadores com Falta Grave</h2><span id="fg-operator-count"></span></div></header><div class="table-scroll"><table id="fg-operators-table"><thead><tr><th>RE</th><th>Operador</th><th id="fg-supervisor-header">Supervisão</th><th>FGs</th><th>Motivo</th><th>Origem</th><th>Skill</th></tr></thead><tbody id="fg-operators"></tbody></table></div>
-        <footer class="pager data-pager">
-          <label>Por página<select id="fg-page-size"><option value="10" selected>10</option><option value="15">15</option><option value="30">30</option><option value="all">Todos</option></select></label>
-          <button type="button" id="fg-prev">Anterior</button><strong id="fg-page-indicator">1 de 1</strong><button type="button" id="fg-next">Próxima</button>
-          <form id="fg-page-form"><label>Ir para <input id="fg-page-input" type="number" min="1" value="1"></label><button type="submit">Ir</button></form>
-        </footer>
-      </article>
+    <section class="view suite-view" id="comparison">
+      <div id="comparison-kpis" class="suite-kpi-grid suite-kpi-grid-6"></div>
+      <div class="suite-grid comparison-main-layout">
+        <article class="panel suite-panel suite-chart-panel"><header class="suite-panel-header"><div><span class="suite-panel-icon">▥</span><div><h2>Evolução dos Indicadores</h2><p>Qualidade e ISC ao longo dos meses, com linhas de meta.</p></div></div></header><div id="comparison-main-chart" class="suite-chart-host"></div></article>
+        <article class="panel suite-panel"><header class="suite-panel-header"><div><span class="suite-panel-icon">▣</span><div><h2>Resumo do Período</h2><p>Comparação entre o primeiro e o último mês disponível.</p></div></div></header><div id="comparison-summary" class="comparison-summary-list"></div></article>
+      </div>
+      <div class="suite-grid comparison-lower-layout">
+        <article class="panel suite-panel suite-chart-panel compact"><header class="suite-panel-header"><div><span class="suite-panel-icon">◷</span><div><h2>TMA x Meta</h2><p>Tempo Médio de Atendimento por mês.</p></div></div></header><div id="comparison-tma-chart" class="suite-chart-host"></div></article>
+        <article class="panel suite-panel suite-chart-panel compact"><header class="suite-panel-header"><div><span class="suite-panel-icon danger">!</span><div><h2>Falta Grave por Mês</h2><p>Total de faltas graves no período.</p></div></div></header><div id="comparison-fg-chart" class="suite-chart-host"></div></article>
+      </div>
+      <article class="panel suite-panel table-panel suite-data-table-panel"><header class="suite-panel-header"><div><span class="suite-panel-icon">▥</span><div><h2>Tabela Comparativa Mensal</h2><p>Valores dos principais indicadores no período.</p></div></div></header><div class="table-scroll"><table><thead id="comparison-head"></thead><tbody id="comparison-table"></tbody></table></div></article>
+      <div id="comparison-charts" class="legacy-compat" aria-hidden="true"></div>
     </section>
 
-    <section class="view" id="comparison"><div id="comparison-charts" class="comparison-charts"></div><article class="panel table-panel"><div class="table-scroll"><table><thead id="comparison-head"></thead><tbody id="comparison-table"></tbody></table></div></article></section>
+    <section class="view suite-view" id="operators">
+      <div id="operators-kpis" class="suite-kpi-grid suite-kpi-grid-6"></div>
+      <div class="suite-grid operators-main-layout">
+        <article class="panel suite-panel table-panel suite-data-table-panel operators-list-panel">
+          <header class="suite-panel-header"><div><span class="suite-panel-icon">▥</span><div><h2>Lista de Operadores</h2><p id="operator-count"></p></div></div><div class="suite-table-actions"><label>Status<select id="operator-status-filter"><option value="all">Todos</option><option value="excellent">Destaque</option><option value="good">Dentro da meta</option><option value="attention">Acompanhamento</option></select></label></div></header>
+          <div class="table-scroll"><table id="operators-main-table" class="sortable"><thead><tr><th data-sort="re">RE</th><th data-sort="operator">Operador</th><th data-sort="evaluations">Monitorias</th><th data-sort="quality">Qualidade</th><th data-sort="quartileQuality">Quartil Qualidade</th><th data-sort="isc">ISC</th><th data-sort="calls">Atendimentos</th><th data-sort="tma">TMA</th><th data-sort="fg">FG</th><th data-sort="status">Status</th></tr></thead><tbody id="operators-table"></tbody></table></div>
+          <footer class="pager data-pager"><label>Por página<select id="operator-page-size"><option value="10" selected>10</option><option value="15">15</option><option value="30">30</option><option value="all">Todos</option></select></label><button type="button" id="operator-prev">Anterior</button><strong id="operator-page-indicator">1 de 1</strong><button type="button" id="operator-next">Próxima</button><form id="operator-page-form"><label>Ir para <input id="operator-page-input" type="number" min="1" value="1"></label><button type="submit">Ir</button></form></footer>
+        </article>
+        <div class="operators-side-stack">
+          <article class="panel suite-panel"><header class="suite-panel-header"><div><span class="suite-panel-icon">▥</span><div><h2>Distribuição por Quartis</h2><p>Distribuição dos operadores por quartil de qualidade.</p></div></div></header><div id="operators-quartiles" class="survey-quartile-suite"></div></article>
+          <article class="panel suite-panel"><header class="suite-panel-header"><div><span class="suite-panel-icon">◎</span><div><h2>Indicadores Gerais</h2><p>Visão consolidada do quadro no período.</p></div></div></header><div id="operators-general-indicators" class="operators-general-list"></div></article>
+        </div>
+      </div>
+      <div class="suite-grid operators-lower-layout">
+        <article class="panel suite-panel"><header class="suite-panel-header"><div><span class="suite-panel-icon trophy">★</span><div><h2>Top Operadores</h2><p>Melhores desempenhos no período.</p></div></div></header><div id="operators-top" class="suite-table-like"></div></article>
+        <article class="panel suite-panel"><header class="suite-panel-header"><div><span class="suite-panel-icon danger">!</span><div><h2>Operadores em Atenção</h2><p>Operadores que necessitam de acompanhamento.</p></div></div></header><div id="operators-attention" class="suite-table-like"></div></article>
+        <article class="panel suite-panel"><header class="suite-panel-header"><div><span class="suite-panel-icon">▥</span><div><h2>Performance por Supervisão</h2><p>Média de qualidade, ISC e TMA por supervisão.</p></div></div></header><div id="operators-supervision" class="suite-table-like"></div></article>
+      </div>
+      <div id="operator-summary" class="legacy-compat" aria-hidden="true"></div>
+    </section>
 
-    <section class="view" id="operators">
-      <div class="operator-tools"><div><h2>Desempenho Individual</h2><span id="operator-count"></span></div><label>Status<select id="operator-status-filter"><option value="all">Todos</option><option value="excellent">Destaque</option><option value="good">Dentro da meta</option><option value="attention">Acompanhamento</option></select></label></div>
-      <div id="operator-summary" class="operator-summary"></div>
-      <article class="panel table-panel"><div class="table-scroll"><table id="operators-main-table" class="sortable"><thead><tr><th data-sort="re">RE</th><th data-sort="operator">Operador</th><th data-sort="evaluations">Monitorias</th><th data-sort="quality">Qualidade</th><th data-sort="quartileQuality">Quartil Qualidade</th><th data-sort="isc">ISC</th><th data-sort="calls">Atendimentos</th><th data-sort="tma">TMA</th><th data-sort="fg">FG</th><th data-sort="status">Status</th></tr></thead><tbody id="operators-table"></tbody></table></div>
-        <footer class="pager data-pager">
-          <label>Por página<select id="operator-page-size"><option value="10" selected>10</option><option value="15">15</option><option value="30">30</option><option value="all">Todos</option></select></label>
-          <button type="button" id="operator-prev">Anterior</button><strong id="operator-page-indicator">1 de 1</strong><button type="button" id="operator-next">Próxima</button>
-          <form id="operator-page-form"><label>Ir para <input id="operator-page-input" type="number" min="1" value="1"></label><button type="submit">Ir</button></form>
-        </footer>
-      </article>
+    <section class="view suite-view admin-view" id="admin">
+      <div id="admin-page-content" class="admin-page-content"><div class="panel suite-panel admin-placeholder">Acesso administrativo necessário.</div></div>
     </section>
   </main>
 </div>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 <script src="/assets/dashboard-data.js"></script>
-<script src="/assets/app.js?v=20260922-redesign-general3"></script>
+<script src="/assets/app.js?v=20260923-redesign-suite1"></script>
 </body>
 </html>
