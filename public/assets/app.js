@@ -8,7 +8,7 @@
   const monthNames={Jan:"JANEIRO",Fev:"FEVEREIRO",Mar:"MARÇO",Abr:"ABRIL",Mai:"MAIO",Jun:"JUNHO",Jul:"JULHO",Ago:"AGOSTO",Set:"SETEMBRO",Out:"OUTUBRO",Nov:"NOVEMBRO",Dez:"DEZEMBRO"};
   const monthOrder={Jan:1,Fev:2,Mar:3,Abr:4,Mai:5,Jun:6,Jul:7,Ago:8,Set:9,Out:10,Nov:11,Dez:12};
   const viewHeaders={
-    general:{eyebrow:"VISÃO CONSOLIDADA",title:'PAINEL <span>GERAL</span>',subtitle:"Indicadores de qualidade, performance e experiência do cidadão"},
+    general:{eyebrow:"VISÃO CONSOLIDADA",title:'Painel <span>Geral</span>',subtitle:"Uma visão completa da qualidade para decisões mais assertivas."},
     special:{eyebrow:"ANÁLISES DE ATENDIMENTO",title:'ANÁLISES <span>ESPECIAIS</span>',subtitle:"Reclamações, elogios, ofícios e auditorias cliente e interna"},
     quality:{eyebrow:"MONITORIAS AVALIADAS",title:'PAINEL DE <span>QUALIDADE</span>',subtitle:"Distribuição das avaliações, médias e itens de aferição"},
     survey:{eyebrow:"EXPERIÊNCIA DO CIDADÃO",title:'PESQUISA <span>ISC</span>',subtitle:"Índice de satisfação calculado pelas perguntas P1, P2 e P3"},
@@ -154,36 +154,126 @@
 
   function renderPodium(target,items,format){const ordered=[...items].sort((a,b)=>(Number(b.value)||0)-(Number(a.value)||0));$(target).innerHTML=ordered.length?ordered.slice(0,3).map((x,i)=>`<div class="podium-entry"><span class="podium-number">${i+1}</span><span class="podium-name" title="${escapeHtml(x.label)}">${escapeHtml(shorten(x.label,31))}</span><div class="bar-track"><div class="bar-fill ${x.color||""}" style="width:${Math.max(4,x.width||70)}%"></div></div><strong class="podium-value">${format(x.value)}</strong></div>`).join(""):empty();}
 
+  function generalMetricSnapshot(f){
+    const notes=f.monitoring.map(x=>x.note).filter(Number.isFinite);
+    const special=f.monitoring.filter(isSpecial);
+    return{
+      quality:average(notes),
+      monitorias:notes.length,
+      isc:isc(f.satisfaction),
+      tma:weighted(f.tma),
+      fg:f.monitoring.filter(x=>x.fg).length,
+      complaints:special.filter(x=>specialCategory(x.origin)==="Reclamação").length,
+      compliments:special.filter(x=>specialCategory(x.origin)==="Elogio").length,
+      audits:special.filter(x=>["Auditoria Cliente","Auditoria Interna"].includes(specialCategory(x.origin))).length
+    };
+  }
+
+  function generalDelta(current,previous,{kind="percent",lowerBetter=false}={}){
+    if(!Number.isFinite(current)||!Number.isFinite(previous))return{tone:"neutral",text:"Período selecionado",arrow:""};
+    const delta=current-previous,improved=lowerBetter?delta<=0:delta>=0;
+    let text="";
+    if(kind==="pp")text=`${delta>0?"+":""}${delta.toLocaleString("pt-BR",{minimumFractionDigits:1,maximumFractionDigits:1})} p.p.`;
+    else if(kind==="seconds")text=`${delta>0?"+":""}${Math.round(delta)}s`;
+    else if(previous!==0){const pct=delta/Math.abs(previous)*100;text=`${pct>0?"+":""}${pct.toLocaleString("pt-BR",{minimumFractionDigits:0,maximumFractionDigits:0})}%`;}
+    else text=delta===0?"0%":"Novo";
+    return{tone:delta===0?"neutral":improved?"positive":"negative",text,arrow:delta===0?"":delta>0?"↑":"↓"};
+  }
+
+  function generalKpi(label,value,icon,{delta=null,foot="",meter=null,tone=""}={}){
+    const width=Number.isFinite(meter)?Math.max(0,Math.min(100,meter)):0;
+    return`<article class="general-kpi ${tone}">
+      <div class="general-kpi-top"><span class="general-kpi-icon">${iconSvg(icon)}</span><span class="general-kpi-label">${label}</span></div>
+      <div class="general-kpi-main"><strong>${value}</strong>${delta?`<span class="general-kpi-delta ${delta.tone}">${delta.arrow} ${delta.text}</span>`:""}</div>
+      <div class="general-kpi-foot">${foot}</div>
+      ${Number.isFinite(meter)?`<div class="general-kpi-meter"><span style="width:${width}%"></span></div>`:""}
+    </article>`;
+  }
+
+  function generalEvolutionSvg(){
+    const months=availableMonths().slice(-8);
+    if(!months.length)return empty("Sem histórico mensal disponível.");
+    const rows=months.map(m=>({m,...comparisonMetric(m)}));
+    const width=900,height=290,p={l:54,r:44,t:30,b:42},pw=width-p.l-p.r,ph=height-p.t-p.b;
+    const values=rows.flatMap(x=>[x.quality,x.isc]).filter(Number.isFinite);
+    if(!values.length)return empty("Sem histórico mensal disponível.");
+    const min=Math.max(0,Math.floor((Math.min(...values,qualityTarget(),satisfactionTarget())-6)/10)*10),max=100;
+    const x=i=>p.l+(rows.length===1?pw/2:i*pw/(rows.length-1));
+    const y=v=>p.t+(max-v)/(max-min)*ph;
+    const pathFor=key=>rows.map((r,i)=>Number.isFinite(r[key])?`${i?"L":"M"}${x(i).toFixed(1)},${y(r[key]).toFixed(1)}`:"").filter(Boolean).join(" ");
+    const grid=[0,.25,.5,.75,1].map(r=>{const v=max-(max-min)*r,yy=p.t+ph*r;return`<line x1="${p.l}" y1="${yy}" x2="${width-p.r}" y2="${yy}" class="general-grid-line"/><text x="${p.l-12}" y="${yy+4}" text-anchor="end" class="general-axis-label">${Math.round(v)}%</text>`;}).join("");
+    const labels=rows.map((r,i)=>`<text x="${x(i)}" y="${height-13}" text-anchor="middle" class="general-month-label">${monthShort(r.m)}</text>`).join("");
+    const dots=(key,cls)=>rows.map((r,i)=>Number.isFinite(r[key])?`<circle cx="${x(i)}" cy="${y(r[key])}" r="4.5" class="${cls}"/>`:"").join("");
+    const qTarget=qualityTarget(),iTarget=satisfactionTarget();
+    const targets=[{v:qTarget,cls:"quality",label:`Meta Qualidade ${Math.round(qTarget)}%`},{v:iTarget,cls:"isc",label:`Meta ISC ${Math.round(iTarget)}%`}].filter(t=>t.v>=min&&t.v<=max).map((t,idx)=>`<line x1="${p.l}" y1="${y(t.v)}" x2="${width-p.r}" y2="${y(t.v)}" class="general-target-line ${t.cls}"/><text x="${width-p.r}" y="${y(t.v)-7-idx*2}" text-anchor="end" class="general-target-label">${t.label}</text>`).join("");
+    const last=rows.at(-1);
+    const endLabels=[["quality","general-end-label quality"],["isc","general-end-label isc"]].map(([key,cls])=>Number.isFinite(last[key])?`<text x="${width-p.r+4}" y="${y(last[key])+4}" class="${cls}">${Math.round(last[key])}%</text>`:"").join("");
+    return`<svg class="general-trend-svg" viewBox="0 0 ${width} ${height}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Evolução mensal de Qualidade e ISC">${grid}${targets}<path d="${pathFor("quality")}" class="general-series quality"/><path d="${pathFor("isc")}" class="general-series isc"/>${dots("quality","general-point quality")}${dots("isc","general-point isc")}${labels}${endLabels}</svg>`;
+  }
+
+  function renderGeneralQuartiles(operators){
+    const values=operators.filter(x=>Number.isFinite(x.quality)).map(x=>({value:x.quality}));
+    const stats=quartileStats(values),total=sum(stats,x=>x.count);
+    const labels=["Alto desempenho","Bom desempenho","Em desenvolvimento","Atenção"];
+    $("general-quartile-overview").innerHTML=stats.map((x,i)=>{
+      const pct=total?x.count/total*100:0;
+      return`<div class="general-quartile-row q${x.q}">
+        <span class="general-quartile-pill">Q${x.q}</span>
+        <div class="general-quartile-copy"><strong>${labels[i]}</strong><small>Média ${fmtPct(x.average)}</small></div>
+        <div class="general-quartile-track"><span style="width:${pct}%"></span></div>
+        <strong class="general-quartile-pct">${Math.round(pct)}%</strong>
+        <small class="general-quartile-count">${fmtInt(x.count)} operador${x.count===1?"":"es"}</small>
+      </div>`;
+    }).join("")||empty();
+  }
+
+  function renderGeneralTopOperators(operators){
+    const rows=operators.filter(x=>x.evaluations>0&&Number.isFinite(x.quality)).sort((a,b)=>b.quality-a.quality).slice(0,5);
+    $("general-top-operators").innerHTML=rows.length?rows.map((x,i)=>{
+      const initials=String(x.operator||"?").trim().split(/\s+/).slice(0,2).map(p=>p[0]||"").join("").toUpperCase();
+      return`<div class="general-top-row"><span class="general-rank">${i+1}</span><span class="general-avatar">${escapeHtml(initials)}</span><span class="general-operator-name" title="${escapeHtml(x.operator)}">${escapeHtml(shorten(x.operator,28))}</span><strong>${fmtPct(x.quality)}</strong><span class="general-status-dot good"></span></div>`;
+    }).join(""):empty();
+  }
+
+  function renderGeneralAttention(snapshot,tmaTarget){
+    const items=[];
+    if(snapshot.fg>0)items.push({tone:"danger",title:`${fmtInt(snapshot.fg)} falta(s) grave(s)`,copy:"Ocorrências críticas registradas no período."});
+    if(Number.isFinite(snapshot.isc)&&snapshot.isc<satisfactionTarget())items.push({tone:"danger",title:"ISC abaixo da meta",copy:`${fmtPct(snapshot.isc)} realizado · meta ${fmtPct(satisfactionTarget())}.`});
+    if(Number.isFinite(snapshot.tma)&&Number.isFinite(tmaTarget)&&snapshot.tma>tmaTarget)items.push({tone:"warn",title:"TMA acima da meta",copy:`${fmtTime(snapshot.tma)} realizado · meta ${fmtTimeFull(tmaTarget)}.`});
+    if(Number.isFinite(snapshot.quality)&&snapshot.quality<qualityTarget())items.push({tone:"warn",title:"Qualidade abaixo da meta",copy:`${fmtPct(snapshot.quality)} realizado · meta ${fmtPct(qualityTarget())}.`});
+    if(snapshot.complaints>0)items.push({tone:"warn",title:`${fmtInt(snapshot.complaints)} reclamação(ões)`,copy:"Registros identificados nas análises do período."});
+    if(!items.length)items.push({tone:"good",title:"Indicadores sob controle",copy:"Nenhum ponto crítico identificado nos principais indicadores."});
+    $("general-attention").innerHTML=items.slice(0,5).map(x=>`<div class="general-attention-row"><span class="general-attention-dot ${x.tone}"></span><div><strong>${escapeHtml(x.title)}</strong><small>${escapeHtml(x.copy)}</small></div></div>`).join("");
+  }
+
+  function renderGeneralUpdateSummary(){
+    const updated=data.meta?.importedAt?formatAdminDateTime(data.meta.importedAt):"Sem registro";
+    const source=repairText(data.meta?.source||"Base consolidada do painel");
+    $("general-update-summary").innerHTML=`<div class="general-update-status"><span class="general-update-check">${iconSvg("check")}</span><div><small>Última atualização</small><strong>${escapeHtml(updated)}</strong></div></div>
+      <div class="general-update-meta"><span>Fonte publicada</span><strong title="${escapeHtml(source)}">${escapeHtml(shorten(source,46))}</strong></div>
+      <div class="general-update-meta"><span>Meses disponíveis</span><strong>${fmtInt(availableMonths().length)}</strong></div>
+      <div class="general-update-meta"><span>Status</span><strong class="metric-good">Dados carregados</strong></div>`;
+  }
+
   function renderGeneral(f,operators){
-    const notes=f.monitoring.map(x=>x.note).filter(Number.isFinite),quality=average(notes),iscValue=isc(f.satisfaction),tmaValue=weighted(f.tma),tmaTarget=state.month!=="all"?tmaTargetFor(state.month):NaN,fg=f.monitoring.filter(x=>x.fg).length;
+    const current=generalMetricSnapshot(f),months=availableMonths(),currentMonth=state.month!=="all"?state.month:months.at(-1),index=months.indexOf(currentMonth),previousMonth=index>0?months[index-1]:null,previous=previousMonth?generalMetricSnapshot(filtered(previousMonth)):null;
+    const tmaTarget=state.month!=="all"?tmaTargetFor(state.month):NaN;
+    const d=(key,opts)=>previous?generalDelta(current[key],previous[key],opts):generalDelta(NaN,NaN,opts);
     $("general-kpis").innerHTML=[
-      kpi("Qualidade Geral",fmtPct(quality),`Meta ≥ <strong>${fmtPct(qualityTarget())}</strong>`,"star",{meter:quality,performance:true}),
-      kpi("Monitorias",fmtInt(notes.length),"Avaliações realizadas","headset",{meter:100}),
-      kpi("Pesquisa (ISC)",fmtPct(iscValue),`Meta ≥ <strong>${fmtPct(satisfactionTarget())}</strong>`,"survey",{meter:iscValue,performance:true}),
-      kpi("TMA Geral",fmtTime(tmaValue),Number.isFinite(tmaTarget)?`Meta do mês: <strong>${fmtTimeFull(tmaTarget)}</strong>`:`${fmtInt(sum(f.tma,x=>x.calls))} atendimentos`,"clock",{meter:Math.min(100,tmaValue&&Number.isFinite(tmaTarget)?tmaTarget/tmaValue*100:0)}),
-      kpi("Falta Grave",fmtInt(fg),`${fmtPct(notes.length?fg/notes.length*100:NaN)} sobre monitorias`,"alert",{danger:true,meter:notes.length?fg/notes.length*100:0})
+      generalKpi("Qualidade",fmtPct(current.quality),"star",{delta:d("quality",{kind:"pp"}),foot:`Meta: <strong>${fmtPct(qualityTarget())}</strong>`,meter:current.quality,tone:"quality"}),
+      generalKpi("ISC",fmtPct(current.isc),"survey",{delta:d("isc",{kind:"pp"}),foot:`Meta: <strong>${fmtPct(satisfactionTarget())}</strong>`,meter:current.isc,tone:"isc"}),
+      generalKpi("TMA",fmtTime(current.tma),"clock",{delta:d("tma",{kind:"seconds",lowerBetter:true}),foot:Number.isFinite(tmaTarget)?`Meta: <strong>${fmtTimeFull(tmaTarget)}</strong>`:`${fmtInt(sum(f.tma,x=>x.calls))} atendimentos`,meter:Number.isFinite(tmaTarget)&&current.tma?tmaTarget/current.tma*100:0,tone:"tma"}),
+      generalKpi("Monitorias",fmtInt(current.monitorias),"clipboard",{delta:d("monitorias",{kind:"percent"}),foot:"Avaliações realizadas",meter:100,tone:"monitoring"}),
+      generalKpi("Faltas Graves",fmtInt(current.fg),"alert",{delta:d("fg",{kind:"percent",lowerBetter:true}),foot:"Ocorrências críticas",meter:current.monitorias?current.fg/current.monitorias*100:0,tone:"danger"}),
+      generalKpi("Reclamações",fmtInt(current.complaints),"x",{delta:d("complaints",{kind:"percent",lowerBetter:true}),foot:"Análises classificadas",tone:"complaints"}),
+      generalKpi("Elogios",fmtInt(current.compliments),"check",{delta:d("compliments",{kind:"percent"}),foot:"Reconhecimentos registrados",tone:"compliments"}),
+      generalKpi("Auditorias",fmtInt(current.audits),"headset",{delta:d("audits",{kind:"percent"}),foot:"Cliente + interna",tone:"audits"})
     ].join("");
-    renderColumns("quality-quartiles",quartileStats(operators.filter(x=>Number.isFinite(x.quality)).map(x=>({value:x.quality}))));
-    renderColumns("survey-quartiles",quartileStats(operators.filter(x=>Number.isFinite(x.isc)).map(x=>({value:x.isc}))));
-    const originMap=new Map();f.monitoring.forEach(x=>{const key=generalOriginCategory(x.origin);originMap.set(key,(originMap.get(key)||0)+1);});const origins=[...originMap].map(([label,value])=>({label,value})).sort((a,b)=>b.value-a.value);renderOriginBars("general-origin",origins);
-    const allCriteria=aggregateCriteria(f.criteria),bestCriteria=[...allCriteria].sort((a,b)=>b.accuracy-a.accuracy).slice(0,5),offenderCriteria=[...allCriteria].filter(x=>Number.isFinite(x.accuracy)&&x.accuracy<qualityTarget()).sort((a,b)=>b.accuracy-a.accuracy).slice(0,5);
-    renderRank("best-criteria",bestCriteria.map(x=>({label:x.criterion,value:x.accuracy})),{limit:5,format:fmtPct,maxValue:100,performance:true});
-    const criteriaOverview=$("criteria-overview"),offenderBlock=$("general-offenders-block");
-    if(offenderCriteria.length){
-      criteriaOverview?.classList.add("has-offenders");criteriaOverview?.classList.remove("no-offenders");offenderBlock?.classList.remove("hidden");
-      renderRank("general-criteria-offenders",offenderCriteria.map(x=>({label:x.criterion,value:x.accuracy,color:"red"})),{limit:5,format:fmtPct,maxValue:100,color:"red"});
-    }else{
-      criteriaOverview?.classList.remove("has-offenders");criteriaOverview?.classList.add("no-offenders");offenderBlock?.classList.add("hidden");
-      if($("general-criteria-offenders"))$("general-criteria-offenders").innerHTML="";
-    }
-    renderSplit("form-performance",aggregate(f.monitoring,"form"));renderSplit("skill-performance",aggregate(f.monitoring,"skill"));
-    const qualityTop=operators.filter(x=>x.evaluations>0).sort((a,b)=>b.quality-a.quality).map(x=>({label:x.operator,value:x.quality,width:x.quality}));
-    const fgTop=operators.filter(x=>x.fg>0).sort((a,b)=>b.fg-a.fg).map(x=>({label:x.operator,value:x.fg,width:Math.min(100,x.fg*22),color:"red"}));
-    const complaintTop=operators.filter(x=>x.complaints>0).sort((a,b)=>b.complaints-a.complaints).map(x=>({label:x.operator,value:x.complaints,width:Math.min(100,x.complaints*18),color:"gold"}));
-    renderPodium("top-quality",qualityTop,fmtPct);renderPodium("top-fg",fgTop,fmtInt);renderPodium("top-complaints",complaintTop,fmtInt);
-    const lowestSkill=aggregate(f.monitoring,"skill").filter(x=>Number.isFinite(x.average)&&x.count>=3).sort((a,b)=>a.average-b.average)[0];
-    const insights=[{text:`Qualidade geral em ${fmtPct(quality)}, ${quality>=qualityTarget()?"acima":"abaixo"} da meta de ${fmtPct(qualityTarget())}.`,tone:quality>=qualityTarget()?"":"warn"},{text:`ISC geral de ${fmtPct(iscValue)}, calculado com P1, P2 e P3.`,tone:iscValue>=satisfactionTarget()?"":"warn"},{text:`${fmtInt(fg)} falta(s) grave(s) em ${fmtInt(notes.length)} monitorias.`,tone:fg?"danger":""},{text:lowestSkill?`${lowestSkill.label} apresenta a menor média entre as skills com ao menos 3 avaliações: ${fmtPct(lowestSkill.average)}.`:"Sem volume suficiente para destacar oportunidades por skill.",tone:"warn"}];
-    $("general-insights").innerHTML=insights.map(x=>`<div class="insight ${x.tone}">${escapeHtml(x.text)}</div>`).join("");
+    $("general-evolution").innerHTML=generalEvolutionSvg();
+    renderGeneralQuartiles(operators);
+    renderGeneralTopOperators(operators);
+    renderGeneralAttention(current,tmaTarget);
+    renderGeneralUpdateSummary();
   }
 
   function renderSpecial(f){
@@ -346,7 +436,7 @@
     const quality=state.view==="quality";$("form-filter-group").classList.toggle("hidden",!quality);if(!quality){state.form="all";$("form-filter").value="all";}
     const comparison=state.view==="comparison";$("month-filter-group").classList.toggle("hidden",comparison);
   }
-  function updateHeader(){const config=viewHeaders[state.view]||viewHeaders.general;$("masthead-eyebrow").textContent=config.eyebrow;$("masthead-title").innerHTML=config.title;$("masthead-subtitle").textContent=config.subtitle;$("reference-caption").textContent=state.view==="comparison"?"PERÍODO COMPARADO":"MÊS DE REFERÊNCIA";}
+  function updateHeader(){const config=viewHeaders[state.view]||viewHeaders.general;document.body.classList.toggle("view-general",state.view==="general");$("masthead-eyebrow").textContent=config.eyebrow;$("masthead-title").innerHTML=config.title;$("masthead-subtitle").textContent=config.subtitle;$("reference-caption").textContent=state.view==="comparison"?"PERÍODO COMPARADO":"MÊS DE REFERÊNCIA";}
   function applyTheme(theme){
     const light=theme==="light";document.body.classList.toggle("light",light);const button=$("theme-toggle");
     button.querySelector(".theme-icon").innerHTML=iconSvg(light?"moon":"sun");button.querySelector(".theme-label").textContent=light?"Modo noite":"Modo dia";button.setAttribute("aria-label",light?"Ativar modo noite":"Ativar modo dia");button.setAttribute("aria-pressed",String(light));
