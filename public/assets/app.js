@@ -363,7 +363,7 @@
 
   function suiteTableRows(rows,columns,limit=7){
     const data=rows.slice(0,limit);
-    return data.length?`<div class="suite-mini-table">${data.map((row,i)=>`<div class="suite-mini-row"><span class="suite-mini-rank">${i+1}</span>${columns.map(col=>`<span class="${col.className||""}" title="${escapeHtml(String(col.value(row)??""))}">${col.html?col.value(row):escapeHtml(String(col.value(row)??"—"))}</span>`).join("")}</div>`).join("")}</div>`:empty("Sem dados no período.");
+    return data.length?`<div class="suite-mini-table">${data.map((row,i)=>`<div class="suite-mini-row"><span class="suite-mini-rank">${i+1}</span>${columns.map(col=>{const cls=typeof col.className==="function"?col.className(row):(col.className||"");const val=col.value(row);return`<span class="${cls}" title="${escapeHtml(String(val??""))}">${col.html?val:escapeHtml(String(val??"—"))}</span>`;}).join("")}</div>`).join("")}</div>`:empty("Sem dados no período.");
   }
 
   function suiteQuestionRing(label,value,sub){
@@ -751,6 +751,7 @@
 
   function injectAdminInterface(status){
     const root=$("admin-page-content");if(!root||root.dataset.ready==="1")return;
+    document.body.classList.add("admin-enabled");
     injectAdminStyles();
     if(!$("admin-nav")){
       $("main-nav").insertAdjacentHTML("beforeend",`<button class="nav-item admin-nav-item" id="admin-nav" type="button" data-view="admin"><span class="nav-icon">${iconSvg("upload")}</span><b>Administração</b></button>`);
