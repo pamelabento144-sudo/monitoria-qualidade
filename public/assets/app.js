@@ -117,9 +117,15 @@
   function countBy(items,key){const map=new Map();items.forEach(x=>{const label=x[key]||"Não informado";map.set(label,(map.get(label)||0)+1);});return[...map].map(([label,value])=>({label,value})).sort((a,b)=>b.value-a.value);}
   function aggregateCriteria(items){const map=new Map();items.forEach(x=>{const key=x.criterion||"Não informado",r=map.get(key)||{criterion:key,kind:x.kind,weight:x.weight,hits:0,errors:0,total:0};r.hits+=+x.hits||0;r.errors+=+x.errors||0;r.total+=+x.total||0;r.weight=Math.max(r.weight,+x.weight||0);map.set(key,r);});return[...map.values()].map(x=>({...x,accuracy:x.total?x.hits/x.total*100:NaN,errorRate:x.total?x.errors/x.total*100:NaN})).filter(x=>x.total>0);}
 
+  function renderRank(target,items,{limit=7,format=fmtInt,color="",maxValue=null,performance=false}={}){
+    const ordered=[...items].sort((a,b)=>(Number(b.value)||0)-(Number(a.value)||0));
+    const list=ordered.slice(0,limit),max=maxValue||Math.max(1,...list.map(x=>+x.value||0));
+    const node=$(target);if(!node)return;
+    node.innerHTML=list.length?list.map(x=>{const tone=x.color||color||(performance?performanceColor(x.value):"");const valueClass=performance?metricClass(x.value):"";return`<div class="rank-row"><span class="rank-name" title="${escapeHtml(x.label)}">${escapeHtml(shorten(x.label,45))}</span><div class="bar-track"><div class="bar-fill ${tone}" style="width:${Math.max(2,(+x.value||0)/max*100)}%"></div></div><strong class="rank-value ${valueClass}">${format(x.value)}</strong></div>`;}).join(""):empty();
+  }
+
   function render(){
     const f=filtered(),operators=buildOperators(f);
-    renderGeneral(f,operators);renderSpecial(f);renderQuality(f,operators);renderSurvey(f);renderFg(f);renderComparison();renderOperators(operators);
     const months=availableMonths();
     const referenceText=state.view==="comparison"?(months.length?`${monthLabel(months[0])} – ${monthLabel(months.at(-1))}`:"SEM DADOS"):state.month==="all"?"TODOS OS MESES":monthLabel(state.month);
     const updatedText=data.meta?.importedAt?new Date(data.meta.importedAt).toLocaleString("pt-BR"):"Dados carregados";
@@ -127,7 +133,22 @@
     $("last-update").textContent=data.meta?.importedAt?`Atualizado neste dispositivo em ${updatedText}`:"Dados carregados do relatório-base";
     if($("general-reference-label"))$("general-reference-label").textContent=referenceText;
     if($("general-last-update"))$("general-last-update").textContent=updatedText;
-    if($("admin-page-content")?.dataset.ready==="1")renderAdminSummary();
+
+    const renderSafely=(name,fn)=>{
+      try{fn();}
+      catch(error){
+        console.error(`[MQ] Falha ao renderizar ${name}`,error);
+        window.__MQ_RENDER_ERRORS=window.__MQ_RENDER_ERRORS||{};
+        window.__MQ_RENDER_ERRORS[name]=String(error?.message||error);
+      }
+    };
+    renderSafely("general",()=>renderGeneral(f,operators));
+    renderSafely("quality",()=>renderQuality(f,operators));
+    renderSafely("survey",()=>renderSurvey(f));
+    renderSafely("fg",()=>renderFg(f));
+    renderSafely("comparison",()=>renderComparison());
+    renderSafely("operators",()=>renderOperators(operators));
+    if($("admin-page-content")?.dataset.ready==="1")renderSafely("admin",()=>renderAdminSummary());
   }
   function renderColumns(target,stats){
     const max=Math.max(1,...stats.map(x=>x.count));
