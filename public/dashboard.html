@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#07111f" />
   <title>Monitoria de Qualidade — Painel Geral</title>
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="/assets/styles.css?v=20260920-nav-icons1" />
+  <link rel="stylesheet" href="/assets/styles.css?v=20260922-redesign-general1" />
 </head>
 <body>
 <svg class="svg-sprite" aria-hidden="true" width="0" height="0">
@@ -35,7 +35,7 @@
   <aside class="sidebar">
     <div class="brand-block brand-logo-block" aria-label="MQ — Monitoria de Qualidade"><img class="brand-logo brand-logo-dark" src="/api/logo?mode=dark&v=20260919-logo2" alt="MQ — Monitoria de Qualidade — Excelência que gera resultados"><img class="brand-logo brand-logo-light" src="/api/logo?mode=light&v=20260919-logo2" alt="MQ — Monitoria de Qualidade — Excelência que gera resultados"></div>
     <nav id="main-nav" class="main-nav" aria-label="Navegação principal">
-      <button class="nav-item active" data-view="general"><span class="nav-icon"><svg aria-hidden="true"><use href="#icon-home"></use></svg></span><b>Painel Geral</b></button>
+      <button class="nav-item active" data-view="general"><span class="nav-icon"><svg aria-hidden="true"><use href="#icon-home"></use></svg></span><b>Visão Geral</b></button>
       <button class="nav-item" data-view="special"><span class="nav-icon"><svg aria-hidden="true"><use href="#icon-chart"></use></svg></span><b>Análises Especiais</b></button>
       <button class="nav-item" data-view="quality"><span class="nav-icon"><svg aria-hidden="true"><use href="#icon-star"></use></svg></span><b>Qualidade</b></button>
       <button class="nav-item" data-view="survey"><span class="nav-icon"><svg aria-hidden="true"><use href="#icon-clipboard"></use></svg></span><b>Pesquisa ISC</b></button>
@@ -43,6 +43,7 @@
       <button class="nav-item" data-view="comparison"><span class="nav-icon"><svg aria-hidden="true"><use href="#icon-trend"></use></svg></span><b>Comparativo Mensal</b></button>
       <button class="nav-item" data-view="operators"><span class="nav-icon"><svg aria-hidden="true"><use href="#icon-users"></use></svg></span><b>Operadores</b></button>
     </nav>
+    <div class="sidebar-motto"><span>Pessoas</span><span>Processos</span><span>Resultados</span><strong>com mais qualidade.</strong></div>
     <button id="side-export" class="export-button">Exportar CSV</button>
     <div class="sidebar-foot"><span>Central SP156</span><small>Monitoria de Qualidade</small></div>
   </aside>
@@ -70,29 +71,71 @@
       <button id="clear-filters" class="clear-button">Limpar filtros</button>
     </section>
 
-    <section class="view active" id="general">
-      <div class="section-identity">
-        
-        <div><p>VISÃO CONSOLIDADA</p><h2>Painel Geral</h2></div>
+    <section class="view active general-redesign" id="general">
+      <div id="general-kpis" class="general-kpi-grid"></div>
+
+      <div class="general-primary-grid">
+        <article class="panel general-evolution-panel">
+          <header class="general-panel-header">
+            <div>
+              <span>EVOLUÇÃO</span>
+              <h2>Evolução Mensal dos Indicadores</h2>
+              <p>Acompanhe Qualidade e ISC ao longo dos meses e a aderência às metas.</p>
+            </div>
+            <div class="general-chart-legend">
+              <span><i class="dot quality"></i>Qualidade</span>
+              <span><i class="dot isc"></i>ISC</span>
+              <span><i class="dash"></i>Metas</span>
+            </div>
+          </header>
+          <div id="general-evolution" class="general-evolution"></div>
+        </article>
+
+        <article class="panel general-quartiles-panel">
+          <header class="general-panel-header">
+            <div>
+              <span>PERFORMANCE</span>
+              <h2>Distribuição por Quartis</h2>
+              <p>Classificação dos operadores pela nota de Qualidade.</p>
+            </div>
+          </header>
+          <div id="general-quartile-overview" class="general-quartile-overview"></div>
+        </article>
       </div>
-      <div id="general-kpis" class="kpi-grid"></div>
-      <div class="content-grid two">
-        <article class="panel"><header><div><span>QUALIDADE</span><h2>Quartis da Qualidade</h2></div></header><div id="quality-quartiles" class="quartile-columns"></div></article>
-        <article class="panel"><header><div><span>PESQUISA</span><h2>Quartis do ISC</h2></div></header><div id="survey-quartiles" class="quartile-columns"></div></article>
-      </div>
-      <div class="content-grid three">
-        <article class="panel"><header><div><span>ORIGEM</span><h2>Distribuição das Monitorias</h2></div></header><div id="general-origin"></div></article>
-        <article class="panel criteria-overview-panel"><header><div><span>CRITÉRIOS</span><h2>Desempenho dos Itens</h2></div></header><div id="criteria-overview" class="criteria-overview"><section class="criteria-best-block"><h3>Melhores Itens</h3><div id="best-criteria"></div></section><section id="general-offenders-block" class="criteria-offender-block hidden"><h3>Itens Ofensores</h3><div id="general-criteria-offenders"></div></section></div></article>
-        <article class="panel"><header><div><span>INSIGHTS</span><h2>Leitura Executiva</h2></div></header><div id="general-insights" class="insight-list"></div></article>
-      </div>
-      <div class="content-grid two">
-        <article class="panel"><header><div><span>AFERIÇÕES</span><h2>Desempenho por Ficha</h2></div></header><div id="form-performance"></div></article>
-        <article class="panel"><header><div><span>SKILLS</span><h2>Desempenho por Skill</h2></div></header><div id="skill-performance"></div></article>
-      </div>
-      <div class="content-grid three">
-        <article class="panel"><header><div><span>DESTAQUES</span><h2>Top Qualidade</h2></div></header><div id="top-quality"></div></article>
-        <article class="panel"><header><div><span>CRÍTICO</span><h2>Top Falta Grave</h2></div></header><div id="top-fg"></div></article>
-        <article class="panel"><header><div><span>OCORRÊNCIAS</span><h2>Top Reclamações</h2></div></header><div id="top-complaints"></div></article>
+
+      <div class="general-bottom-grid">
+        <article class="panel general-compact-panel">
+          <header class="general-panel-header">
+            <div>
+              <span>DESTAQUES</span>
+              <h2>Operadores em destaque</h2>
+              <p>Maiores resultados de Qualidade no período.</p>
+            </div>
+          </header>
+          <div id="general-top-operators" class="general-top-operators"></div>
+        </article>
+
+        <article class="panel general-compact-panel">
+          <header class="general-panel-header">
+            <div>
+              <span>ACOMPANHAMENTO</span>
+              <h2>Pontos de atenção</h2>
+              <p>Sinais que merecem acompanhamento da gestão.</p>
+            </div>
+          </header>
+          <div id="general-attention" class="general-attention"></div>
+        </article>
+
+        <article class="panel general-compact-panel">
+          <header class="general-panel-header">
+            <div>
+              <span>ATUALIZAÇÃO</span>
+              <h2>Atualização do painel</h2>
+              <p>Resumo da base atualmente publicada.</p>
+            </div>
+          </header>
+          <div id="general-update-summary" class="general-update-summary"></div>
+        </article>
       </div>
     </section>
 
@@ -165,6 +208,6 @@
 </div>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 <script src="/assets/dashboard-data.js"></script>
-<script src="/assets/app.js?v=20260922-historical-package1"></script>
+<script src="/assets/app.js?v=20260922-redesign-general1"></script>
 </body>
 </html>
