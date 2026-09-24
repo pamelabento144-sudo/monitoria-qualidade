@@ -209,12 +209,28 @@
     return{tone:delta===0?"neutral":improved?"positive":"negative",text,arrow:delta===0?"":delta>0?"↑":"↓"};
   }
 
-  function generalKpi(label,value,icon,{delta=null,foot="",meter=null,tone=""}={}){
+  function generalSparkline(values,tone=""){
+    const clean=(values||[]).map(Number).filter(Number.isFinite);
+    if(clean.length<2)return"";
+    const width=78,height=24,p=2,min=Math.min(...clean),max=Math.max(...clean),range=Math.max(1,max-min);
+    const x=i=>p+i*(width-p*2)/(clean.length-1),y=v=>height-p-(v-min)/range*(height-p*2);
+    const points=clean.map((v,i)=>`${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(" ");
+    const dots=clean.map((v,i)=>`<circle cx="${x(i).toFixed(1)}" cy="${y(v).toFixed(1)}" r="1.25"/>`).join("");
+    return`<svg class="general-kpi-sparkline ${tone}" viewBox="0 0 ${width} ${height}" aria-hidden="true"><polyline points="${points}"/>${dots}</svg>`;
+  }
+
+  function generalKpi(label,value,icon,{delta=null,foot="",meter=null,tone="",sparkline=null}={}){
     const width=Number.isFinite(meter)?Math.max(0,Math.min(100,meter)):0;
-    return`<article class="general-kpi ${tone}">
+    const spark=Array.isArray(sparkline)?generalSparkline(sparkline,tone):"";
+    return`<article class="general-kpi ${tone} ${spark?"has-sparkline":""}">
       <div class="general-kpi-top"><span class="general-kpi-icon">${iconSvg(icon)}</span><span class="general-kpi-label">${label}</span></div>
-      <div class="general-kpi-main"><strong>${value}</strong>${delta?`<span class="general-kpi-delta ${delta.tone}">${delta.arrow} ${delta.text}</span>`:""}</div>
-      <div class="general-kpi-foot">${foot}</div>
+      <div class="general-kpi-body">
+        <div class="general-kpi-copy">
+          <div class="general-kpi-main"><strong>${value}</strong>${delta?`<span class="general-kpi-delta ${delta.tone}">${delta.arrow} ${delta.text}</span>`:""}</div>
+          <div class="general-kpi-foot">${foot}</div>
+        </div>
+        ${spark?`<div class="general-kpi-spark-wrap">${spark}</div>`:""}
+      </div>
       ${Number.isFinite(meter)?`<div class="general-kpi-meter"><span style="width:${width}%"></span></div>`:""}
     </article>`;
   }
@@ -294,15 +310,17 @@
     const current=generalMetricSnapshot(f),months=availableMonths(),currentMonth=state.month!=="all"?state.month:months.at(-1),index=months.indexOf(currentMonth),previousMonth=index>0?months[index-1]:null,previous=previousMonth?generalMetricSnapshot(filtered(previousMonth)):null;
     const tmaTarget=state.month!=="all"?tmaTargetFor(state.month):NaN;
     const d=(key,opts)=>previous?generalDelta(current[key],previous[key],opts):generalDelta(NaN,NaN,opts);
+    const historyMonths=(state.month!=="all"&&index>=0?months.slice(Math.max(0,index-7),index+1):months.slice(-8));
+    const spark=key=>historyMonths.map(m=>comparisonMetric(m)[key]).filter(Number.isFinite);
     $("general-kpis").innerHTML=[
       generalKpi("Qualidade",fmtPct(current.quality),"star",{delta:d("quality",{kind:"pp"}),foot:`Meta: <strong>${fmtPct(qualityTarget())}</strong>`,meter:current.quality,tone:"quality"}),
       generalKpi("ISC",fmtPct(current.isc),"survey",{delta:d("isc",{kind:"pp"}),foot:`Meta: <strong>${fmtPct(satisfactionTarget())}</strong>`,meter:current.isc,tone:"isc"}),
       generalKpi("TMA",fmtTime(current.tma),"clock",{delta:d("tma",{kind:"seconds",lowerBetter:true}),foot:Number.isFinite(tmaTarget)?`Meta: <strong>${fmtTimeFull(tmaTarget)}</strong>`:`${fmtInt(sum(f.tma,x=>x.calls))} atendimentos`,meter:Number.isFinite(tmaTarget)&&current.tma?tmaTarget/current.tma*100:0,tone:"tma"}),
       generalKpi("Monitorias",fmtInt(current.monitorias),"clipboard",{delta:d("monitorias",{kind:"percent"}),foot:"Avaliações realizadas",meter:100,tone:"monitoring"}),
-      generalKpi("Faltas Graves",fmtInt(current.fg),"alert",{delta:d("fg",{kind:"percent",lowerBetter:true}),foot:"Ocorrências críticas",meter:current.monitorias?current.fg/current.monitorias*100:0,tone:"danger"}),
-      generalKpi("Reclamações",fmtInt(current.complaints),"x",{delta:d("complaints",{kind:"percent",lowerBetter:true}),foot:"Análises classificadas",tone:"complaints"}),
-      generalKpi("Elogios",fmtInt(current.compliments),"check",{delta:d("compliments",{kind:"percent"}),foot:"Reconhecimentos registrados",tone:"compliments"}),
-      generalKpi("Auditorias",fmtInt(current.audits),"headset",{delta:d("audits",{kind:"percent"}),foot:"Cliente + interna",tone:"audits"})
+      generalKpi("Faltas Graves",fmtInt(current.fg),"alert",{delta:d("fg",{kind:"percent",lowerBetter:true}),foot:"Ocorrências críticas",sparkline:spark("fg"),tone:"danger"}),
+      generalKpi("Reclamações",fmtInt(current.complaints),"x",{delta:d("complaints",{kind:"percent",lowerBetter:true}),foot:"Análises classificadas",sparkline:spark("complaints"),tone:"complaints"}),
+      generalKpi("Elogios",fmtInt(current.compliments),"check",{delta:d("compliments",{kind:"percent"}),foot:"Reconhecimentos registrados",sparkline:spark("compliments"),tone:"compliments"}),
+      generalKpi("Auditorias",fmtInt(current.audits),"headset",{delta:d("audits",{kind:"percent"}),foot:"Cliente + interna",meter:100,tone:"audits"})
     ].join("");
     $("general-evolution").innerHTML=generalEvolutionSvg();
     renderGeneralQuartiles(operators);
