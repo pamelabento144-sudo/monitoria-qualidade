@@ -736,11 +736,29 @@
     button.querySelector(".theme-icon").innerHTML=iconSvg(light?"moon":"sun");button.querySelector(".theme-label").textContent=light?"Modo noite":"Modo dia";button.setAttribute("aria-label",light?"Ativar modo noite":"Ativar modo dia");button.setAttribute("aria-pressed",String(light));
     try{localStorage.setItem("mq-theme",light?"light":"dark");}catch{/* preferência opcional */}
   }
+  function setSidebarCollapsed(collapsed){
+    const desktop=window.matchMedia("(min-width:801px)").matches;
+    const next=desktop&&Boolean(collapsed);
+    document.body.classList.toggle("sidebar-collapsed",next);
+    const button=$("sidebar-collapse");
+    if(button){
+      button.setAttribute("aria-expanded",String(!next));
+      button.setAttribute("aria-label",next?"Expandir menu lateral":"Recolher menu lateral");
+      button.setAttribute("title",next?"Expandir menu lateral":"Recolher menu lateral");
+      const glyph=button.querySelector(".sidebar-collapse-glyph");
+      if(glyph)glyph.textContent=next?"›":"‹";
+    }
+  }
+
   function switchView(view){
     state.view=view;
     document.querySelectorAll(".view").forEach(x=>x.classList.toggle("active",x.id===view));
     document.querySelectorAll(".nav-item[data-view]").forEach(x=>x.classList.toggle("active",x.dataset.view===view));
     $("dashboard-filters").classList.remove("expanded");
+
+    /* Fluxo solicitado: página inicial = menu aberto; módulos = menu recolhido. */
+    setSidebarCollapsed(view!=="general");
+
     updateFilterVisibility();updateHeader();render();window.scrollTo({top:0,behavior:"smooth"});
   }
   function exportCsv(){
@@ -994,14 +1012,7 @@
     $("main-nav").addEventListener("click",e=>{const button=e.target.closest("[data-view]");if(button)switchView(button.dataset.view);});
     $("sidebar-home")?.addEventListener("click",()=>switchView("general"));
     $("sidebar-collapse")?.addEventListener("click",()=>{
-      const collapsed=document.body.classList.toggle("sidebar-collapsed");
-      const button=$("sidebar-collapse");
-      button.setAttribute("aria-expanded",String(!collapsed));
-      button.setAttribute("aria-label",collapsed?"Expandir menu lateral":"Recolher menu lateral");
-      button.setAttribute("title",collapsed?"Expandir menu lateral":"Recolher menu lateral");
-      const glyph=button.querySelector(".sidebar-collapse-glyph");
-      if(glyph)glyph.textContent=collapsed?"›":"‹";
-      try{localStorage.setItem("mq-sidebar-collapsed",collapsed?"1":"0");}catch{/* preferência opcional */}
+      setSidebarCollapsed(!document.body.classList.contains("sidebar-collapsed"));
     });
     [["month-filter","month"],["skill-filter","skill"],["form-filter","form"],["supervisor-filter","supervisor"]].forEach(([id,key])=>$(id).addEventListener("change",e=>{state[key]=e.target.value;resetListPages();render();}));
     let timer;$("operator-filter").addEventListener("input",e=>{clearTimeout(timer);timer=setTimeout(()=>{state.search=e.target.value.trim();resetListPages();render();},180);});
@@ -1035,22 +1046,9 @@
 
   async function bootstrap(){
     document.body.classList.add("redesign-suite");
-    let initialTheme="dark",sidebarCollapsed=false;
-    try{
-      initialTheme=localStorage.getItem("mq-theme")||"dark";
-      sidebarCollapsed=localStorage.getItem("mq-sidebar-collapsed")==="1";
-    }catch{/* preferências opcionais */}
-    if(sidebarCollapsed&&window.matchMedia("(min-width:801px)").matches){
-      document.body.classList.add("sidebar-collapsed");
-      const button=$("sidebar-collapse");
-      if(button){
-        button.setAttribute("aria-expanded","false");
-        button.setAttribute("aria-label","Expandir menu lateral");
-        button.setAttribute("title","Expandir menu lateral");
-        const glyph=button.querySelector(".sidebar-collapse-glyph");
-        if(glyph)glyph.textContent="›";
-      }
-    }
+    let initialTheme="dark";
+    try{initialTheme=localStorage.getItem("mq-theme")||"dark";}catch{/* modo escuro padrão */}
+    setSidebarCollapsed(false);
     await loadServerState();populateFilters();updateFilterVisibility();updateHeader();bind();applyTheme(initialTheme);render();await establishAdmin();
   }
   bootstrap();
