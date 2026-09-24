@@ -991,7 +991,18 @@
   }
 
   function bind(){
-    $("main-nav").addEventListener("click",e=>{const button=e.target.closest("[data-view]");if(button)switchView(button.dataset.view);});\n    $("sidebar-home")?.addEventListener("click",()=>switchView("general"));\n    $("sidebar-collapse")?.addEventListener("click",()=>{\n      const collapsed=document.body.classList.toggle("sidebar-collapsed");\n      const button=$("sidebar-collapse");\n      button.setAttribute("aria-expanded",String(!collapsed));\n      button.setAttribute("aria-label",collapsed?"Expandir menu lateral":"Recolher menu lateral");\n      button.setAttribute("title",collapsed?"Expandir menu lateral":"Recolher menu lateral");\n      const glyph=button.querySelector(".sidebar-collapse-glyph");if(glyph)glyph.textContent=collapsed?"›":"‹";\n      try{localStorage.setItem("mq-sidebar-collapsed",collapsed?"1":"0");}catch{/* preferência opcional */}\n    });
+    $("main-nav").addEventListener("click",e=>{const button=e.target.closest("[data-view]");if(button)switchView(button.dataset.view);});
+    $("sidebar-home")?.addEventListener("click",()=>switchView("general"));
+    $("sidebar-collapse")?.addEventListener("click",()=>{
+      const collapsed=document.body.classList.toggle("sidebar-collapsed");
+      const button=$("sidebar-collapse");
+      button.setAttribute("aria-expanded",String(!collapsed));
+      button.setAttribute("aria-label",collapsed?"Expandir menu lateral":"Recolher menu lateral");
+      button.setAttribute("title",collapsed?"Expandir menu lateral":"Recolher menu lateral");
+      const glyph=button.querySelector(".sidebar-collapse-glyph");
+      if(glyph)glyph.textContent=collapsed?"›":"‹";
+      try{localStorage.setItem("mq-sidebar-collapsed",collapsed?"1":"0");}catch{/* preferência opcional */}
+    });\n    $("sidebar-home")?.addEventListener("click",()=>switchView("general"));\n    $("sidebar-collapse")?.addEventListener("click",()=>{\n      const collapsed=document.body.classList.toggle("sidebar-collapsed");\n      const button=$("sidebar-collapse");\n      button.setAttribute("aria-expanded",String(!collapsed));\n      button.setAttribute("aria-label",collapsed?"Expandir menu lateral":"Recolher menu lateral");\n      button.setAttribute("title",collapsed?"Expandir menu lateral":"Recolher menu lateral");\n      const glyph=button.querySelector(".sidebar-collapse-glyph");if(glyph)glyph.textContent=collapsed?"›":"‹";\n      try{localStorage.setItem("mq-sidebar-collapsed",collapsed?"1":"0");}catch{/* preferência opcional */}\n    });
     [["month-filter","month"],["skill-filter","skill"],["form-filter","form"],["supervisor-filter","supervisor"]].forEach(([id,key])=>$(id).addEventListener("change",e=>{state[key]=e.target.value;resetListPages();render();}));
     let timer;$("operator-filter").addEventListener("input",e=>{clearTimeout(timer);timer=setTimeout(()=>{state.search=e.target.value.trim();resetListPages();render();},180);});
     $("clear-filters").addEventListener("click",()=>{state.skill="all";state.form="all";state.supervisor="all";state.search="";state.criteriaDimension="all";state.surveyQuartile="all";resetListPages();$("skill-filter").value="all";$("form-filter").value="all";$("supervisor-filter").value="all";$("criteria-dimension-filter").value="all";$("survey-quartile-filter").value="all";$("operator-filter").value="";render();});
@@ -1024,7 +1035,22 @@
 
   async function bootstrap(){
     document.body.classList.add("redesign-suite");
-    let initialTheme="dark";try{initialTheme=localStorage.getItem("mq-theme")||"dark";}catch{/* modo escuro padrão */}
+    let initialTheme="dark",sidebarCollapsed=false;
+    try{
+      initialTheme=localStorage.getItem("mq-theme")||"dark";
+      sidebarCollapsed=localStorage.getItem("mq-sidebar-collapsed")==="1";
+    }catch{/* preferências opcionais */}
+    if(sidebarCollapsed&&window.matchMedia("(min-width:801px)").matches){
+      document.body.classList.add("sidebar-collapsed");
+      const button=$("sidebar-collapse");
+      if(button){
+        button.setAttribute("aria-expanded","false");
+        button.setAttribute("aria-label","Expandir menu lateral");
+        button.setAttribute("title","Expandir menu lateral");
+        const glyph=button.querySelector(".sidebar-collapse-glyph");
+        if(glyph)glyph.textContent="›";
+      }
+    }
     await loadServerState();populateFilters();updateFilterVisibility();updateHeader();bind();applyTheme(initialTheme);render();await establishAdmin();
   }
   bootstrap();
