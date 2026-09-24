@@ -836,7 +836,7 @@
     document.body.classList.add("admin-enabled");
     injectAdminStyles();
     if(!$("admin-nav")){
-      $("main-nav").insertAdjacentHTML("beforeend",`<button class="nav-item admin-nav-item" id="admin-nav" type="button" data-view="admin"><span class="nav-icon">${iconSvg("upload")}</span><b>Administração</b></button>`);
+      $("main-nav").insertAdjacentHTML("beforeend",`<button class="nav-item admin-nav-item" id="admin-nav" type="button" data-view="admin" aria-label="Administração"><span class="nav-icon">${iconSvg("upload")}</span><b>Administração</b></button>`);
     }
     const environment=location.hostname.includes("homologacao")?"Homologação":"Produção";
     root.dataset.ready="1";
@@ -991,7 +991,7 @@
   }
 
   function bind(){
-    $("main-nav").addEventListener("click",e=>{const button=e.target.closest("[data-view]");if(button)switchView(button.dataset.view);});
+    $("main-nav").addEventListener("click",e=>{const button=e.target.closest("[data-view]");if(button)switchView(button.dataset.view);});\n    $("sidebar-home")?.addEventListener("click",()=>switchView("general"));\n    $("sidebar-collapse")?.addEventListener("click",()=>{\n      const collapsed=document.body.classList.toggle("sidebar-collapsed");\n      const button=$("sidebar-collapse");\n      button.setAttribute("aria-expanded",String(!collapsed));\n      button.setAttribute("aria-label",collapsed?"Expandir menu lateral":"Recolher menu lateral");\n      button.setAttribute("title",collapsed?"Expandir menu lateral":"Recolher menu lateral");\n      const glyph=button.querySelector(".sidebar-collapse-glyph");if(glyph)glyph.textContent=collapsed?"›":"‹";\n      try{localStorage.setItem("mq-sidebar-collapsed",collapsed?"1":"0");}catch{/* preferência opcional */}\n    });
     [["month-filter","month"],["skill-filter","skill"],["form-filter","form"],["supervisor-filter","supervisor"]].forEach(([id,key])=>$(id).addEventListener("change",e=>{state[key]=e.target.value;resetListPages();render();}));
     let timer;$("operator-filter").addEventListener("input",e=>{clearTimeout(timer);timer=setTimeout(()=>{state.search=e.target.value.trim();resetListPages();render();},180);});
     $("clear-filters").addEventListener("click",()=>{state.skill="all";state.form="all";state.supervisor="all";state.search="";state.criteriaDimension="all";state.surveyQuartile="all";resetListPages();$("skill-filter").value="all";$("form-filter").value="all";$("supervisor-filter").value="all";$("criteria-dimension-filter").value="all";$("survey-quartile-filter").value="all";$("operator-filter").value="";render();});
