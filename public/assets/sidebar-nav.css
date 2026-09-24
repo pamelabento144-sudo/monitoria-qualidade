@@ -1,27 +1,40 @@
-/* Sidebar retrátil + atalho Home — homologação */
+/* =========================================================
+   SIDEBAR RETRÁTIL — HOMOLOGAÇÃO
+   Comportamento:
+   - Painel Geral: menu expandido.
+   - Ao acessar um módulo: menu recua para uma faixa de 72px.
+   - Recolhido: Home + ícones dos módulos.
+   - Home: volta ao Painel Geral e reabre o menu.
+   ========================================================= */
+
+.sidebar{
+  position:relative;
+}
+
 .sidebar-quick-actions{
   display:flex;
   align-items:center;
   gap:7px;
-  margin-top:-9px;
 }
+
 .sidebar-icon-button{
   width:34px;
   height:34px;
   display:grid;
   place-items:center;
   flex:0 0 34px;
-  border:1px solid rgba(78,145,199,.32);
+  border:1px solid rgba(78,145,199,.34);
   border-radius:9px;
-  background:linear-gradient(180deg,rgba(13,40,68,.94),rgba(8,27,48,.96));
+  background:linear-gradient(180deg,rgba(13,40,68,.96),rgba(8,27,48,.98));
   color:#bcd1e3;
   cursor:pointer;
+  z-index:30;
   transition:background .18s ease,border-color .18s ease,color .18s ease,transform .18s ease;
 }
 .sidebar-icon-button:hover{
-  border-color:rgba(22,217,245,.62);
+  border-color:rgba(22,217,245,.68);
   color:#eef9ff;
-  background:rgba(22,217,245,.10);
+  background:rgba(22,217,245,.12);
 }
 .sidebar-icon-button:active{transform:translateY(1px)}
 .sidebar-icon-button svg{
@@ -36,103 +49,198 @@
   line-height:1;
   transform:translateY(-1px);
 }
-#sidebar-collapse{margin-left:auto}
 
-body.sidebar-collapsed .app-shell,
-body.sidebar-collapsed.view-general .app-shell{
-  grid-template-columns:68px minmax(0,1fr)!important;
-}
-body.sidebar-collapsed .sidebar,
-body.sidebar-collapsed.view-general .sidebar{
-  padding-left:8px!important;
-  padding-right:8px!important;
-  gap:14px!important;
-}
-body.sidebar-collapsed .brand-logo-block,
-body.sidebar-collapsed.view-general .brand-logo-block{
-  min-height:48px!important;
-  height:48px!important;
-  display:grid!important;
-  place-items:center!important;
-  overflow:visible!important;
-}
-body.sidebar-collapsed .brand-logo,
-body.sidebar-collapsed.view-general .brand-logo{
+/* Expandido: o Home adicional não duplica a opção Visão Geral.
+   A seta fica na borda direita da sidebar. */
+body:not(.sidebar-collapsed) #sidebar-home{
   display:none!important;
 }
-body.sidebar-collapsed .brand-logo-block:after{
-  content:"MQ";
-  width:42px;
-  height:42px;
-  display:grid;
-  place-items:center;
-  border:1px solid rgba(22,217,245,.42);
-  border-radius:11px;
-  color:var(--cyan);
-  background:rgba(22,217,245,.05);
-  font-size:15px;
-  font-weight:900;
-  letter-spacing:.03em;
-  box-shadow:0 0 20px rgba(22,217,245,.08);
+body:not(.sidebar-collapsed) .sidebar-quick-actions{
+  position:absolute!important;
+  top:82px!important;
+  right:-17px!important;
+  width:34px!important;
+  height:34px!important;
+  margin:0!important;
+  z-index:80!important;
 }
-body.sidebar-collapsed .sidebar-quick-actions{
-  display:grid;
-  grid-template-columns:1fr;
-  justify-items:center;
-  margin-top:-4px;
-}
-body.sidebar-collapsed #sidebar-collapse{margin-left:0}
-body.sidebar-collapsed .main-nav,
-body.sidebar-collapsed.view-general .main-nav{gap:6px!important}
-body.sidebar-collapsed .main-nav .nav-item,
-body.sidebar-collapsed.view-general .main-nav .nav-item{
-  min-height:42px!important;
-  grid-template-columns:1fr!important;
-  justify-items:center!important;
-  padding:8px!important;
-}
-body.sidebar-collapsed .main-nav .nav-item b,
-body.sidebar-collapsed.view-general .main-nav .nav-item b{
-  display:none!important;
-}
-body.sidebar-collapsed .main-nav .nav-item .nav-icon,
-body.sidebar-collapsed.view-general .main-nav .nav-item .nav-icon{
-  width:24px!important;
-  height:24px!important;
-  display:grid!important;
-  place-items:center!important;
-}
-body.sidebar-collapsed .main-nav .nav-item .nav-icon svg,
-body.sidebar-collapsed.view-general .main-nav .nav-item .nav-icon svg{
-  width:18px!important;
-  height:18px!important;
-}
-body.sidebar-collapsed .sidebar-motto,
-body.sidebar-collapsed .sidebar-foot,
-body.sidebar-collapsed .sidebar .export-button{
-  display:none!important;
-}
-body.sidebar-collapsed .main-nav .nav-item{
-  position:relative;
-}
-body.sidebar-collapsed .main-nav .nav-item:hover:after{
-  content:attr(aria-label);
-  position:absolute;
-  left:50px;
-  top:50%;
-  transform:translateY(-50%);
-  z-index:120;
-  white-space:nowrap;
-  padding:7px 9px;
-  border:1px solid rgba(74,137,187,.36);
-  border-radius:7px;
-  background:#0c2034;
-  color:#eef7ff;
-  font-size:11px;
-  box-shadow:0 8px 24px rgba(0,0,0,.25);
-  pointer-events:none;
+body:not(.sidebar-collapsed) #sidebar-collapse{
+  margin:0!important;
+  box-shadow:0 8px 22px rgba(0,0,0,.20);
 }
 
+/* Recolhimento real no desktop/notebook:
+   força largura física da coluna E da própria sidebar. */
+@media(min-width:801px){
+  body.sidebar-collapsed .app-shell,
+  body.sidebar-collapsed.view-general .app-shell,
+  body.redesign-suite.sidebar-collapsed .app-shell{
+    display:grid!important;
+    grid-template-columns:72px minmax(0,1fr)!important;
+    width:100%!important;
+    max-width:none!important;
+    margin:0!important;
+  }
+
+  body.sidebar-collapsed .sidebar,
+  body.sidebar-collapsed.view-general .sidebar,
+  body.redesign-suite.sidebar-collapsed .sidebar{
+    position:sticky!important;
+    top:0!important;
+    left:0!important;
+    width:72px!important;
+    min-width:72px!important;
+    max-width:72px!important;
+    height:100vh!important;
+    padding:14px 8px!important;
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:center!important;
+    gap:12px!important;
+    overflow:visible!important;
+    box-sizing:border-box!important;
+  }
+
+  body.sidebar-collapsed .main-content,
+  body.sidebar-collapsed.view-general .main-content,
+  body.redesign-suite.sidebar-collapsed .main-content{
+    min-width:0!important;
+    width:100%!important;
+  }
+
+  body.sidebar-collapsed .brand-logo-block,
+  body.sidebar-collapsed.view-general .brand-logo-block{
+    width:54px!important;
+    min-width:54px!important;
+    max-width:54px!important;
+    min-height:50px!important;
+    height:50px!important;
+    padding:0!important;
+    margin:0!important;
+    display:grid!important;
+    place-items:center!important;
+    overflow:visible!important;
+    border:0!important;
+    background:transparent!important;
+    box-shadow:none!important;
+  }
+  body.sidebar-collapsed .brand-logo,
+  body.sidebar-collapsed.view-general .brand-logo{
+    display:none!important;
+  }
+  body.sidebar-collapsed .brand-logo-block:after{
+    content:"MQ";
+    width:48px;
+    height:48px;
+    display:grid;
+    place-items:center;
+    border:1px solid rgba(22,217,245,.44);
+    border-radius:11px;
+    color:var(--cyan);
+    background:rgba(22,217,245,.05);
+    font-size:15px;
+    font-weight:900;
+    letter-spacing:.03em;
+    box-shadow:0 0 20px rgba(22,217,245,.08);
+  }
+
+  body.sidebar-collapsed .sidebar-quick-actions,
+  body.sidebar-collapsed.view-general .sidebar-quick-actions{
+    position:relative!important;
+    top:auto!important;
+    right:auto!important;
+    width:54px!important;
+    height:auto!important;
+    margin:0!important;
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:8px!important;
+    justify-items:center!important;
+  }
+  body.sidebar-collapsed #sidebar-home,
+  body.sidebar-collapsed #sidebar-collapse{
+    display:grid!important;
+    margin:0!important;
+  }
+
+  /* A página inicial passa a ser representada SOMENTE pelo botão Home. */
+  body.sidebar-collapsed .main-nav .nav-item[data-view="general"]{
+    display:none!important;
+  }
+
+  body.sidebar-collapsed .main-nav,
+  body.sidebar-collapsed.view-general .main-nav{
+    width:54px!important;
+    min-width:54px!important;
+    max-width:54px!important;
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    grid-column:auto!important;
+    gap:7px!important;
+    padding:0!important;
+    margin:0!important;
+    overflow:visible!important;
+  }
+
+  body.sidebar-collapsed .main-nav .nav-item,
+  body.sidebar-collapsed.view-general .main-nav .nav-item{
+    position:relative!important;
+    width:46px!important;
+    min-width:46px!important;
+    max-width:46px!important;
+    min-height:44px!important;
+    height:44px!important;
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    place-items:center!important;
+    justify-self:center!important;
+    padding:0!important;
+    margin:0!important;
+    border-radius:9px!important;
+  }
+  body.sidebar-collapsed .main-nav .nav-item b,
+  body.sidebar-collapsed.view-general .main-nav .nav-item b{
+    display:none!important;
+  }
+  body.sidebar-collapsed .main-nav .nav-item .nav-icon,
+  body.sidebar-collapsed.view-general .main-nav .nav-item .nav-icon{
+    width:24px!important;
+    height:24px!important;
+    display:grid!important;
+    place-items:center!important;
+  }
+  body.sidebar-collapsed .main-nav .nav-item .nav-icon svg,
+  body.sidebar-collapsed.view-general .main-nav .nav-item .nav-icon svg{
+    width:19px!important;
+    height:19px!important;
+  }
+
+  body.sidebar-collapsed .main-nav .nav-item:hover:after{
+    content:attr(aria-label);
+    position:absolute;
+    left:54px;
+    top:50%;
+    transform:translateY(-50%);
+    z-index:150;
+    white-space:nowrap;
+    padding:7px 9px;
+    border:1px solid rgba(74,137,187,.38);
+    border-radius:7px;
+    background:#0c2034;
+    color:#eef7ff;
+    font-size:11px;
+    box-shadow:0 8px 24px rgba(0,0,0,.25);
+    pointer-events:none;
+  }
+
+  body.sidebar-collapsed .sidebar-motto,
+  body.sidebar-collapsed .sidebar-foot,
+  body.sidebar-collapsed .sidebar .export-button{
+    display:none!important;
+  }
+}
+
+/* Tema claro */
 body.light .sidebar-icon-button{
   background:#fff;
   color:#4b667e;
@@ -149,32 +257,47 @@ body.light.sidebar-collapsed .main-nav .nav-item:hover:after{
   border-color:#d3e1eb;
 }
 
+/* Mobile: não força sidebar estreita. Mantém navegação horizontal existente. */
 @media(max-width:800px){
   #sidebar-collapse{display:none!important}
-  .sidebar-quick-actions{
-    margin:0;
-    justify-self:end;
-  }
+  #sidebar-home{display:none!important}
+  .sidebar-quick-actions{display:none!important}
   body.sidebar-collapsed .app-shell,
-  body.sidebar-collapsed.view-general .app-shell{display:block!important}
+  body.sidebar-collapsed.view-general .app-shell{
+    display:block!important;
+    width:100%!important;
+  }
   body.sidebar-collapsed .sidebar,
   body.sidebar-collapsed.view-general .sidebar{
-    padding:12px 12px 10px!important;
+    position:relative!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+    height:auto!important;
+    padding:12px!important;
+    align-items:stretch!important;
   }
   body.sidebar-collapsed .brand-logo,
   body.sidebar-collapsed.view-general .brand-logo{display:block!important}
   body.sidebar-collapsed .brand-logo-block:after{display:none!important}
+  body.sidebar-collapsed .main-nav .nav-item[data-view="general"]{display:grid!important}
   body.sidebar-collapsed .main-nav,
   body.sidebar-collapsed.view-general .main-nav{
+    width:100%!important;
+    max-width:none!important;
     display:flex!important;
     overflow-x:auto!important;
   }
   body.sidebar-collapsed .main-nav .nav-item,
   body.sidebar-collapsed.view-general .main-nav .nav-item{
+    width:auto!important;
+    min-width:0!important;
+    max-width:none!important;
+    height:auto!important;
     grid-template-columns:18px max-content!important;
     justify-items:initial!important;
   }
   body.sidebar-collapsed .main-nav .nav-item b,
   body.sidebar-collapsed.view-general .main-nav .nav-item b{display:block!important}
-  body.sidebar-collapsed .main-nav .nav-item:hover:after{display:none}
+  body.sidebar-collapsed .main-nav .nav-item:hover:after{display:none!important}
 }
