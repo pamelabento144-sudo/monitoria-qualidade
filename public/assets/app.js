@@ -39,6 +39,7 @@
   const weighted=(items,valueKey="tma",weightKey="calls")=>{const weight=sum(items,x=>x[weightKey]);return weight?sum(items,x=>(+x[valueKey]||0)*(+x[weightKey]||0))/weight:NaN;};
   const qualityTarget=()=>Number(data.meta?.qualityTarget)||90;
   const satisfactionTarget=()=>Number(data.meta?.satisfactionTarget)||90;
+  const fgLimit=()=>{const value=Number(data.meta?.fgLimit??data.meta?.faltaGraveLimit??50);return Number.isFinite(value)&&value>0?value:50;};
   const metricClass=(value)=>!Number.isFinite(value)?"":value>=95?"metric-good":value>=90?"metric-warn":"metric-danger";
   const performanceColor=(value)=>!Number.isFinite(value)?"":value>=95?"green":value>=90?"gold":"red";
   const monthNumber=(m)=>monthOrder[m]||(/^\d{4}-(\d{2})$/.test(m)?Number(m.slice(5)):99);
@@ -222,23 +223,30 @@
     const months=availableMonths().slice(-8);
     if(!months.length)return empty("Sem histórico mensal disponível.");
     const rows=months.map(m=>({m,...comparisonMetric(m)}));
-    const width=900,height=290,p={l:54,r:44,t:30,b:42},pw=width-p.l-p.r,ph=height-p.t-p.b;
+    const width=900,height=276,p={l:54,r:52,t:28,b:40},pw=width-p.l-p.r,ph=height-p.t-p.b;
     const values=rows.flatMap(x=>[x.quality,x.isc]).filter(Number.isFinite);
     if(!values.length)return empty("Sem histórico mensal disponível.");
-    const min=Math.max(0,Math.floor((Math.min(...values,qualityTarget(),satisfactionTarget())-6)/10)*10),max=100;
+    const min=Math.max(0,Math.floor((Math.min(...values,qualityTarget(),satisfactionTarget())-5)/5)*5),max=100;
     const x=i=>p.l+(rows.length===1?pw/2:i*pw/(rows.length-1));
     const y=v=>p.t+(max-v)/(max-min)*ph;
     const pathFor=key=>rows.map((r,i)=>Number.isFinite(r[key])?`${i?"L":"M"}${x(i).toFixed(1)},${y(r[key]).toFixed(1)}`:"").filter(Boolean).join(" ");
     const grid=[0,.25,.5,.75,1].map(r=>{const v=max-(max-min)*r,yy=p.t+ph*r;return`<line x1="${p.l}" y1="${yy}" x2="${width-p.r}" y2="${yy}" class="general-grid-line"/><text x="${p.l-12}" y="${yy+4}" text-anchor="end" class="general-axis-label">${Math.round(v)}%</text>`;}).join("");
-    const labels=rows.map((r,i)=>`<text x="${x(i)}" y="${height-13}" text-anchor="middle" class="general-month-label">${monthShort(r.m)}</text>`).join("");
-    const dots=(key,cls)=>rows.map((r,i)=>Number.isFinite(r[key])?`<circle cx="${x(i)}" cy="${y(r[key])}" r="4.5" class="${cls}"/>`:"").join("");
+    const labels=rows.map((r,i)=>`<text x="${x(i)}" y="${height-12}" text-anchor="middle" class="general-month-label">${monthShort(r.m)}</text>`).join("");
+    const dots=(key,cls)=>rows.map((r,i)=>Number.isFinite(r[key])?`<circle cx="${x(i)}" cy="${y(r[key])}" r="4.3" class="${cls}"/>`:"").join("");
     const qTarget=qualityTarget(),iTarget=satisfactionTarget();
-    const targets=[{v:qTarget,cls:"quality",label:`Meta Qualidade ${Math.round(qTarget)}%`},{v:iTarget,cls:"isc",label:`Meta ISC ${Math.round(iTarget)}%`}].filter(t=>t.v>=min&&t.v<=max).map((t,idx)=>`<line x1="${p.l}" y1="${y(t.v)}" x2="${width-p.r}" y2="${y(t.v)}" class="general-target-line ${t.cls}"/><text x="${width-p.r}" y="${y(t.v)-7-idx*2}" text-anchor="end" class="general-target-label">${t.label}</text>`).join("");
+    let targets="";
+    if(Math.abs(qTarget-iTarget)<.05){
+      if(qTarget>=min&&qTarget<=max)targets=`<line x1="${p.l}" y1="${y(qTarget)}" x2="${width-p.r}" y2="${y(qTarget)}" class="general-target-line combined"/><text x="${width-p.r}" y="${y(qTarget)-7}" text-anchor="end" class="general-target-label">Metas ${Math.round(qTarget)}%</text>`;
+    }else{
+      targets=[
+        {v:qTarget,cls:"quality",label:`Meta Qualidade ${Math.round(qTarget)}%`},
+        {v:iTarget,cls:"isc",label:`Meta ISC ${Math.round(iTarget)}%`}
+      ].filter(t=>t.v>=min&&t.v<=max).map(t=>`<line x1="${p.l}" y1="${y(t.v)}" x2="${width-p.r}" y2="${y(t.v)}" class="general-target-line ${t.cls}"/><text x="${width-p.r}" y="${y(t.v)-7}" text-anchor="end" class="general-target-label ${t.cls}">${t.label}</text>`).join("");
+    }
     const last=rows.at(-1);
-    const endLabels=[["quality","general-end-label quality"],["isc","general-end-label isc"]].map(([key,cls])=>Number.isFinite(last[key])?`<text x="${width-p.r+4}" y="${y(last[key])+4}" class="${cls}">${Math.round(last[key])}%</text>`:"").join("");
+    const endLabels=[["quality","general-end-label quality"],["isc","general-end-label isc"]].map(([key,cls])=>Number.isFinite(last[key])?`<text x="${width-p.r+5}" y="${y(last[key])+4}" class="${cls}">${Math.round(last[key])}%</text>`:"").join("");
     return`<svg class="general-trend-svg" viewBox="0 0 ${width} ${height}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Evolução mensal de Qualidade e ISC">${grid}${targets}<path d="${pathFor("quality")}" class="general-series quality"/><path d="${pathFor("isc")}" class="general-series isc"/>${dots("quality","general-point quality")}${dots("isc","general-point isc")}${labels}${endLabels}</svg>`;
   }
-
   function renderGeneralQuartiles(operators){
     const values=operators.filter(x=>Number.isFinite(x.quality)).map(x=>({value:x.quality}));
     const stats=quartileStats(values),total=sum(stats,x=>x.count);
@@ -277,12 +285,11 @@
   function renderGeneralUpdateSummary(){
     const updated=data.meta?.importedAt?formatAdminDateTime(data.meta.importedAt):"Sem registro";
     const source=repairText(data.meta?.source||"Base consolidada do painel");
+    const history=Array.isArray(window.__MQ_IMPORT_HISTORY)?window.__MQ_IMPORT_HISTORY.slice(0,3):[];
+    const historyHtml=history.length?`<div class="general-history-mini"><div class="general-history-title"><span>Histórico de importações</span><small>Recentes</small></div>${history.map(item=>`<div class="general-history-row"><span class="history-dot ${normalize(item.status)==="sucesso"?"ok":normalize(item.status)==="erro"?"error":"pending"}"></span><strong title="${escapeHtml(item.file||"")}">${escapeHtml(shorten(item.file||"—",28))}</strong><small>${escapeHtml(formatAdminDateTime(item.dateTime||item.createdAt||item.updatedAt))}</small></div>`).join("")}</div>`:"";
     $("general-update-summary").innerHTML=`<div class="general-update-status"><span class="general-update-check">${iconSvg("check")}</span><div><small>Última atualização</small><strong>${escapeHtml(updated)}</strong></div></div>
-      <div class="general-update-meta"><span>Fonte publicada</span><strong title="${escapeHtml(source)}">${escapeHtml(shorten(source,46))}</strong></div>
-      <div class="general-update-meta"><span>Meses disponíveis</span><strong>${fmtInt(availableMonths().length)}</strong></div>
-      <div class="general-update-meta"><span>Status</span><strong class="metric-good">Dados carregados</strong></div>`;
+      ${historyHtml||`<div class="general-update-meta"><span>Fonte publicada</span><strong title="${escapeHtml(source)}">${escapeHtml(shorten(source,46))}</strong></div><div class="general-update-meta"><span>Meses disponíveis</span><strong>${fmtInt(availableMonths().length)}</strong></div><div class="general-update-meta"><span>Status</span><strong class="metric-good">Dados carregados</strong></div>`}`;
   }
-
   function renderGeneral(f,operators){
     const current=generalMetricSnapshot(f),months=availableMonths(),currentMonth=state.month!=="all"?state.month:months.at(-1),index=months.indexOf(currentMonth),previousMonth=index>0?months[index-1]:null,previous=previousMonth?generalMetricSnapshot(filtered(previousMonth)):null;
     const tmaTarget=state.month!=="all"?tmaTargetFor(state.month):NaN;
@@ -355,10 +362,26 @@
   }
 
   function suiteQualityEvolution(){
-    const months=availableMonths(),series=months.map(month=>({month,value:comparisonMetric(month).quality}));
-    return trendChart({key:"quality",label:"Qualidade",format:fmtPct,axis:v=>`${Math.round(v)}%`,percent:true,targetValue:qualityTarget(),kind:"line"},series);
+    const months=availableMonths().slice(-8);
+    if(!months.length)return empty("Sem histórico mensal disponível.");
+    const rows=months.map(month=>{const f=filtered(month),notes=f.monitoring.map(x=>x.note).filter(Number.isFinite);return{month,quality:average(notes),monitoring:notes.length};});
+    const valid=rows.filter(x=>Number.isFinite(x.quality));
+    if(!valid.length)return empty("Sem histórico mensal de qualidade.");
+    const width=900,height=275,p={l:54,r:62,t:30,b:40},pw=width-p.l-p.r,ph=height-p.t-p.b;
+    const minQ=Math.max(0,Math.floor((Math.min(...valid.map(x=>x.quality),qualityTarget())-5)/5)*5),maxQ=100;
+    const maxM=Math.max(1,...rows.map(x=>x.monitoring));
+    const slot=pw/Math.max(rows.length,1),x=i=>p.l+slot*(i+.5),yQ=v=>p.t+(maxQ-v)/(maxQ-minQ)*ph,yM=v=>p.t+ph-(v/maxM)*ph*.72;
+    const grid=[0,.25,.5,.75,1].map(r=>{const v=maxQ-(maxQ-minQ)*r,yy=p.t+ph*r;return`<line x1="${p.l}" y1="${yy}" x2="${width-p.r}" y2="${yy}" class="quality-grid-line"/><text x="${p.l-11}" y="${yy+4}" text-anchor="end" class="quality-axis-label">${Math.round(v)}%</text>`;}).join("");
+    const barW=Math.min(46,slot*.42);
+    const bars=rows.map((r,i)=>`<rect x="${x(i)-barW/2}" y="${yM(r.monitoring)}" width="${barW}" height="${Math.max(2,p.t+ph-yM(r.monitoring))}" rx="3" class="quality-volume-bar"/>`).join("");
+    const path=valid.map((r,i)=>{const idx=rows.indexOf(r);return`${i?"L":"M"}${x(idx)},${yQ(r.quality)}`;}).join(" ");
+    const points=rows.map((r,i)=>Number.isFinite(r.quality)?`<circle cx="${x(i)}" cy="${yQ(r.quality)}" r="4.5" class="quality-line-point"/><text x="${x(i)}" y="${yQ(r.quality)-10}" text-anchor="middle" class="quality-value-label">${r.quality.toLocaleString("pt-BR",{minimumFractionDigits:1,maximumFractionDigits:1})}%</text>`:"").join("");
+    const monthsLabels=rows.map((r,i)=>`<text x="${x(i)}" y="${height-11}" text-anchor="middle" class="quality-month-label">${monthShort(r.month)}</text>`).join("");
+    const target=qualityTarget();
+    const targetLine=target>=minQ&&target<=maxQ?`<line x1="${p.l}" y1="${yQ(target)}" x2="${width-p.r}" y2="${yQ(target)}" class="quality-target-line"/><text x="${width-p.r}" y="${yQ(target)-7}" text-anchor="end" class="quality-target-label">Meta ${fmtPct(target)}</text>`:"";
+    const rightTicks=[1,.5,0].map(r=>{const value=Math.round(maxM*r),yy=p.t+ph-(r*ph*.72);return`<text x="${width-p.r+8}" y="${yy+4}" class="quality-count-label">${fmtInt(value)}</text>`;}).join("");
+    return`<div class="quality-chart-legend"><span><i class="quality"></i>Qualidade</span><span><i class="target"></i>Meta</span><span><i class="volume"></i>Monitorias</span></div><svg class="quality-combo-chart" viewBox="0 0 ${width} ${height}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Evolução mensal da Qualidade e monitorias">${grid}${bars}${targetLine}<path d="${path}" class="quality-line"/>${points}${monthsLabels}${rightTicks}</svg>`;
   }
-
   function suiteSurveyEvolution(){
     const months=availableMonths(),series=months.map(month=>({month,value:comparisonMetric(month).isc}));
     return trendChart({key:"isc",label:"ISC",format:fmtPct,axis:v=>`${Math.round(v)}%`,percent:true,targetValue:satisfactionTarget(),kind:"line"},series);
@@ -385,6 +408,16 @@
   function suiteTableRows(rows,columns,limit=7){
     const data=rows.slice(0,limit);
     return data.length?`<div class="suite-mini-table">${data.map((row,i)=>`<div class="suite-mini-row"><span class="suite-mini-rank">${i+1}</span>${columns.map(col=>{const cls=typeof col.className==="function"?col.className(row):(col.className||"");const val=col.value(row);return`<span class="${cls}" title="${escapeHtml(String(val??""))}">${col.html?val:escapeHtml(String(val??"—"))}</span>`;}).join("")}</div>`).join("")}</div>`:empty("Sem dados no período.");
+  }
+
+  function suiteMiniTable(headers,rows,columns,limit=7){
+    const data=rows.slice(0,limit);
+    if(!data.length)return empty("Sem dados no período.");
+    const tail=columns.length>1?` repeat(${columns.length-1},minmax(46px,.72fr))`:"";
+    const template=`22px minmax(105px,1.55fr)${tail}`;
+    const head=`<div class="suite-mini-head" style="grid-template-columns:${template}"><span>#</span>${headers.map(x=>`<span>${escapeHtml(x)}</span>`).join("")}</div>`;
+    const body=data.map((row,i)=>`<div class="suite-mini-row" style="grid-template-columns:${template}"><span class="suite-mini-rank">${i+1}</span>${columns.map(col=>{const cls=typeof col.className==="function"?col.className(row):(col.className||"");const val=col.value(row);return`<span class="${cls}" title="${escapeHtml(String(val??""))}">${escapeHtml(String(val??"—"))}</span>`;}).join("")}</div>`).join("");
+    return`<div class="suite-mini-table headed">${head}${body}</div>`;
   }
 
   function suiteQuestionRing(label,value,sub){
@@ -434,12 +467,16 @@
     $("quality-deviations").innerHTML=suiteSimpleRows(deviations,{format:fmtPct,limit:7,tone:"danger"});
 
     const supervision=suiteSupervisionRows(operators);
-    $("quality-supervision").innerHTML=suiteTableRows(supervision,[
-      {value:x=>x.label,className:"suite-col-main"},
-      {value:x=>fmtInt(x.evaluations)},
-      {value:x=>fmtPct(x.quality),className:"metric-good"},
-      {value:x=>fmtInt(x.fg),className:x=>x.fg?"metric-danger":""}
-    ],6);
+    $("quality-supervision").innerHTML=suiteMiniTable(
+      ["Supervisão","Monitorias","Qualidade","FG"],
+      supervision,
+      [
+        {value:x=>x.label,className:"suite-col-main"},
+        {value:x=>fmtInt(x.evaluations)},
+        {value:x=>fmtPct(x.quality),className:"metric-good"},
+        {value:x=>fmtInt(x.fg),className:x=>x.fg?"metric-danger":""}
+      ],5
+    );
   }
   function operatorSurveyRows(items){return items.map(x=>{const p1=iscFromCounts(x.p1||[]),p2=iscFromCounts(x.p2||[]),p3=iscFromCounts(x.p3||[]),all=[0,0,0,0,0];["p1","p2","p3"].forEach(q=>(x[q]||[]).forEach((v,i)=>all[i]+=+v||0));return{...x,p1Score:p1,p2Score:p2,p3Score:p3,isc:iscFromCounts(all),responses:sum(all),quartile:quartile(iscFromCounts(all))};}).filter(x=>x.responses>0);}
   function renderSurvey(f){
@@ -493,7 +530,7 @@
       suiteKpi("Operadores com FG",fmtInt(operators),"users",{delta:suiteDelta(operators,prev?new Set(prevRows.map(x=>x.re||x.operator)).size:NaN,{kind:"percent",lowerBetter:true}),foot:`Total monitorado: ${fmtInt(new Set(f.monitoring.map(x=>x.re||x.operator)).size)}`,meter:f.monitoring.length?operators/Math.max(1,new Set(f.monitoring.map(x=>x.re||x.operator)).size)*100:0,tone:"danger"}),
       suiteKpi("Skills com FG",fmtInt(skills),"headset",{foot:`Skills monitoradas: ${fmtInt(new Set(f.monitoring.map(x=>x.skill).filter(Boolean)).size)}`,meter:100,tone:"skills"}),
       suiteKpi("Motivo mais recorrente",escapeHtml(shorten(mainReason,26)),"clipboard",{foot:`${fmtInt(mainReasonCount)} ocorrência(s)`,tone:"text"}),
-      suiteKpi("Origens com FG",fmtInt(origins),"layers",{foot:"Fontes de identificação",meter:100,tone:"target"}),
+      suiteKpi("Meta / Limite",fmtInt(fgLimit()),"star",{foot:"Limite mensal",meter:Math.min(100,rows.length/fgLimit()*100),tone:"target"}),
       suiteKpi("Variação vs. mês anterior",reduction.text||"—","arrow-down",{delta:reduction,foot:prev?`${fmtInt(prevRows.length)} → ${fmtInt(rows.length)} ocorrências`:"Sem período anterior",tone:"good"})
     ].join("");
 
@@ -501,8 +538,8 @@
     renderRank("fg-reasons",reasons.map(x=>({...x,color:"red"})),{limit:7,color:"red"});
     renderRank("fg-origins",countBy(rows,"origin"),{limit:7});
     renderRank("fg-skills",countBy(rows,"skill"),{limit:7,color:"gold"});
-    const incidence=f.monitoring.length?rows.length/f.monitoring.length*100:0;
-    $("fg-performance").innerHTML=`<div class="fg-performance-main"><div><small>Total de Faltas Graves</small><strong>${fmtInt(rows.length)}</strong></div><div><small>Incidência</small><strong>${fmtPct(incidence)}</strong></div></div><div class="fg-performance-status ${rows.length<=prevRows.length?"good":"danger"}"><span>●</span><strong>${prev?reduction.text:"Período atual"}</strong><small>${prev?"vs. mês anterior":"Sem comparação anterior"}</small></div><div class="suite-kpi-meter"><span style="width:${Math.min(100,incidence)}%"></span></div>`;
+    const limit=fgLimit(),within=rows.length<=limit,used=limit?rows.length/limit*100:0;
+    $("fg-performance").innerHTML=`<div class="fg-performance-main three"><div><small>Total de Faltas Graves</small><strong>${fmtInt(rows.length)}</strong></div><div><small>Meta / Limite</small><strong>${fmtInt(limit)}</strong></div><div><small>Status</small><strong class="${within?"metric-good":"metric-danger"}">${within?"Dentro do limite":"Acima do limite"}</strong></div></div><div class="fg-performance-status ${within?"good":"danger"}"><span>${within?"✓":"!"}</span><strong>${Math.round(used)}% do limite utilizado</strong><small>${prev?`${reduction.text} vs. mês anterior`:"Período atual"}</small></div><div class="suite-kpi-meter"><span style="width:${Math.min(100,used)}%"></span></div>`;
 
     const map=new Map();rows.forEach(x=>{const key=x.re||x.operator,r=map.get(key)||{operator:x.operator,re:x.re,supervisor:x.supervisor,rows:[]};r.rows.push(x);map.set(key,r);});const opRows=[...map.values()].map(x=>({...x,count:x.rows.length,reason:mode(x.rows,"fgReason"),origin:mode(x.rows,"origin"),skill:mode(x.rows,"skill")})).sort((a,b)=>b.count-a.count);
     const paged=paginateRows(opRows,state.fgPage,state.fgPageSize);state.fgPage=paged.page;
@@ -552,7 +589,7 @@
     }
     const target=def.percent&&minY<=percentTarget?`<line x1="${pad.left}" y1="${y(percentTarget)}" x2="${width-pad.right}" y2="${y(percentTarget)}" class="chart-target-line"/><text x="${width-pad.right}" y="${y(percentTarget)-7}" text-anchor="end" class="chart-target-label">META ${fmtPct(percentTarget)}</text>`:"";
     const targetValid=targetSeries.map((point,i)=>({...point,i})).filter(point=>Number.isFinite(point.value)),targetPath=targetValid.map((point,i)=>`${i?"L":"M"}${x(point.i).toFixed(1)},${y(point.value).toFixed(1)}`).join(" ");
-    const targetMarks=targetValid.length?`<path d="${targetPath}" class="chart-line target-series"/>${targetValid.map(point=>`<circle cx="${x(point.i)}" cy="${y(point.value)}" r="5" class="chart-point target-point"/><text x="${x(point.i)}" y="${Math.max(pad.top+16,y(point.value)-18)}" text-anchor="middle" class="chart-target-value-label">Meta ${(def.targetFormat||def.format)(point.value)}</text>`).join("")}`:"";
+    const targetMarks=targetValid.length?`<path d="${targetPath}" class="chart-line target-series"/>${targetValid.map(point=>`<circle cx="${x(point.i)}" cy="${y(point.value)}" r="3.5" class="chart-point target-point"/>`).join("")}`:"";
     const legend=targetValid.length?`<div class="chart-legend"><span><i class="target"></i>Meta TMA</span><span><i class="actual"></i>Realizado</span></div>`:"";
     return`${legend}<svg class="trend-chart" viewBox="0 0 ${width} ${height}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Evolução mensal de ${escapeHtml(def.label)}">${grid}${axes}${target}${marks}${targetMarks}${labels}</svg>`;
   }
@@ -604,7 +641,7 @@
       suiteKpi("Total de Operadores",fmtInt(operators.length),"users",{delta:suiteDelta(operators.length,prev.length,{kind:"percent"}),foot:"Operadores no recorte",meter:100,tone:"monitoring"}),
       suiteKpi("Destaques (Q1)",operators.length?fmtPct(qCounts[0]/operators.length*100):"—","star",{foot:`${fmtInt(qCounts[0])} operadores`,meter:operators.length?qCounts[0]/operators.length*100:0,tone:"good"}),
       suiteKpi("Dentro da Meta (Q2)",operators.length?fmtPct(qCounts[1]/operators.length*100):"—","check",{foot:`${fmtInt(qCounts[1])} operadores`,meter:operators.length?qCounts[1]/operators.length*100:0,tone:"quality"}),
-      suiteKpi("Em Atenção (Q3/Q4)",operators.length?fmtPct((qCounts[2]+qCounts[3])/operators.length*100):"—","alert",{foot:`${fmtInt(qCounts[2]+qCounts[3])} operadores`,meter:operators.length?(qCounts[2]+qCounts[3])/operators.length*100:0,tone:"danger"}),
+      suiteKpi("Em Atenção (Q3)",operators.length?fmtPct(qCounts[2]/operators.length*100):"—","alert",{foot:`${fmtInt(qCounts[2])} operadores`,meter:operators.length?qCounts[2]/operators.length*100:0,tone:"danger"}),
       suiteKpi("Média de Qualidade",fmtPct(quality),"star",{delta:suiteDelta(quality,prevQuality,{kind:"pp"}),foot:`Meta: ${fmtPct(qualityTarget())}`,meter:quality,tone:"quality"}),
       suiteKpi("Média de ISC",fmtPct(iscAvg),"survey",{delta:suiteDelta(iscAvg,prevIsc,{kind:"pp"}),foot:`Meta: ${fmtPct(satisfactionTarget())}`,meter:iscAvg,tone:"isc"})
     ].join("");
@@ -625,7 +662,11 @@
     const attention=[...operators].filter(x=>x.status==="attention").sort((a,b)=>(b.fg-a.fg)||((a.quality||0)-(b.quality||0))).slice(0,5);
     $("operators-attention").innerHTML=suiteTableRows(attention,[{value:x=>x.re},{value:x=>x.operator,className:"suite-col-main"},{value:x=>fmtPct(x.quality)},{value:x=>fmtInt(x.fg),className:"metric-danger"}],5);
     const sup=suiteSupervisionRows(operators);
-    $("operators-supervision").innerHTML=suiteTableRows(sup,[{value:x=>x.label,className:"suite-col-main"},{value:x=>fmtInt(x.operators)},{value:x=>fmtPct(x.quality)},{value:x=>fmtPct(x.isc)},{value:x=>fmtTime(x.tma)}],5);
+    $("operators-supervision").innerHTML=suiteMiniTable(
+      ["Supervisão","Operadores","Qualidade","ISC","TMA"],
+      sup,
+      [{value:x=>x.label,className:"suite-col-main"},{value:x=>fmtInt(x.operators)},{value:x=>fmtPct(x.quality)},{value:x=>fmtPct(x.isc)},{value:x=>fmtTime(x.tma)}],5
+    );
 
     const paged=paginateRows(visible,state.operatorPage,state.operatorPageSize);state.operatorPage=paged.page;
     $("operator-count").textContent=visible.length?`${fmtInt(visible.length)} operadores · ${fmtInt(paged.start+1)}–${fmtInt(paged.end)}`:"0 operadores";
@@ -724,10 +765,12 @@
     try{
       const response=await fetch("/api/admin/history",{cache:"no-store"});
       if(!response.ok)return;
-      const payload=await response.json();renderImportHistory(Array.isArray(payload)?payload:payload.items||[]);
+      const payload=await response.json(),items=Array.isArray(payload)?payload:payload.items||[];
+      window.__MQ_IMPORT_HISTORY=items;
+      renderImportHistory(items);
+      if($("general-update-summary"))renderGeneralUpdateSummary();
     }catch{/* histórico não bloqueia o painel */}
   }
-
   async function undoImport(importId){
     if(!importId)return;
     const confirmed=window.confirm("Desfazer esta importação? O painel voltará exatamente ao estado anterior a ela.");
