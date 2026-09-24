@@ -1,0 +1,131 @@
+/* Global typography scale — homologacao 2026-09-23
+   Aumenta legibilidade sem alterar estrutura, dados ou cálculos. */
+
+body{font-size:15px}
+
+.main-nav .nav-item b{font-size:12px!important}
+.sidebar-motto{font-size:12px!important}
+.sidebar-foot{font-size:10px!important}
+
+.masthead h1{font-size:30px!important}
+.masthead-copy>p:last-child{font-size:13px!important;line-height:1.45}
+.eyebrow{font-size:10px!important}
+
+.dashboard-filters label,
+.suite-table-actions label,
+.operator-tools label,
+.admin-settings label{font-size:11px!important}
+.dashboard-filters select,
+.dashboard-filters input,
+.suite-table-actions select,
+.operator-tools select,
+.operator-tools input{font-size:13px!important}
+
+.suite-panel-header h2,
+.panel>h2,
+.panel header h2{font-size:15px!important}
+.suite-panel-header p,
+.panel header p{font-size:11px!important;line-height:1.4}
+
+.suite-kpi-grid .suite-kpi-label,
+.kpi-label{font-size:10px!important}
+.suite-kpi-grid .suite-kpi-value,
+.kpi-value{font-size:27px!important}
+.suite-kpi-grid .suite-kpi-foot,
+.kpi-foot{font-size:11px!important;line-height:1.35}
+
+.suite-rank-list,
+.suite-table-like,
+.suite-distribution-list,
+.suite-quartile-cards,
+.survey-quartile-suite,
+.operators-general-list,
+.comparison-summary-list{font-size:11px!important}
+
+.suite-rank-list *,
+.suite-table-like *,
+.suite-distribution-list *,
+.suite-quartile-cards *,
+.survey-quartile-suite *,
+.operators-general-list *,
+.comparison-summary-list *{font-size:inherit}
+
+table th{font-size:10px!important}
+table td{font-size:12px!important}
+.badge{font-size:10px!important}
+.pager,
+.pager label,
+.pager button,
+.pager select,
+.pager input{font-size:11px!important}
+
+.suite-chart-host text,
+.trend-chart text,
+.trend-svg text,
+.general-evolution text{font-size:11px!important}
+.chart-axis-label,
+.chart-target-label,
+.chart-target-value-label{font-size:11px!important}
+.chart-month-label,
+.chart-value-label{font-size:12px!important}
+.chart-legend{font-size:10px!important}
+
+/* Visão Geral — neutraliza a camada compacta de 7–9 px */
+body.view-general .main-nav .nav-item{font-size:12px!important}
+body.view-general .main-nav .nav-item b{font-size:12px!important}
+body.view-general .sidebar-foot{font-size:10px!important}
+
+body.view-general .masthead h1{font-size:29px!important}
+body.view-general .masthead-copy>p:last-child{font-size:12px!important}
+body.view-general .general-header-meta small{font-size:10px!important}
+body.view-general .general-header-meta strong{font-size:12px!important}
+body.view-general .general-header-button{font-size:11px!important}
+
+body.view-general #general .general-kpi-top{font-size:11px!important}
+body.view-general #general .general-kpi-main strong{font-size:28px!important}
+body.view-general #general .general-kpi:nth-child(n+5) .general-kpi-main strong{font-size:25px!important}
+body.view-general #general .general-kpi-delta{font-size:10px!important}
+body.view-general #general .general-kpi-foot{font-size:10px!important;line-height:1.3}
+
+body.view-general #general .general-panel-header h2{font-size:15px!important}
+body.view-general #general .general-panel-header p{font-size:10px!important}
+body.view-general #general .general-chart-legend{font-size:10px!important}
+
+body.view-general #general .general-quartile-pill{font-size:10px!important}
+body.view-general #general .general-quartile-copy strong{font-size:10.5px!important}
+body.view-general #general .general-quartile-copy small,
+body.view-general #general .general-quartile-count{font-size:9.5px!important}
+body.view-general #general .general-quartile-pct{font-size:12px!important}
+
+body.view-general #general .general-top-row{font-size:10px!important}
+body.view-general #general .general-top-row>strong{font-size:11px!important}
+body.view-general #general .general-avatar{font-size:8px!important}
+body.view-general #general .general-attention-row strong{font-size:10.5px!important}
+body.view-general #general .general-attention-row small{font-size:9.5px!important}
+body.view-general #general .general-update-status small{font-size:9.5px!important}
+body.view-general #general .general-update-status strong{font-size:11px!important}
+body.view-general #general .general-update-meta{font-size:9.5px!important}
+
+@media(max-width:800px){
+  body{font-size:14px}
+  .masthead h1,
+  body.view-general .masthead h1{font-size:25px!important}
+  .suite-kpi-grid .suite-kpi-value,
+  .kpi-value{font-size:24px!important}
+
+  body.view-general .main-nav .nav-item b{font-size:11px!important}
+  body.view-general .masthead-copy>p:last-child{font-size:11px!important}
+  body.view-general .general-header-button{font-size:10px!important}
+  body.view-general #general .general-kpi-main strong,
+  body.view-general #general .general-kpi:nth-child(n+5) .general-kpi-main strong{font-size:23px!important}
+  body.view-general #general .general-kpi-delta,
+  body.view-general #general .general-kpi-foot{font-size:9px!important}
+}
+
+@media(max-width:520px){
+  table th{font-size:9px!important}
+  table td{font-size:11px!important}
+  .suite-panel-header h2,
+  .panel>h2,
+  .panel header h2{font-size:14px!important}
+}
