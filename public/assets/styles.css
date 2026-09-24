@@ -3987,3 +3987,117 @@ body.redesign-suite #general .general-kpi.audits .general-kpi-meter>span{
     gap:7px!important;
   }
 }
+
+
+/* ===== MQ LEGIBILIDADE GLOBAL 2026-09-23 ===== */
+/* Aumenta a leitura em todos os módulos sem reconstruir o layout. */
+body.redesign-suite{font-size:15px!important}
+body.redesign-suite .nav-item b{font-size:13px!important}
+body.redesign-suite .sidebar-motto,
+body.redesign-suite .sidebar-foot{font-size:11px!important}
+
+body.redesign-suite .masthead h1{font-size:30px!important}
+body.redesign-suite .eyebrow{font-size:11px!important}
+body.redesign-suite .masthead-copy-text>p:last-child{font-size:13px!important;line-height:1.4!important}
+body.redesign-suite .general-header-meta small{font-size:9.5px!important}
+body.redesign-suite .general-header-meta strong{font-size:11.5px!important}
+body.redesign-suite .general-header-button{font-size:11.5px!important}
+
+body.redesign-suite .dashboard-filters label,
+body.redesign-suite .table-panel header label,
+body.redesign-suite .operator-tools label,
+body.redesign-suite .admin-settings label{font-size:10.5px!important}
+body.redesign-suite select,
+body.redesign-suite input,
+body.redesign-suite button{font-size:11.5px}
+
+body.redesign-suite .suite-kpi-card,
+body.redesign-suite #general .general-kpi{min-height:100px!important}
+body.redesign-suite .suite-kpi-heading strong,
+body.redesign-suite #general .general-kpi-top,
+body.redesign-suite #general .general-kpi-label{font-size:10.5px!important;line-height:1.25!important}
+body.redesign-suite .suite-kpi-value{font-size:27px!important}
+body.redesign-suite #general .general-kpi-main strong{font-size:24px!important}
+body.redesign-suite .suite-kpi-card.text .suite-kpi-value{font-size:16px!important}
+body.redesign-suite .suite-kpi-delta,
+body.redesign-suite #general .general-kpi-delta{font-size:9.5px!important}
+body.redesign-suite .suite-kpi-foot,
+body.redesign-suite #general .general-kpi-foot{font-size:9.5px!important;line-height:1.3!important}
+
+body.redesign-suite .suite-panel-header{min-height:34px!important}
+body.redesign-suite .suite-panel-header h2{font-size:14px!important;line-height:1.2!important}
+body.redesign-suite .suite-panel-header p{font-size:10.5px!important;line-height:1.35!important}
+body.redesign-suite .suite-panel-icon{font-size:12px!important}
+
+body.redesign-suite #general .general-quartile-copy strong{font-size:10px!important}
+body.redesign-suite #general .general-quartile-copy small,
+body.redesign-suite #general .general-quartile-count{font-size:9px!important}
+body.redesign-suite #general .general-quartile-pct{font-size:12px!important}
+body.redesign-suite .general-history-title{font-size:9.5px!important}
+body.redesign-suite .general-history-row{font-size:9px!important;min-height:24px!important}
+body.redesign-suite .general-history-row small{font-size:8px!important}
+
+body.redesign-suite .suite-rank-row{font-size:9.5px!important;min-height:25px!important}
+body.redesign-suite .suite-quartile-card strong{font-size:15px!important}
+body.redesign-suite .survey-quartile-suite .suite-quartile-row,
+body.redesign-suite .operators-side-stack .suite-quartile-row{font-size:9.5px!important;min-height:39px!important}
+
+body.redesign-suite .quality-chart-legend{font-size:9.5px!important}
+body.redesign-suite .quality-axis-label,
+body.redesign-suite .quality-month-label,
+body.redesign-suite .quality-count-label{font-size:10.5px!important}
+body.redesign-suite .quality-value-label,
+body.redesign-suite .quality-target-label{font-size:10px!important}
+body.redesign-suite .chart-axis-label,
+body.redesign-suite .chart-target-label,
+body.redesign-suite .chart-target-value-label{font-size:10px!important}
+body.redesign-suite .chart-month-label,
+body.redesign-suite .chart-value-label{font-size:11px!important}
+body.redesign-suite .general-target-label{font-size:10px!important}
+body.redesign-suite .general-end-label{font-size:10.5px!important}
+
+body.redesign-suite .comparison-summary-row{min-height:49px!important}
+body.redesign-suite .comparison-summary-row strong{font-size:13px!important}
+body.redesign-suite .comparison-summary-row small,
+body.redesign-suite .comparison-summary-row span{font-size:9.5px!important}
+
+body.redesign-suite .operators-general-list>div{font-size:9.5px!important;min-height:24px!important}
+body.redesign-suite .operators-general-list strong{font-size:12px!important}
+body.redesign-suite .suite-mini-head{font-size:9px!important;min-height:25px!important}
+body.redesign-suite .suite-mini-table.headed .suite-mini-row{font-size:9.5px!important;min-height:27px!important}
+
+body.redesign-suite th{font-size:9.5px!important;padding:7px 8px!important}
+body.redesign-suite td{font-size:10px!important;padding:7px 8px!important;line-height:1.3!important}
+body.redesign-suite #comparison .suite-data-table-panel th,
+body.redesign-suite #comparison .suite-data-table-panel td{font-size:9.5px!important;padding:7px 8px!important}
+body.redesign-suite .pager,
+body.redesign-suite .pager label,
+body.redesign-suite .pager button,
+body.redesign-suite .pager select,
+body.redesign-suite .pager input{font-size:10.5px!important}
+
+body.redesign-suite .admin-history{font-size:10px!important}
+body.redesign-suite .admin-history th{font-size:9.5px!important}
+body.redesign-suite .admin-history td{font-size:10px!important}
+body.redesign-suite .admin-latest,
+body.redesign-suite .admin-updated,
+body.redesign-suite .admin-tips,
+body.redesign-suite .admin-status-guide,
+body.redesign-suite .drop-zone small{font-size:10px!important}
+body.redesign-suite .drop-zone strong{font-size:12px!important}
+
+@media(max-width:900px){
+  body.redesign-suite .masthead h1{font-size:27px!important}
+  body.redesign-suite .suite-kpi-heading strong,
+  body.redesign-suite #general .general-kpi-label{font-size:10px!important}
+  body.redesign-suite .suite-kpi-value{font-size:25px!important}
+}
+@media(max-width:560px){
+  body.redesign-suite{font-size:14px!important}
+  body.redesign-suite .masthead h1{font-size:25px!important}
+  body.redesign-suite .suite-panel-header h2{font-size:13px!important}
+  body.redesign-suite .suite-panel-header p{font-size:10px!important}
+  body.redesign-suite th{font-size:9px!important}
+  body.redesign-suite td{font-size:9.5px!important}
+}
+/* ===== FIM MQ LEGIBILIDADE GLOBAL 2026-09-23 ===== */
