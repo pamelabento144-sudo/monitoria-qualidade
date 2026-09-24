@@ -3881,3 +3881,109 @@ body.redesign-suite .pager{
     grid-template-columns:1fr!important;
   }
 }
+
+
+/* Visão Geral — acabamento dos KPIs conforme mockup aprovado */
+body.redesign-suite #general .general-kpi{
+  min-height:84px!important;
+  padding:8px 10px 8px!important;
+}
+body.redesign-suite #general .general-kpi-top{
+  gap:6px!important;
+  min-height:22px!important;
+}
+body.redesign-suite #general .general-kpi-icon{
+  width:22px!important;
+  height:22px!important;
+  border-radius:6px!important;
+}
+body.redesign-suite #general .general-kpi-icon svg{
+  width:13px!important;
+  height:13px!important;
+}
+body.redesign-suite #general .general-kpi-label{
+  font-size:7.8px!important;
+  font-weight:700!important;
+}
+body.redesign-suite #general .general-kpi-body{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  gap:5px!important;
+  align-items:end!important;
+  min-height:38px!important;
+  margin-top:4px!important;
+}
+body.redesign-suite #general .general-kpi-copy{
+  min-width:0!important;
+}
+body.redesign-suite #general .general-kpi-main{
+  margin-top:0!important;
+  align-items:center!important;
+}
+body.redesign-suite #general .general-kpi-main strong{
+  font-size:19px!important;
+  line-height:1!important;
+}
+body.redesign-suite #general .general-kpi-delta{
+  font-size:6.6px!important;
+  padding-bottom:0!important;
+}
+body.redesign-suite #general .general-kpi-foot{
+  min-height:10px!important;
+  margin-top:3px!important;
+  font-size:6.2px!important;
+}
+body.redesign-suite #general .general-kpi-meter{
+  height:4px!important;
+  margin-top:4px!important;
+}
+body.redesign-suite #general .general-kpi-spark-wrap{
+  width:66px!important;
+  height:25px!important;
+  display:grid!important;
+  place-items:center!important;
+  align-self:end!important;
+}
+body.redesign-suite #general .general-kpi-sparkline{
+  width:66px!important;
+  height:22px!important;
+  overflow:visible!important;
+}
+body.redesign-suite #general .general-kpi-sparkline polyline{
+  fill:none!important;
+  stroke:#ff6679!important;
+  stroke-width:1.5!important;
+  stroke-linecap:round!important;
+  stroke-linejoin:round!important;
+}
+body.redesign-suite #general .general-kpi-sparkline circle{
+  fill:#ff6679!important;
+}
+body.redesign-suite #general .general-kpi-sparkline.compliments polyline{
+  stroke:#21e1ad!important;
+}
+body.redesign-suite #general .general-kpi-sparkline.compliments circle{
+  fill:#21e1ad!important;
+}
+body.redesign-suite #general .general-kpi.has-sparkline .general-kpi-main{
+  gap:5px!important;
+}
+body.redesign-suite #general .general-kpi.has-sparkline .general-kpi-delta{
+  margin-left:5px!important;
+}
+body.redesign-suite #general .general-kpi:not(.has-sparkline) .general-kpi-body{
+  grid-template-columns:1fr!important;
+}
+body.redesign-suite #general .general-kpi.audits .general-kpi-meter{
+  background:#123452!important;
+}
+body.redesign-suite #general .general-kpi.audits .general-kpi-meter>span{
+  background:linear-gradient(90deg,#2a9fff,#48c9ff)!important;
+}
+
+@media(min-width:1200px){
+  body.redesign-suite #general #general-kpis.general-kpi-grid{
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    gap:7px!important;
+  }
+}
