@@ -3430,3 +3430,454 @@ body.redesign-suite .comparison-lower-layout{
     grid-template-columns:1fr!important;
   }
 }
+
+
+/* =====================================================================
+   FIDELIDADE FINAL AOS MOCKUPS APROVADOS — 23/09/2026
+   Corrige densidade, grids, sidebar, quartis, gráficos e tabelas.
+   ===================================================================== */
+
+/* Sidebar: sem moldura externa envolvendo o menu. */
+body.redesign-suite .main-nav{
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  padding:0!important;
+}
+body.redesign-suite .main-nav .nav-item{
+  outline:none!important;
+  box-shadow:none!important;
+}
+body.redesign-suite .main-nav .nav-item:focus,
+body.redesign-suite .main-nav .nav-item:focus-visible{
+  outline:none!important;
+  box-shadow:none!important;
+}
+body.redesign-suite .main-nav .nav-item.active{
+  border-color:rgba(41,168,250,.52)!important;
+  box-shadow:inset 0 0 18px rgba(33,163,246,.08),0 0 14px rgba(26,144,227,.05)!important;
+}
+
+/* Mais densidade: mockups foram concebidos para caber em uma tela 16:9. */
+body.redesign-suite .main-content{
+  padding:14px 16px 24px!important;
+}
+body.redesign-suite .suite-masthead{
+  min-height:60px!important;
+  margin-bottom:8px!important;
+}
+body.redesign-suite .masthead-module-icon{
+  width:38px!important;height:38px!important;flex-basis:38px!important;
+}
+body.redesign-suite .masthead-module-icon svg{width:21px!important;height:21px!important}
+body.redesign-suite .masthead h1{
+  font-size:25px!important;
+}
+body.redesign-suite .masthead-copy-text>p:last-child{
+  font-size:10px!important;
+}
+body.redesign-suite .general-header-meta,
+body.redesign-suite .general-header-button{
+  min-height:42px!important;
+}
+body.redesign-suite .general-header-meta{padding:6px 9px!important}
+body.redesign-suite .general-header-button{padding:0 11px!important}
+
+/* KPIs: seis em uma única faixa, como nos mockups. */
+body.redesign-suite .suite-kpi-grid{
+  gap:8px!important;
+  margin-bottom:8px!important;
+}
+body.redesign-suite .suite-kpi-grid-6{
+  grid-template-columns:repeat(6,minmax(0,1fr))!important;
+}
+body.redesign-suite .suite-kpi-card,
+body.redesign-suite #general .general-kpi{
+  min-height:92px!important;
+  padding:10px 11px 9px!important;
+  border-radius:8px!important;
+}
+body.redesign-suite .suite-kpi-heading strong,
+body.redesign-suite #general .general-kpi-top{
+  font-size:8.6px!important;
+}
+body.redesign-suite .suite-kpi-icon,
+body.redesign-suite #general .general-kpi-icon{
+  width:24px!important;height:24px!important;
+}
+body.redesign-suite .suite-kpi-value,
+body.redesign-suite #general .general-kpi-main strong{
+  font-size:22px!important;
+}
+body.redesign-suite .suite-kpi-card.text .suite-kpi-value{
+  font-size:13px!important;
+}
+body.redesign-suite .suite-kpi-delta,
+body.redesign-suite #general .general-kpi-delta{
+  font-size:7.3px!important;
+}
+body.redesign-suite .suite-kpi-foot,
+body.redesign-suite #general .general-kpi-foot{
+  font-size:7px!important;
+  margin-top:4px!important;
+}
+body.redesign-suite .suite-kpi-meter,
+body.redesign-suite #general .general-kpi-meter{
+  height:4px!important;
+  margin-top:5px!important;
+}
+
+/* Painéis mais compactos. */
+body.redesign-suite .suite-grid{gap:8px!important}
+body.redesign-suite .suite-panel{padding:10px!important}
+body.redesign-suite .suite-panel-header{
+  min-height:27px!important;
+  margin-bottom:7px!important;
+}
+body.redesign-suite .suite-panel-header h2{
+  font-size:11px!important;
+}
+body.redesign-suite .suite-panel-header p{
+  font-size:7.2px!important;
+}
+body.redesign-suite .suite-panel-icon{
+  min-width:23px!important;height:23px!important;
+  font-size:10px!important;
+}
+
+/* Visão Geral: mantém 4x2, mas reduz altura e espaços vazios. */
+body.redesign-suite #general #general-kpis{
+  gap:8px!important;
+  margin-bottom:8px!important;
+}
+body.redesign-suite #general .general-primary-grid{gap:8px!important;margin-bottom:8px!important}
+body.redesign-suite #general .general-bottom-grid{gap:8px!important}
+body.redesign-suite #general .general-evolution-panel{min-height:270px!important}
+body.redesign-suite #general .general-compact-panel{min-height:170px!important}
+body.redesign-suite #general .general-quartile-row{
+  min-width:0!important;
+  width:100%!important;
+  grid-template-columns:30px minmax(85px,1fr) minmax(45px,.58fr) 34px 58px!important;
+  gap:5px!important;
+  padding:6px!important;
+}
+body.redesign-suite #general .general-quartile-copy strong{font-size:7.6px!important}
+body.redesign-suite #general .general-quartile-copy small,
+body.redesign-suite #general .general-quartile-count{font-size:6.6px!important}
+body.redesign-suite #general .general-quartile-pct{font-size:9px!important}
+
+/* Histórico resumido no card Administração da Visão Geral. */
+body.redesign-suite .general-history-mini{
+  display:grid!important;
+  gap:4px!important;
+  margin-top:7px!important;
+}
+body.redesign-suite .general-history-title{
+  display:flex!important;justify-content:space-between!important;align-items:center!important;
+  padding-bottom:4px!important;border-bottom:1px solid rgba(67,139,195,.16)!important;
+  color:#d7e7f5!important;font-size:7px!important;
+}
+body.redesign-suite .general-history-title small{color:#58bbf5!important}
+body.redesign-suite .general-history-row{
+  display:grid!important;
+  grid-template-columns:8px minmax(0,1fr) auto!important;
+  gap:5px!important;align-items:center!important;
+  min-height:20px!important;
+  font-size:6.8px!important;
+}
+body.redesign-suite .general-history-row strong{
+  min-width:0!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;color:#cbdceb!important;
+}
+body.redesign-suite .general-history-row small{color:#7893ac!important;font-size:6.3px!important}
+body.redesign-suite .history-dot{width:6px;height:6px;border-radius:50%;background:#ffbe32}
+body.redesign-suite .history-dot.ok{background:#18e4a3}
+body.redesign-suite .history-dot.error{background:#ff586d}
+
+/* Qualidade: composição do mockup. */
+body.redesign-suite .quality-dashboard-grid{
+  grid-template-columns:minmax(0,2.18fr) minmax(285px,.92fr)!important;
+  gap:8px!important;
+  margin-bottom:8px!important;
+}
+body.redesign-suite .quality-left-column{
+  grid-template-rows:minmax(255px,auto) auto!important;
+  gap:8px!important;
+}
+body.redesign-suite .quality-evolution-panel{min-height:255px!important}
+body.redesign-suite .quality-side-stack{gap:8px!important}
+body.redesign-suite .quality-lower-layout{
+  grid-template-columns:1.1fr .9fr .9fr!important;
+  gap:8px!important;
+}
+body.redesign-suite .quality-lower-layout>.suite-panel{min-height:160px!important}
+body.redesign-suite .quality-supervision-panel{min-height:165px!important}
+body.redesign-suite .suite-distribution-list{
+  grid-template-columns:minmax(0,1fr) 70px!important;
+  gap:6px!important;
+}
+body.redesign-suite .suite-donut{width:66px!important;height:66px!important}
+body.redesign-suite .suite-donut:after{inset:10px!important}
+body.redesign-suite .suite-quartile-cards{gap:5px!important}
+body.redesign-suite .suite-quartile-card{padding:6px!important}
+body.redesign-suite .suite-quartile-card strong{font-size:13px!important}
+body.redesign-suite .suite-rank-row{
+  grid-template-columns:18px minmax(70px,1fr) 44px minmax(44px,.65fr)!important;
+  min-height:20px!important;
+  gap:5px!important;
+  font-size:7px!important;
+}
+body.redesign-suite .suite-rank-pos{width:17px!important;height:17px!important}
+body.redesign-suite .suite-rank-track{height:6px!important}
+
+/* Novo gráfico combinado da Qualidade. */
+body.redesign-suite .quality-chart-legend{
+  display:flex!important;
+  justify-content:flex-end!important;
+  gap:12px!important;
+  margin:-3px 4px 3px!important;
+  color:#8ca7bf!important;
+  font-size:7px!important;
+  font-weight:700!important;
+}
+body.redesign-suite .quality-chart-legend span{display:flex;align-items:center;gap:4px}
+body.redesign-suite .quality-chart-legend i{display:block;width:13px;height:3px;border-radius:99px}
+body.redesign-suite .quality-chart-legend i.quality{background:#24baff}
+body.redesign-suite .quality-chart-legend i.target{background:repeating-linear-gradient(90deg,#a8bfd2 0 4px,transparent 4px 7px)}
+body.redesign-suite .quality-chart-legend i.volume{height:7px;background:#19538b}
+body.redesign-suite .quality-combo-chart{display:block;width:100%;height:auto;max-height:235px}
+body.redesign-suite .quality-grid-line{stroke:rgba(123,166,201,.14);stroke-width:1}
+body.redesign-suite .quality-axis-label,
+body.redesign-suite .quality-month-label,
+body.redesign-suite .quality-count-label{fill:#7f9bb6;font-size:9px}
+body.redesign-suite .quality-month-label{font-weight:700}
+body.redesign-suite .quality-volume-bar{fill:#145395;opacity:.62}
+body.redesign-suite .quality-line{fill:none;stroke:#27c7f5;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+body.redesign-suite .quality-line-point{fill:#2baaff;stroke:#08223d;stroke-width:2}
+body.redesign-suite .quality-value-label{fill:#dff5ff;font-size:8px;font-weight:800}
+body.redesign-suite .quality-target-line{stroke:#b4c9d8;stroke-width:1.2;stroke-dasharray:6 5;opacity:.75}
+body.redesign-suite .quality-target-label{fill:#9fb6ca;font-size:8px}
+
+/* Quartis: nunca cortar texto, percentual ou quantidade. */
+body.redesign-suite .survey-quartile-suite{
+  min-width:0!important;
+  width:100%!important;
+  overflow:hidden!important;
+}
+body.redesign-suite .survey-quartile-suite .suite-quartile-row{
+  width:100%!important;
+  min-width:0!important;
+  grid-template-columns:28px minmax(92px,1.25fr) minmax(48px,.62fr) 36px 28px 48px!important;
+  gap:4px!important;
+  min-height:34px!important;
+  padding:5px 6px!important;
+  font-size:6.9px!important;
+}
+body.redesign-suite .operators-side-stack .suite-quartile-row{
+  width:100%!important;
+  min-width:0!important;
+  grid-template-columns:28px minmax(105px,1.35fr) minmax(48px,.62fr) 32px 64px!important;
+  gap:4px!important;
+  min-height:35px!important;
+  padding:5px 6px!important;
+  font-size:6.9px!important;
+}
+body.redesign-suite .suite-quartile-row>strong,
+body.redesign-suite .suite-quartile-row>small{
+  min-width:0!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+}
+body.redesign-suite .quartile-badge{
+  min-width:26px!important;
+  height:24px!important;
+  padding:0 5px!important;
+}
+
+/* Pesquisa ISC: mesma proporção compacta do mockup. */
+body.redesign-suite .survey-main-layout{
+  grid-template-columns:minmax(0,1.9fr) minmax(320px,.95fr)!important;
+  gap:8px!important;
+  margin-bottom:8px!important;
+}
+body.redesign-suite .survey-main-layout>.suite-panel{min-height:245px!important}
+body.redesign-suite .survey-lower-layout{
+  gap:8px!important;
+  margin-bottom:8px!important;
+}
+body.redesign-suite .survey-lower-layout>.suite-panel{min-height:150px!important}
+body.redesign-suite .suite-question-circles{height:105px!important}
+body.redesign-suite .suite-ring{width:58px!important;height:58px!important}
+body.redesign-suite .suite-ring strong{font-size:12px!important}
+
+/* Falta Grave. */
+body.redesign-suite .fg-main-layout{
+  grid-template-columns:minmax(0,1.85fr) minmax(300px,.95fr)!important;
+  gap:8px!important;
+  margin-bottom:8px!important;
+}
+body.redesign-suite .fg-main-layout>.suite-panel{min-height:245px!important}
+body.redesign-suite .fg-lower-layout{
+  gap:8px!important;
+  margin-bottom:8px!important;
+}
+body.redesign-suite .fg-lower-layout>.suite-panel{min-height:155px!important}
+body.redesign-suite .fg-performance-main.three{
+  grid-template-columns:repeat(3,1fr)!important;
+}
+body.redesign-suite .fg-performance-main.three>div{
+  padding:6px!important;
+  min-width:0!important;
+}
+body.redesign-suite .fg-performance-main.three strong{
+  font-size:15px!important;
+}
+body.redesign-suite .fg-performance-status{
+  padding:6px!important;
+}
+body.redesign-suite .fg-performance-status strong{font-size:9px!important}
+
+/* Comparativo Mensal: linhas com as cores corretas e resumo compacto. */
+body.redesign-suite .comparison-dashboard-grid{
+  grid-template-columns:minmax(0,2.25fr) minmax(270px,.85fr)!important;
+  gap:8px!important;
+  margin-bottom:8px!important;
+}
+body.redesign-suite .comparison-left-column{
+  grid-template-rows:minmax(245px,auto) auto!important;
+  gap:8px!important;
+}
+body.redesign-suite .comparison-lower-layout{gap:8px!important}
+body.redesign-suite .comparison-lower-layout>.suite-panel{min-height:170px!important}
+body.redesign-suite .comparison-summary-panel{min-height:100%!important}
+body.redesign-suite .comparison-summary-list{gap:5px!important}
+body.redesign-suite .comparison-summary-row{
+  min-height:43px!important;
+  padding:6px!important;
+  grid-template-columns:27px 1fr!important;
+  gap:6px!important;
+}
+body.redesign-suite .comparison-summary-icon{width:26px!important;height:26px!important;font-size:14px!important}
+body.redesign-suite .comparison-summary-row strong{font-size:12px!important}
+body.redesign-suite .comparison-summary-row small,
+body.redesign-suite .comparison-summary-row span{font-size:6.8px!important}
+
+/* generalEvolutionSvg também é usado fora da Visão Geral. */
+body.redesign-suite .general-series{
+  fill:none!important;
+  stroke-width:3!important;
+  stroke-linecap:round!important;
+  stroke-linejoin:round!important;
+}
+body.redesign-suite .general-series.quality{stroke:#2b9dff!important}
+body.redesign-suite .general-series.isc{stroke:#20dce9!important}
+body.redesign-suite .general-point{stroke:#07192d!important;stroke-width:2!important}
+body.redesign-suite .general-point.quality{fill:#2b9dff!important}
+body.redesign-suite .general-point.isc{fill:#20dce9!important}
+body.redesign-suite .general-target-line{stroke:#9db8cc!important;stroke-width:1.1!important;stroke-dasharray:6 5!important}
+body.redesign-suite .general-target-label{fill:#98aec1!important;font-size:8px!important}
+body.redesign-suite .general-end-label.quality{fill:#55b8ff!important}
+body.redesign-suite .general-end-label.isc{fill:#38e5ec!important}
+body.redesign-suite .chart-target-value-label{display:none!important}
+body.redesign-suite .chart-value-label{font-size:8px!important;stroke-width:3px!important}
+body.redesign-suite .chart-target-label{font-size:7.5px!important}
+body.redesign-suite .chart-legend{margin:0 4px 3px!important}
+body.redesign-suite .trend-chart,
+body.redesign-suite .general-trend-svg{max-height:230px!important}
+
+/* Tabela comparativa mais compacta. */
+body.redesign-suite #comparison .suite-data-table-panel th,
+body.redesign-suite #comparison .suite-data-table-panel td{
+  padding:5px 7px!important;
+  font-size:7px!important;
+}
+body.redesign-suite #comparison .suite-data-table-panel>.suite-panel-header{
+  padding:9px 10px 6px!important;
+}
+
+/* Operadores: composição e densidade do mockup. */
+body.redesign-suite .operators-main-layout{
+  grid-template-columns:minmax(0,2.55fr) minmax(285px,.82fr)!important;
+  gap:8px!important;
+  margin-bottom:8px!important;
+}
+body.redesign-suite .operators-side-stack{gap:8px!important}
+body.redesign-suite .operators-list-panel{min-height:335px!important}
+body.redesign-suite .operators-lower-layout{
+  grid-template-columns:1fr 1.12fr 1.08fr!important;
+  gap:8px!important;
+}
+body.redesign-suite .operators-lower-layout>.suite-panel{
+  min-height:145px!important;
+}
+body.redesign-suite .operators-general-list{gap:3px!important}
+body.redesign-suite .operators-general-list>div{
+  padding:5px 3px!important;
+  font-size:7px!important;
+}
+body.redesign-suite .operators-general-list strong{font-size:10px!important}
+
+/* Mini-tabelas com cabeçalhos claros e TMA na mesma linha. */
+body.redesign-suite .suite-mini-table.headed{display:grid!important;gap:0!important}
+body.redesign-suite .suite-mini-head{
+  display:grid!important;
+  gap:5px!important;
+  align-items:center!important;
+  min-height:22px!important;
+  padding:3px 5px!important;
+  color:#7898b3!important;
+  border-bottom:1px solid rgba(69,137,190,.17)!important;
+  font-size:6.4px!important;
+  font-weight:700!important;
+}
+body.redesign-suite .suite-mini-table.headed .suite-mini-row{
+  gap:5px!important;
+  min-height:23px!important;
+  padding:3px 5px!important;
+  font-size:6.8px!important;
+}
+body.redesign-suite .suite-mini-table.headed .suite-mini-row span{
+  min-width:0!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+
+/* Tabelas gerais mais densas. */
+body.redesign-suite th{
+  padding:5px 7px!important;
+  font-size:6.8px!important;
+}
+body.redesign-suite td{
+  padding:4px 7px!important;
+  font-size:7px!important;
+}
+body.redesign-suite .pager{
+  min-height:34px!important;
+  padding:5px 8px!important;
+}
+
+/* Quebras responsivas só quando realmente necessárias. */
+@media(min-width:901px){
+  body.redesign-suite .suite-kpi-grid-6{
+    grid-template-columns:repeat(6,minmax(0,1fr))!important;
+  }
+}
+@media(max-width:900px) and (min-width:561px){
+  body.redesign-suite .suite-kpi-grid-6{
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  }
+}
+@media(max-width:560px){
+  body.redesign-suite .suite-kpi-grid-6{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+  body.redesign-suite .quality-dashboard-grid,
+  body.redesign-suite .survey-main-layout,
+  body.redesign-suite .fg-main-layout,
+  body.redesign-suite .comparison-dashboard-grid,
+  body.redesign-suite .operators-main-layout{
+    grid-template-columns:1fr!important;
+  }
+}
